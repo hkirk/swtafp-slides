@@ -258,7 +258,7 @@ gulp.task('package', gulp.series('default', () =>
 
 ))
 
-gulp.task('reload', () => gulp.src(['*.html', '*.md'])
+gulp.task('reload', () => gulp.src(['*.html', '*.md', 'slides/*.html'])
     .pipe(connect.reload()));
 
 gulp.task('serve', () => {
@@ -272,6 +272,8 @@ gulp.task('serve', () => {
 
     gulp.watch(['*.html', '*.md'], gulp.series('reload'))
 
+    gulp.watch(['slides/**/*.html', 'slides/**/*.md'], gulp.series('reload'))
+
     gulp.watch(['js/**'], gulp.series('js', 'reload', 'test'))
 
     gulp.watch(['plugin/**/plugin.js'], gulp.series('plugins', 'reload'))
@@ -283,7 +285,8 @@ gulp.task('serve', () => {
 
     gulp.watch([
         'css/*.scss',
-        'css/print/*.{sass,scss,css}'
+        'css/print/*.{sass,scss,css}',
+        'slides/css/**/*.css'
     ], gulp.series('css-core', 'reload'))
 
     gulp.watch(['test/*.html'], gulp.series('test'))
