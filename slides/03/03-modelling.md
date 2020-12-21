@@ -89,6 +89,43 @@ type Meassurement = CM = | Meter = 1 | Kilometer = 2
 
 ---
 
+## Examples Quadratic equations
+
+ ![Quardraitic equations](./img/quadratic_formula.gif "Quadratic equations")
+
+----
+
+### Domain 
+
+``` fsharp [1|2|4]
+type Equation = float * float * float
+type Solution = float * float
+
+type solve = Equation -> Solution
+```
+
+Solution:
+
+`$$ x = \frac {-b \pm \sqrt {b^2 - 4ac}}{2a}$$`
+
+----
+
+### Solution
+
+```fsharp [7|2,6|4]
+let solve a b c =
+  let = d = b*b - 4.0*a*c
+  if d < 0.0 || a = 0.0
+  then failWith "discrimant is negative or a is zero"
+  else 
+    let sqrtD = sqrt d
+    ((-b + sqrtD) / (2.0*a), (-b - sqrtD) / (2.0*a))
+```
+
+_Left as a exercise to try and capture the possible solutions (2 roots, 1 root, 0 roots)_
+
+---
+
 ## Modelling
 
 TODO: better example from SWD/DAB?
@@ -220,7 +257,7 @@ TODO: image
 
 * New requirements: Email or Postal address
 
-```fsharp
+```fsharp [3-4]
 type Contact = {
   name: NameInfo
   email: EmailInfo opton
@@ -234,7 +271,7 @@ type Contact = {
 
 ### Make illegal states unrepresentable
 
-```fsharp
+```fsharp [2-3|4|8]
 type Contactinfo =
   | OnlyEmail of EmailInfo
   | OnlyPostal of PostalInfo
@@ -252,29 +289,182 @@ What about if there should be a secondary contact address?
 
 ### Domain Driven Design
 
-TODO: Just to mention?
 
+* "The model and the heart of the design shape each other."
+* "The model is the backbone of the language used by all team members."
+* "The model is distilled knowledge."
 
----
+![Ubiquitous Language](./img/ubiquitous_language.png "Ubiquitous Language")
 
-## Examples
-
-
----
-
-## Quadritic equations
+TODO: resize
 
 ---
 
-## Cash registry
+## Examples Cash register
+
+![Cash register](./img/cash_register.jpg "Cash register")
+
+----
+
+### Domain
+
+```fsharp [1-6|8-11 ]
+// Register
+type Code = string;;
+type Name = string;;
+type Price = int;;
+
+type Register = (Code * (Name*Price)) list;;
+
+// Purchase
+type NoPiece = int;;
+type Item = NoPiece * Code;;
+type Purchase = Item list;;
+```
+
+----
+
+### Domain (cont.)
+
+```fsharp [1-4|6-8]
+// Bill
+type Info = NoPiece * Name * Price;;
+type InfoList = Info list;;
+type Bill = Info list * Price;;
+
+// Functions
+type findArticle = Code -> Register -> (Name*Price);;
+type makeBill = Register -> Purchase-> Bill;;
+```
+
+Note: The more general type actually given by F#
 
 ---
 
-## Map Colering
+TODO: Better example not from book
+
+## Examples Map Coloring
+
+![Map Coloring](./img/map_coloring.png "Map Coloring")
+
+----
+
+### Domain
+
+```fsharp [1-5|7-8]
+type Country = string;;
+type Map = (Country * Country) list;;
+
+type Color = Country list;;
+type Coloring = Color list;;
+
+// Goal
+type colorMap = Map -> Coloring;;
+```
+
+----
+
+### Functions
+
+```fsharp
+let colorContries = Map -> Country list -> Coloring
+let countries = Map -> Country list
+let extendColoring = Map -> Coloring -> Country -> Coloring
+let canBeExtendedBy = Map -> Color -> Country -> bool
+let areNeighbours = Country -> Country -> bool
+```
+
+TODO: Add notes for students
+
+Note: Break down of the functions from colorMap
 
 ---
 
-## State machine
+## Examples State machine
+
+![State machine](./img/state.png "State machine")
+
+----
+
+### Domain
+
+```fsharp
+// Auxiliary types
+type MessageHandler = unit -> Timed<unit>;;
+
+// State data
+type ReadyData = Timed<TimeSpan list>;;
+type ReceivedMessageData =
+        Timed<TimeSpan list * MessageHandler>;;
+type NoMessageData = Timed<TimeSpan list>;;
+```
+
+Note: Message handler keeps that state clean of the concrete data
+
+End state don't need any data in this example
+
+
+----
+
+### States
+
+Representing a state of the state machine
+
+```fsharp
+type PollingConsumer =
+  | ReadyState of ReadyData
+  | ReceivedMessageState of ReceivedMessageData
+  | NoMessageState of NoMessageData
+  | StoppedState;;
+```
+
+----
+
+### Transitions
+
+Aiming for a transition function from each state
+
+```fsharp
+type transitionFromStopped =
+      unit -> PollingConsumer;;
+type transitionFromNoMessage =
+      NoMessageData -> PollingConsumer;;
+type transitionFromReceived =
+      ReceivedMessageData -> PollingConsumer;;
+type transitionFromReady =
+      ReadyData -> PollingConsumer;;
+```
+
+----
+
+### Implementing transitionFromNoMessage
+
+```fsharp
+let transitionFromNoMessage nm =
+    if shouldIdle nm
+    then idle () |> ReadyState
+    else StoppedState
+```
+Since this compile - refactoring into
+
+```fsharp
+let transitionFromNoMessage shouldIdle idle nm =
+    if shouldIdle nm
+    then idle () |> ReadyState
+    else StoppedState
+// val transitionFromNoMessage :
+//   shouldIdle:(NoMessageData -> bool) ->
+//     idle:(unit -> ReadyData) -> nm:NoMessageData
+//       -> PollingConsumer
+```
+
+---- 
+
+### Still not done
+
+* Model the domain directly in code
+* Type system helps with refactoring
+* Keeps a todo list
 
 ---
 
@@ -283,3 +473,5 @@ TODO: Just to mention?
 Inspirations from: 
 
 https://fsharpforfunandprofit.com/ddd/
+
+https://blog.ploeh.dk/2015/08/10/type-driven-development/
