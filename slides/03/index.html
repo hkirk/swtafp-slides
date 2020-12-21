@@ -13,6 +13,8 @@
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="../css/highlight.js/idea.css" id="highlight-theme">
+
+		<script src="../../plugin/math/math.js"></script>
 	</head>
 	<body>
 		<div class="reveal">
@@ -50,8 +52,14 @@
 				"history": true,
 				"center": true,
 
+				math: {
+				mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+				config: 'TeX-AMS_HTML-full',
+				// pass other options into `MathJax.Hub.Config()`
+				TeX: { Macros: { RR: "{\\bf R}" } }
+				},
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath]
 			});
 		</script>
 	</body>
