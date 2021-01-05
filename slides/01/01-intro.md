@@ -1,4 +1,7 @@
+<!-- .slide: data-background="#003d73" -->
 ## Introduction + F# #
+
+![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
 TODO: first slides template
 
@@ -18,7 +21,8 @@ TODO: first slides template
 
 ---
 
-## Introduction
+<!-- .slide: data-background-image="./img/introduction.jpg" -->
+## Introduction <!-- .element style="color: white" -->
 
 ----
 
@@ -34,7 +38,9 @@ TODO: first slides template
 
 ### Lectures
 
-TODO: Do stuff
+- 4 hours per week
+- `$\frac{1}{2}$` lecture
+- `$\frac{1}{2}$` exercises
 
 ----
 
@@ -46,29 +52,39 @@ TODO: Do stuff
 
 ### Expectations
 
-TODO: Do stuff
+- Online:
+  - Use your real name
+  - Show your face - even though this is early Tuesday morning
+- Offline
+  - Prepare **and** do exercises
+  - Handin assignment on time
+  - Check they have the correct content
+- **Ask** questions and make comments - this is a new course
 
 ----
 
 ### Assignments
 
-5 smaller assignment 
+6 smaller assignment (you need to handin 4)
 
 | Name     | Release | Handin |
 |---------|:-------:|-------:|
 | Nokia   | 2       | 4      |
-| Queue   | 5       | 6      |∏
+| Queue   | 5       | 6      |
 | Tetris 1| 7       | 9      |
 | Tetris 2| 9       | 11     |
 | Akka    | 11      | 13     |
 | Error   | 13      | 15     |
 
+
 ----
 
 ### Exam
 
-- 30 minutes plural exam
-- Examination contain talks about the theory and how this is applied in the assignments.
+- Take home exam
+  - Equal size to an assignment - and combines 2-3 of these
+- plus 30 minutes oral exam
+  - Examination contain talks about the theory and how this is applied in the written part - you can draw in your assignments.
 
 ---
 
@@ -81,7 +97,7 @@ Applying and composing of functions
 ### Declarative vs Imperative
 
 - Imparative
-  - Procedural (e.g C)
+  - Procedural (e.g. C)
   - OOP (C++, C#)
 - Declarative
   - Functional (F\#)
@@ -101,7 +117,7 @@ Traditional imperative would iterate over a list and modify a result, where decl
 - Write from file
 - Throwing exception
 
-We are going to minimize side effects and control - **not** removing them altogheter
+We are going to try minimize side effects and controlflow - **not** removing them altogheter
 
 ----
 
@@ -133,13 +149,22 @@ We are going to minimize side effects and control - **not** removing them altogh
 
 ![Learning curve FP vs OOP](./img/programming_languages_curve.png "Learning curve")
 
----
+----
+
+### Personal experience with FP
+
+TODO: Something about this is hard to teach - and my own experience.
+
+----
 
 ## Why F# #
 
+- forces you to think in a different way
 - is build by Microsfot
 - has access to .NET standard library
 - fully operational on Windows, Linux and Mac via .Net Core 
+- strong type system
+- can do OO like programing in F#
 
 ---
 
@@ -430,7 +455,7 @@ TODO: concat, add
 TODO: 
 
 - List in F\# can be arbitrary long but **must** contain elements of same type
-  - Give type `a` then a list of `a`'s have type `a list`
+  - Give type `a` then a list of `'a`'s have type `'a list`
   - Examples `int list`, `char list`, `String list` `('a -> 'b) list`
 
 ----
@@ -455,8 +480,9 @@ let l3 = 1::2::3::4::5::[]
 
 ### Visualize a list
 
-TODO: insert image
- 
+![List](./img/list.jpg "List") <!-- .element style="width:700px" -->
+
+
 ----
 
 ### Working with lists
@@ -493,7 +519,8 @@ let rec sum = function
 
 ### two things about last example
 
-- Pattern matching kan decompose any data structures in the pattern
+- Pattern matching can decompose any data structures in the pattern
 - TODO: function
 
 
+TODO: is this really the last slide :)

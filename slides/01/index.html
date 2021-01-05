@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>01 Intro + F#</title>
 
 		<link rel="stylesheet" href="../../dist/reset.css">
 		<link rel="stylesheet" href="../../dist/reveal.css">
@@ -13,6 +13,7 @@
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="../css/highlight.js/idea.css" id="highlight-theme">
+		<script src="../../plugin/math/math.js"></script>
 	</head>
 	<body>
 		<div class="reveal">
@@ -49,9 +50,14 @@
 				"progress": true,
 				"history": true,
 				"center": true,
-
+				math: {
+				  mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+				  config: 'TeX-AMS_HTML-full',
+				  // pass other options into `MathJax.Hub.Config()`
+				  TeX: { Macros: { RR: "{\\bf R}" } }
+				},
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
 			});
 		</script>
 	</body>
