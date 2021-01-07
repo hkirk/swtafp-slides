@@ -1,0 +1,12 @@
+{
+    "files.exclude": {
+        ".github": true,
+        ".vscode": true,
+        "css": true,
+        "dist": true,
+        "examples": true,
+        "js": true,
+        "node_modules": true,
+        "test": true
+    }
+}
