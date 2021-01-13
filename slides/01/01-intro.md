@@ -166,6 +166,10 @@ TODO: Something about this is hard to teach - and my own experience.
 - strong type system
 - can do OO like programing in F#
 
+----
+
+TODO: What can the language be used for
+
 ---
 
 ## Program files
@@ -524,3 +528,8 @@ let rec sum = function
 
 
 TODO: is this really the last slide :)
+
+---
+
+## References
+TODO: insert ref to The Rules
