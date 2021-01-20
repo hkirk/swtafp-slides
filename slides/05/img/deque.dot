@@ -1,0 +1,10 @@
+digraph {
+
+    node [shape=record, fontcolor=black, fontsize=14, width=4.75, fixedsize=true];
+    pointers [label="<f0> head |   | |    |  | <f5> tail", color=white];
+    values [label="<f0> 0 | 1 | 2 | ... | n-2 | <f5> n-1", color="#003d73", fillcolor=white, style=filled];
+
+    edge [color="#003d73"];
+    pointers:f0 -> values:f0;
+    pointers:f5 -> values:f5;
+}
