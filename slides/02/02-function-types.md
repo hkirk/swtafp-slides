@@ -384,3 +384,10 @@ This is not efficient because of the way `@` is implemented
 TODO: We will teach this.
 
 [2] No taught here but look at chapter 11 
+
+
+---
+
+## References
+
+TODO: insert ref to The Rules

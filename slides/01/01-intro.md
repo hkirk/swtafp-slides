@@ -3,8 +3,6 @@
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
-TODO: first slides template
-
 ----
 
 ## Agenda
@@ -46,7 +44,7 @@ TODO: first slides template
 
 ### Plan
 
-TODO: Do stuff
+![Schedule](./img/Schedule.png "Schedule")
 
 ----
 
@@ -60,6 +58,13 @@ TODO: Do stuff
   - Handin assignment on time
   - Check they have the correct content
 - **Ask** questions and make comments - this is a new course
+
+----
+
+### Your expectations
+
+* Slides?
+* ?
 
 ----
 
@@ -168,13 +173,19 @@ TODO: Something about this is hard to teach - and my own experience.
 
 ----
 
-TODO: What can the language be used for
+## Usages of F#
+
+* 'Normal programs'
+* GUI
+* Web backend
+* Web frontend (compiled to JS)
+* Depoyment to Azure
 
 ---
 
 ## Program files
 
-Creating a project
+Creating a project*
 - Commandline
 - Jetbrains Rider
 - Visual Studio
@@ -288,7 +299,6 @@ module Module1 =
 
 Language intro
 TODO: lambda
-TODO: string concat
 
 
 ----
@@ -345,7 +355,8 @@ TODO: string concat
 - Functional vs 'dot' operator
   - `String.Length "Hello f#"`
   - `"Hello F#".Length`
-
+- Concat like in C#
+  - `let result = "Hello" + " World!"`
 
 ----
 
@@ -429,14 +440,31 @@ Here `_` is a wildcard that mactches everything
 
 ### Pattern matching
 
-TODO: Option
+```fsharp
+type Option<'a> = | Some of 'a | None 
+
+let optionalInt = Some 1
+
+match optionalInt with 
+| Some x -> printfn "Value is %A" x
+| None -> printfn "No value" 
+```
 
 ----
 
 ### Pattern matching
 
-TODO: Choice
+```fsharp
+type Result<'T,'TError> =
+    | Ok of ResultValue:'T
+    | Error of ErrorValue:'TError
 
+let result = Error "File not found"
+
+match result with
+| Ok result -> printfn "Success with result %A" result
+| Error reason -> printfn "Error with reason: %s" reason
+```
 
 ----
 
@@ -455,10 +483,7 @@ TODO: Choice
 
 ## Lists
 
-TODO: concat, add
-TODO: 
-
-- List in F\# can be arbitrary long but **must** contain elements of same type
+- List in F# can be arbitrary long but **must** contain elements of same type
   - Give type `a` then a list of `'a`'s have type `'a list`
   - Examples `int list`, `char list`, `String list` `('a -> 'b) list`
 
@@ -502,6 +527,22 @@ List.length l1 // => 3
 
 ----
 
+### A couple of functions on lists
+
+```fsharp
+let l1 = [1;2;3]
+let l2 = [4;5;6]
+
+let l1' = 0 :: l1
+
+let l1Plus2 = List.append l1 l2
+let l1Plus2' = l1 @ l2
+```
+
+[List module](https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html)
+
+----
+
 ### Defining a sum function
 
 ```fsharp
@@ -532,4 +573,5 @@ TODO: is this really the last slide :)
 ---
 
 ## References
-TODO: insert ref to The Rules
+
+* [List module](https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html)
