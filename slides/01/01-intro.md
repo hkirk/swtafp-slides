@@ -7,14 +7,14 @@
 
 ## Agenda
 
-- Introduction
-- What is FP
-- Why F\#
-- Program files
-- F\#
-  - Functions
-  - Types
-- Lists
+* Introduction
+* What is FP
+* Why F\#
+* Program files
+* F\#
+  * Types
+  * Functions
+* Lists
 
 
 ---
@@ -26,19 +26,21 @@
 
 ## Qualification description
 
-- **Apply** and **explain** functional programing as a programing paradigm
-- **Design** and **implement** solutions building on functional programing
-- **Explain** the Actor model
-- **Design** and **implement** solutions with the Actor model
-- **Design**, **explain** and **combine** functional design patterns when developing applications
+* **Apply** and **explain** functional programing as a programing paradigm
+* **Design** and **implement** solutions building on functional programing
+* **Explain** the Actor model
+* **Design** and **implement** solutions with the Actor model
+* **Design**, **explain** and **combine** functional design patterns when developing applications
 
 ----
 
-### Lectures
+### Format
 
-- 4 hours per week
-- `$\frac{1}{2}$` lecture
-- `$\frac{1}{2}$` exercises
+* Lecture:
+  * 4 hours per week
+  * `$\frac{1}{2}$` lecturing
+  * `$\frac{1}{2}$` exercises
+* Homework before, exercises after
 
 ----
 
@@ -158,7 +160,12 @@ We are going to try minimize side effects and controlflow - **not** removing the
 
 ### Personal experience with FP
 
-TODO: Something about this is hard to teach - and my own experience.
+* Been using FP with OOP since 2012
+* Fluent in Scala
+* Know some SML
+* Been using F# since summer 2020
+
+* a bit like starting from scratch
 
 ----
 
@@ -298,8 +305,6 @@ module Module1 =
 ![F\#](./img/fsharp.png "F\#")
 
 Language intro
-TODO: lambda
-
 
 ----
 
@@ -377,6 +382,17 @@ TODO: lambda
 - Can also declare variables
 - `let pi = 3.14159`
   - Type: `val pi : float = 3.14159`
+
+----
+
+### Lambda
+
+* Lambda in F# can be defined by the `fun` keyword
+
+```fsharp
+fun a b -> a + b
+fun (a: int) (b: int) -> a + b
+```
 
 ----
 
@@ -483,9 +499,9 @@ match result with
 
 ## Lists
 
-- List in F# can be arbitrary long but **must** contain elements of same type
-  - Give type `a` then a list of `'a`'s have type `'a list`
-  - Examples `int list`, `char list`, `String list` `('a -> 'b) list`
+* List in F# can be arbitrary long but **must** contain elements of same type
+  * Give type `a` then a list of `'a`'s have type `'a list`
+  * Examples `int list`, `char list`, `String list` `('a -> 'b) list`
 
 ----
 
@@ -564,13 +580,14 @@ let rec sum = function
 
 ### two things about last example
 
-- Pattern matching can decompose any data structures in the pattern
-- TODO: function
-
-
-TODO: is this really the last slide :)
+* Pattern matching can decompose 'any' data structures in the pattern
+* `function` vs `match x with`
 
 ---
+
+<!-- .slide: data-background-image="./img/hard.jpg" -->
+
+----
 
 ## References
 
