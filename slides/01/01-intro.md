@@ -38,7 +38,7 @@
 
 * Lecture:
   * 4 hours per week
-  * `$\frac{1}{2}$` lecturing
+  * `$\frac{1}{2}$` lecturing / videos
   * `$\frac{1}{2}$` exercises
 * Homework before, exercises after
 
@@ -142,9 +142,9 @@ We are going to try minimize side effects and controlflow - **not** removing the
 
 ### Why FP
 
-- Helps us developer modular code
-- Makes up write testable code
-- Helps us write faster code
+- Helps us develop more modular code
+- Makes writing testable code easy
+- Helps us write 'faster' code
 - Makes us better OOP developers
 - Less code -> fewer bugs
 
@@ -164,15 +164,14 @@ We are going to try minimize side effects and controlflow - **not** removing the
 * Fluent in Scala
 * Know some SML
 * Been using F# since summer 2020
-
-* a bit like starting from scratch
+* A bit like starting from scratch
 
 ----
 
 ## Why F# #
 
 - forces you to think in a different way
-- is build by Microsfot
+- is build by Microsoft
 - has access to .NET standard library
 - fully operational on Windows, Linux and Mac via .Net Core 
 - strong type system
@@ -186,7 +185,7 @@ We are going to try minimize side effects and controlflow - **not** removing the
 * GUI
 * Web backend
 * Web frontend (compiled to JS)
-* Depoyment to Azure
+* Deployment to Azure
 
 ---
 
@@ -250,7 +249,7 @@ let main argv =
 ### Namespaces and Modules
 
 
-- Namespace lets you organize F\# programming elements into.
+- Namespace lets you organize F\# programming related elements.
   - Must be top level in a file
   - Cannot contain values/function directly
 - Modules are used to group values, type and functions
@@ -411,14 +410,14 @@ fun (a: int) (b: int) -> a + b
 
 - Examples: factorial: 
   - `0! = 1`
-  - `n! = n*(n-1)~!` for `n > 0`
+  - `n! = n*(n-1)!` for `n > 0`
 - Keyword `rec`
 - In F\#?
 
 ```fsharp
 let rec factorial n =
   if (n = 0) then 1
-  else x * factorial (n-1)
+  else n * factorial (n-1)
 ```
 <!-- .element: class="fragment" data-fragment-index="1" -->
 
@@ -445,7 +444,8 @@ match expr with
 Could redefine factorial with case constructs
 
 ```fsharp
-let rec factorial x = match n with
+let rec factorial n =
+  match n with
   | 0 -> 1
   | _ -> n * factorial (n-1)
 ```
@@ -500,8 +500,8 @@ match result with
 ## Lists
 
 * List in F# can be arbitrary long but **must** contain elements of same type
-  * Give type `a` then a list of `'a`'s have type `'a list`
-  * Examples `int list`, `char list`, `String list` `('a -> 'b) list`
+  * Give type `'a` then a list of `'a`'s have type `'a list`
+  * Examples `int list`, `char list`, `string list`, `('a -> 'b) list`
 
 ----
 
