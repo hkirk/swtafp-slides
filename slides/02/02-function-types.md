@@ -1,6 +1,7 @@
+<!-- .slide: data-background="#003d73" -->
 # Functions and Types
 
-![I'll not figth the future](./img/future.gif "From Giphy.com")
+![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
 ----
 
@@ -19,7 +20,7 @@
 
 # Functions
 
-TODO:
+![I will not fight the future](./img/future.gif "From Giphy")
 
 ----
 
@@ -27,7 +28,19 @@ TODO:
 
 * F# compiler will try to determine type
   * If compiler cannot find type it will return error
-TODO: example
+
+```
+let concat x = System.String.Concat(x);;
+
+  let concat x = System.String.Concat(x);;
+  ---------------^^^^^^^^^^^^^^^^^^^^^^^
+
+<path>: error FS0041: A unique overload for method 'Concat'
+could not be determined based on type information prior to
+this program point. A type annotation may be needed.
+
+Known type of argument: 'a
+```
 
 ----
 
@@ -113,6 +126,8 @@ List.filter (fun y -> y < 4) <| [2;3;4;5;6;6] // [2;3]
 
 Works as in bash og Powershell
 
+![Pipe](./img/pipe.jpg "Pipe") <!-- .element style="height: 300px;" -->
+
 ----
 
 ## Equality
@@ -137,7 +152,7 @@ let greater x y = if (x > y) then "greater" else "smaller";;
 // val greater : x:'a -> y:'a -> string when 'a : comparison
 ```
 
-* Do not work on functions same as equality
+* Do not work on functions - for same reasons as equality
 
 ---
 
@@ -199,6 +214,8 @@ let first (x, y) = x
 * Requires that components to be pair wise equal in type
 * Is compared from left to right
 
+!["Ordering](./img/sorting.jpg "Ordering") <!-- .element style="height: 300px; " -->
+
 ---
 
 # Records
@@ -244,7 +261,8 @@ let swafp = {name = "SWAF"; semester = "F21";
 Can use pattern to decompose records
 
 ```fsharp
-let {name = n; semester = s; students = l; teacher = t } = swafp;;
+let {name = n; semester = s; students = l; teacher = t } 
+                    = swafp
 val t : int = 33
 val s : string = "F21"
 val n : string = "SWAF"
@@ -372,18 +390,15 @@ This is not efficient because of the way `@` is implemented
 * __Only infinite sequences__[2] only depend on infinite sequnces, no lists
   * Could increase performance because of the lazy properties
 * __One argument functions__[1] Each function should have a single argument - not depending on currying
- 
 
 
----
+----
 
-## Notes
+### Notes
 
 [1] Hard
 
-TODO: We will teach this.
-
-[2] No taught here but look at chapter 11 
+[2] No taught in details here but look at chapter 11 
 
 
 ---
