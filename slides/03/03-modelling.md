@@ -1,5 +1,7 @@
+<!-- .slide: data-background="#003d73" -->
 # Type / Model based programing
 
+![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
 ----
 
@@ -12,13 +14,14 @@
 * Modeling
 * Examples
 
-
-
 ---
 
 ## Types
 
-TODO: something about types?
+> Data dominates. If you've chosen the right data structures and organized things well, the algorithms will almost always be self-evident. Data structures, not algorithms, are central to programming.
+> - Rob Pike in 1989
+
+Note: TODO: something about types?
 
 ----
 
@@ -81,7 +84,7 @@ type Option<'a> =
 ### Enumeration
 
 * Simular to sum type
-  * Uses `Equal` and and `int` value
+  * Uses `Equal` and `int` value
 
 ```fsharp
 type Meassurement = CM = | Meter = 1 | Kilometer = 2
@@ -114,7 +117,7 @@ Solution:
 
 ```fsharp [7|2,6|4]
 let solve a b c =
-  let = d = b*b - 4.0*a*c
+  let d = b*b - 4.0*a*c
   if d < 0.0 || a = 0.0
   then failWith "discrimant is negative or a is zero"
   else 
@@ -128,8 +131,6 @@ _Left as a exercise to try and capture the possible solutions (2 roots, 1 root, 
 
 ## Modelling
 
-TODO: better example from SWD/DAB?
-
 ```fsharp
 type Contact = {
   FirstName: string
@@ -142,6 +143,8 @@ type Contact = {
 ```
 
 How can we do better?
+
+Note: TODO: better example from SWD/DAB?
 
 ----
 
@@ -228,7 +231,6 @@ type EmailInfo {
 ### Constraint 2
 
 ```fsharp
-TODO: Check why
 type VerifiedEmail = VerifiedEmail of Email
 
 type VerifyEmailSerice =
@@ -240,16 +242,18 @@ type EmailInfo =
 
 ```
 
+Note: Why 
+TODO: Check why VerifiedEmail
+
 ----
 
 ### Documentation
 
+* ![""](./img/self_documenting.jpeg "") <!-- .element style="height:50vh; background-color:white; float:right;" -->
 * All code on the previeus slides are compilable code
 * Can argue that most can be read by non-F# programmers
 * Document constraints and logic
 * Develops a language we can use to talk about the code
-
-TODO: image
 
 ----
 
@@ -294,9 +298,7 @@ What about if there should be a secondary contact address?
 * "The model is the backbone of the language used by all team members."
 * "The model is distilled knowledge."
 
-![Ubiquitous Language](./img/ubiquitous_language.png "Ubiquitous Language")
-
-TODO: resize
+![Ubiquitous Language](./img/ubiquitous_language.png "Ubiquitous Language") <!-- .element style="height: 200px;" -->
 
 ---
 
@@ -341,8 +343,6 @@ Note: The more general type actually given by F#
 
 ---
 
-TODO: Better example not from book
-
 ## Examples Map Coloring
 
 ![Map Coloring](./img/map_coloring.png "Map Coloring")
@@ -374,9 +374,9 @@ let canBeExtendedBy = Map -> Color -> Country -> bool
 let areNeighbours = Country -> Country -> bool
 ```
 
-TODO: Add notes for students
 
 Note: Break down of the functions from colorMap
+TODO: Add notes for students
 
 ---
 
@@ -458,7 +458,7 @@ let transitionFromNoMessage shouldIdle idle nm =
 //       -> PollingConsumer
 ```
 
----- 
+----
 
 ### Still not done
 
@@ -475,3 +475,7 @@ Inspirations from:
 https://fsharpforfunandprofit.com/ddd/
 
 https://blog.ploeh.dk/2015/08/10/type-driven-development/
+
+Images from:
+
+http://geek-and-poke.com/geekandpoke/2013/2/14/self-documenting-code.html
