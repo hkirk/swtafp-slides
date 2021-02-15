@@ -144,8 +144,6 @@ type Contact = {
 
 How can we do better?
 
-Note: TODO: better example from SWD/DAB?
-
 ----
 
 ### Optional
@@ -234,16 +232,13 @@ type EmailInfo {
 type VerifiedEmail = VerifiedEmail of Email
 
 type VerifyEmailSerice =
-  (Email * Hash) -> VerifiedEmail
+  (Email * Hash) -> VerifiedEmail option
 
 type EmailInfo =
   | Verified of VerifiedEmail
   | UnVerifiedEmail of Email
 
 ```
-
-Note: Why 
-TODO: Check why VerifiedEmail
 
 ----
 
@@ -312,16 +307,16 @@ What about if there should be a secondary contact address?
 
 ```fsharp [1-6|8-11 ]
 // Register
-type Code = string;;
-type Name = string;;
-type Price = int;;
+type Code = string
+type Name = string
+type Price = int
 
-type Register = (Code * (Name*Price)) list;;
+type Register = (Code * (Name*Price)) list
 
 // Purchase
-type NoPiece = int;;
-type Item = NoPiece * Code;;
-type Purchase = Item list;;
+type NoPiece = int
+type Item = NoPiece * Code
+type Purchase = Item list
 ```
 
 ----
@@ -330,13 +325,13 @@ type Purchase = Item list;;
 
 ```fsharp [1-4|6-8]
 // Bill
-type Info = NoPiece * Name * Price;;
-type InfoList = Info list;;
-type Bill = Info list * Price;;
+type Info = NoPiece * Name * Price
+type InfoList = Info list
+type Bill = Info list * Price
 
 // Functions
-type findArticle = Code -> Register -> (Name*Price);;
-type makeBill = Register -> Purchase-> Bill;;
+type findArticle = Code -> Register -> (Name*Price)
+type makeBill = Register -> Purchase-> Bill
 ```
 
 Note: The more general type actually given by F#
@@ -352,14 +347,14 @@ Note: The more general type actually given by F#
 ### Domain
 
 ```fsharp [1-5|7-8]
-type Country = string;;
-type Map = (Country * Country) list;;
+type Country = string
+type Map = (Country * Country) list
 
-type Color = Country list;;
-type Coloring = Color list;;
+type Color = Country list
+type Coloring = Color list
 
 // Goal
-type colorMap = Map -> Coloring;;
+type colorMap = Map -> Coloring
 ```
 
 ----
@@ -367,11 +362,11 @@ type colorMap = Map -> Coloring;;
 ### Functions
 
 ```fsharp
-let colorContries = Map -> Country list -> Coloring
-let countries = Map -> Country list
-let extendColoring = Map -> Coloring -> Country -> Coloring
-let canBeExtendedBy = Map -> Color -> Country -> bool
 let areNeighbours = Country -> Country -> bool
+let canBeExtendedBy = Map -> Color -> Country -> bool
+let extendColoring = Map -> Coloring -> Country -> Coloring
+let countries = Map -> Country list
+let colorContries = Map -> Country list -> Coloring
 ```
 
 
@@ -408,7 +403,7 @@ End state don't need any data in this example
 
 ### States
 
-Representing a state of the state machine
+Representing states of the STM
 
 ```fsharp
 type PollingConsumer =
@@ -437,18 +432,37 @@ type transitionFromReady =
 
 ----
 
-### Implementing transitionFromNoMessage
+### Implementation
+
+Starting with transitionFromNoMessage
 
 ```fsharp
-let transitionFromNoMessage nm =
+let transitionFromNoMessage (nm : NoMessageData) =
     if shouldIdle nm
     then idle () |> ReadyState
     else StoppedState
 ```
-Since this compile - refactoring into
+
+----
+
+### STM
+
+![State machine](./img/state.png "State machine")
+
+----
 
 ```fsharp
-let transitionFromNoMessage shouldIdle idle nm =
+let transitionFromNoMessage (nm : NoMessageData) =
+    if shouldIdle nm
+    then idle () |> ReadyState
+    else StoppedState
+```
+
+Since this does not compiles - refactoring into
+
+```fsharp
+let transitionFromNoMessage shouldIdle idle
+                         (nm : NoMessageData) =
     if shouldIdle nm
     then idle () |> ReadyState
     else StoppedState
@@ -462,7 +476,7 @@ let transitionFromNoMessage shouldIdle idle nm =
 
 ### Still not done
 
-* Model the domain directly in code
+*   Model the domain directly in code
 * Type system helps with refactoring
 * Keeps a todo list
 
