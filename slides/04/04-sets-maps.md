@@ -20,9 +20,15 @@
 
 ## List
 
-* Finite
+* Are finite
 
-// TODO: Sum
+```fsharp [1-3|5]
+let rec sum = function
+    | []    -> 0
+    | x::xs -> x+(sum xs)
+
+let sum l = List.fold (fun acc elem -> acc+elem) 0 l
+```
 
 ----
 
@@ -234,14 +240,6 @@ Set.intersect first third
 Set.difference first third
 // val it : Set<string> = set ["b"]
 ```
-
-----
-
-<!-- .slide: data-visibility="hidden" -->
-### TryFind example
-
-TODO: think this is nessesary?
-
 ----
 
 ## Sets in general
@@ -312,9 +310,9 @@ Map.fold (fun a b c -> a + c) 0 m
 ```
 <!-- .element: class="fragment" -->
 
----
+----
 
-## Equality
+### Equality
 
 * `=` operator is defined for both list, set and map
 * Equal is consists of same elements
