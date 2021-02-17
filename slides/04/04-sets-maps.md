@@ -21,6 +21,8 @@
 ## List
 
 * Are finite
+* Single chained linked list
+    * `head` + `tail`
 
 ```fsharp [1-3|5]
 let rec sum = function
@@ -77,6 +79,7 @@ List.map (fun f -> ((float f) - 32.0) * (5.0/9.0)) tempSF
     * `'a list`, `Set<'a>`, `Map<'a>`
     * `'a option`
     * etc.
+* Map is always `$ O(n) $`
 
 ----
 
@@ -90,7 +93,7 @@ List.fold: ('a -> 'b -> 'a) -> 'a -> 'b list -> 'a
 
 Accumulates a list given a initial value and a function that takes a list element and a accumulative value.
 
-* `('a -> 'b -> 'c)` function that accumulate a list element and a partial result
+* `('a -> 'b -> 'a)` function that accumulate a list element and a partial result
 * `'a` an initial value
 
 ----
@@ -182,6 +185,28 @@ List.foldBack (fun a i -> a - i) [1; 3; 8] 100
 * fold: (((100 - 1) - 3) - 8) <!-- .element: class="fragment"  data-fragment-index="1" -->
 * foldBack: (1 - (3 - (8 - 100))) <!-- .element: class="fragment"  data-fragment-index="1" -->
 
+----
+
+### Zip
+
+Combines two or three lists together
+
+```fsharp
+zip: 'a list -> 'b list -> ('a*'b) list
+zip3: 'a list -> 'b list -> c' list -> ('a*'b*'c) list
+```
+
+```fsharp
+ List.zip [1;2;3;4] [2;4;6;8];;
+val it : (int * int) list = [(1, 2); (2, 4); (3, 6); (4, 8)]
+
+> List.zip [1;2;3;4] [2;4;6;8;2];;
+System.ArgumentException: The lists had different lengths.
+list1 is 1 element shorter than list2 (Parameter 'list1')
+Stopped due to error
+
+```
+
 ---
 
 ## Set
@@ -240,6 +265,7 @@ Set.intersect first third
 Set.difference first third
 // val it : Set<string> = set ["b"]
 ```
+
 ----
 
 ## Sets in general
@@ -310,9 +336,9 @@ Map.fold (fun a b c -> a + c) 0 m
 ```
 <!-- .element: class="fragment" -->
 
-----
+---
 
-### Equality
+## Equality
 
 * `=` operator is defined for both list, set and map
 * Equal is consists of same elements
