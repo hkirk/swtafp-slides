@@ -171,7 +171,7 @@ type Contact = {
 ```fsharp [1-4|8-12]
 type Email = | Email of string
 
-modules Email =
+module Email =
   let createEmail (s: String): Option<Email>
      = failWith "implement"
 
