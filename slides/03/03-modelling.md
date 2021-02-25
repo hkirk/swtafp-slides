@@ -69,6 +69,8 @@ type IntOrBool =
   | B of Bool
 ```
 
+Notes: TODO: Explain how a 'of SomeRecord' can be changed into the union type by up-cast
+
 ----
 
 ### Options
