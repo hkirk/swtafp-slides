@@ -1,7 +1,7 @@
 <!-- .slide: data-background="#003d73" -->
 # Immutable data structures
 
-![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
+![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element: style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
 ----
 
@@ -66,10 +66,10 @@ Note: We could also use .fsi files to declare functions
 ### Operations
 
 ```fsharp
-type empty<'a> = unit -> BST<'a>
-type insert<'a> = 'a -> BST<'a> -> BST<'a>
-type remove<'a> = 'a -> BST<'a> -> BST<'a>
-type contains<'a> 'a -> BST<'a> -> bool
+type empty<'a>    = unit -> BST<'a>
+type insert<'a>   = 'a -> BST<'a> -> BST<'a>
+type remove<'a>   = 'a -> BST<'a> -> BST<'a>
+type contains<'a> = 'a -> BST<'a> -> bool
 ```
 
 Could be extended with
@@ -135,7 +135,7 @@ Inserting 9
 // Create finite
 seq [1;2;3;4;5]
 // Create infinite
-let nat = Seq.iniInfinite (fun i -> i)
+let nat = Seq.initInfinite (fun i -> i)
 // [f 0; f 1; f 2; ...]
 ```
 
@@ -144,12 +144,12 @@ let nat = Seq.iniInfinite (fun i -> i)
 ### Accessing
 
 ```fsharp
-Seq.nth 5 nat
+Seq.item 5 nat
 // val it: int 5
 ```
 
-* `Seq.nth 5 nat` evaluates the 5th element, but not 0-4
-* Calling `Seq.nth 5 nat` will evaluate the 5 elements again
+* `Seq.item 5 nat` evaluates the 5th element, but not 0-4
+* Calling `Seq.item 5 nat` will evaluate the 5 elements again
 
 ----
 
@@ -160,14 +160,14 @@ Seq.nth 5 nat
 let cachedNat = Seq.cache nat
 ```
 
-* Calling `Seq.nth 5 cachedNat` will evaluate all elements from 0-5
+* Calling `Seq.item 5 cachedNat` will evaluate all elements from 0-5
 * Calling again will not evalute elements 0-5 again
 
 ---
 
 ## Queue
 
-![Queue](./img/queue.png "Queue")
+![Queue](./img/queue.jpg "Queue") <!-- .element style="width:800px;" -->
 
 
 ----
@@ -204,16 +204,17 @@ let rec tail = function
     | ([], r)  -> tail (List.rev r, [])
     | (l, r)   -> (List.tail l, r)
 ```
+<!-- .element: class="fragment" -->
 
 ----
 
 ### Amortized bounds
 
-* An extention to the Big-O notation from DOA
+* An extension to the Big-O notation from DOA
 * Used to analysis avarage run time
     * Usually used when some operations are fast and other are slow
 
-* C# List is an example
+* C# List is an example, its worst case bounds
     * insert: `$ O(n) $`
     * lookup: `$ O(1) $`
     * delete: `$ O(1) $`
@@ -224,15 +225,15 @@ let rec tail = function
 
 * `$ \rightarrow $` `n` insertions is `$ O(n^2) $`
 * You can make the amortized analysis that shows <!-- .element: class="fragment"  data-fragment-index="1" -->
-    * `n` insertions is `$ O(n) $` <!-- .element: class="fragment"  data-fragment-index="1" -->
-    * So amortized bounds is `$ O(n) $` for all operations <!-- .element: class="fragment"  data-fragment-index="1" -->
+    * `n` insertions is `$ O(2n) $` <!-- .element: class="fragment"  data-fragment-index="1" -->
+    * So amortized bounds is `$ O(1) $` for all operations <!-- .element: class="fragment"  data-fragment-index="1" -->
 * Se references for detailed analysis<!-- .element: class="fragment"  data-fragment-index="1" -->
 
 ----
 
 ### Using lazy evaluation
 
-To optimize our queue C. Okasaki proposes to use layz lists (Seq in F#)
+To optimize our queue C. Okasaki proposes to use lazy lists (Seq in F#)
 
 ```fsharp
 module LazyQueue
@@ -250,9 +251,49 @@ val tail: LazyQueue<'a> -> LazyQueue<'a>
 
 ----
 
-### Lazy queue
+### Lazy queue impl (1/2)
 
-TODO: 
+So here we use that `Seq` is lazy
+
+```fsharp
+let l' = Seq.append l r
+```
+
+This do not evalute `r` before its needed
+
+----
+
+### Lazy queue impl (2/2)
+
+```fsharp
+let l` = Seq.append l (Seq.rev r)
+```
+
+1. since append is lazy, we need to do `Seq.rev` incrementally. 
+2. so do one step of `Seq.rev` for each step of append   
+3. we then need the invariant `Seq.length r <= Seq.length l`
+
+----
+
+### Incremental rotation
+
+```fsharp
+let rot (l, r, a) = match Seq.length l
+    | 0 -> (Seq.head r) :: a    
+    | 1 -> (Seq.head l) :: (rot
+                (Seq.tail l, Seq.tail r, Seq.head r :: A))
+```
+
+\* Not battle tested code
+
+\*\* Not optimized code
+
+----
+
+### Bounds
+
+* Amortized bounds for all operations are still `$ O(1) $`
+* Worst case `$ O(log n) $`
 
 ----
 
@@ -260,9 +301,6 @@ TODO:
 
 * Not useful in `realtime` systems
     * why?
-
-
-TODO: 
 
 ----
 
