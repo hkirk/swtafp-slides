@@ -281,7 +281,7 @@ let l` = Seq.append l (Seq.rev r)
 let rot (l, r, a) = match Seq.length l
     | 0 -> (Seq.head r) :: a    
     | 1 -> (Seq.head l) :: (rot
-                (Seq.tail l, Seq.tail r, Seq.head r :: A))
+                (Seq.tail l, Seq.tail r, Seq.head r :: a))
 ```
 
 \* Not battle tested code
