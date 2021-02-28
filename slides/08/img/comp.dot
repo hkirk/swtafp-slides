@@ -1,0 +1,17 @@
+digraph G {
+
+    edge [dir=none]
+    node [shape=plaintext]
+
+    Ser -> Par
+    Par -> Comp1
+    Par -> Comp2
+    Comp1 -> 0.25
+    Comp2 -> 1.0
+    Ser -> Comp3
+    Comp3 -> 1.5
+
+    Comp1 [label="Comp"]
+    Comp2 [label="Comp"]
+    Comp3 [label="Comp"]
+}
