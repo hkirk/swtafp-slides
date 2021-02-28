@@ -1,0 +1,20 @@
+digraph G {
+    rankdir="LR"
+    edge [dir=none]
+    node [shape=Square]
+    Start1 [label="", shape=point, width=0.01, height=0.01];
+
+    Start -> Start1
+    Start1 -> 1.0
+    Start1 -> 0.25
+    1.0 -> 1.5
+    0.25 -> 1.5
+    1.5 -> End
+
+    Start [label="", shape=none]
+    Start1 [label="", shape=none]
+    1.0 [label="", xlabel=1.0]
+    1.5 [label="", xlabel=1.5]
+    0.25 [label="", xlabel=0.25]
+    End [label="", shape=none]
+}

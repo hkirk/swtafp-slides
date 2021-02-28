@@ -1,0 +1,25 @@
+digraph G {
+    edge [dir=none]
+    node [shape=plaintext]
+
+    CBox1 -> 2.0
+    CBox1 -> Blue
+    CBox1 -> CBox2
+    
+    CBox2 -> 1.0
+    CBox2 -> Green
+    CBox2 -> CBox3
+    
+    CBox3 -> 0.5
+    CBox3 -> Red
+    CBox3 -> Nothing
+    
+    Blue [fontcolor="blue"]
+    Green [fontcolor="green"]
+    Red [fontcolor="red"]
+
+    CBox1 [label="CBox"]
+    CBox2 [label="CBox"]
+    CBox3 [label="CBox"]
+    
+}
