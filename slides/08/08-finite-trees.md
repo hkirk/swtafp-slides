@@ -15,10 +15,10 @@
 
 ---
 
-## Finite trees
+## Finite trees / recursive data types
 
 * Recursive data types
-* Avoid infinityly recursive dat atypse
+* Avoid infinityly recursive data types
 * Found everywhere in the real world
     * JSON
     * File system
