@@ -55,7 +55,10 @@ val it : string =
 
 ---
 
+<!-- .slide: data-visibility="hidden" -->
+
 ## Big-O
+
 TODO: Should this be included and what?
 
 ---
@@ -66,7 +69,7 @@ TODO: Should this be included and what?
 * This can blow the stack
     * recursive call creates a new stack frame
 
-!["Recursion](./img/recursion.jpg "Recusion") <!-- .element style="height: 200px;" -->
+!["Recursion"](./img/recursion.jpg "Recusion") <!-- .element style="height: 200px;" -->
 
 ----
 
@@ -162,7 +165,7 @@ In general we will transform:
 ```fsharp
 f: 'a -> 'b
 // into
-f: 'a -> ('b -> 'b) -> 'b
+f: 'a -> ('a -> 'b) -> 'b
 ```
 
 ----
@@ -185,14 +188,145 @@ bigListC 3 (fun a -> a);;
 
 ### Analysis 
 
-// TODO: Big-O analisys of space + complexity
+* Accumulation is much faster than continuation based
+    * Even more visible compared to iterative methods
+* Continuations can handle deeper recursion
+
 
 ----
 
 ### Example
 
+```fsharp
+type BinTree<'a> = | Leaf
+                   | Node of BinTree<'a> * 'a * BinTree<'a>
+
+let rec count = function
+    | Leaf          -> 0
+    | Node(l, n, r) -> count l + 1 + count r
+// This is not tail recursive
+```
+
+----
+
+### Implementaion with continuations
+
+```fsharp
+let rec countC t c =
+    match t with
+    | Leaf          -> c 0
+    | Node(l, n, r) -> 
+        let cl = fun vl -> 
+            let cr = fun vr -> c(vl+1+vr)
+            countC r cr
+        countC l cl
+// val countC : t:BinTree<'a> -> c:(int -> 'b) -> 'b
+```
+
+* So continuations based versions also works with multiple recursion
+* One of the continuations can be replaced with an accumulative version
+
 ---
 
 ## Optimization
 
-// TODO: Include complexity for basic list, set, map operations
+![Collections complexities in F#](./img/collection.png)
+
+[Collections complexities in F#](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-collection-types)
+
+----
+
+### Ex. `foldback`
+
+* This should be a continuation-based imp.
+
+```fsharp
+// this version doesn't causes stack overflow - it uses a private stack 
+[<CompiledName("FoldBack")>]
+let foldBack<'T,'State> folder (list:'T list) (state:'State) = 
+    let f = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(folder)
+    match list with 
+    | [] -> state
+    | [h] -> f.Invoke(h,state)
+    | [h1;h2] -> f.Invoke(h1,f.Invoke(h2,state))
+    | [h1;h2;h3] -> f.Invoke(h1,f.Invoke(h2,f.Invoke(h3,state)))
+    | [h1;h2;h3;h4] -> f.Invoke(h1,f.Invoke(h2,f.Invoke(h3,f.Invoke(h4,state))))
+    | _ -> 
+        // It is faster to allocate and iterate an array than to create all those 
+        // highly nested stacks.  It also means we won't get stack overflows here. 
+        let arr = toArray list
+        let arrn = arr.Length
+        foldArraySubRight f arr 0 (arrn - 1) state
+```
+
+[F# List impl](https://github.com/fsharp/fsharp/blob/master/src/fsharp/FSharp.Core/list.fs)
+
+Note:
+
+```fsharp
+let foldArraySubRight (f:OptimizedClosures.FSharpFunc<'T,_,_>) (arr: 'T[]) start fin acc = 
+    let mutable state = acc
+    for i = fin downto start do
+        state <- f.Invoke(arr.[i], state)
+    state
+```
+
+----
+
+### Performance
+
+```fsharp
+type A = {X: int; Y: int}
+// vs
+[<Struct>]
+type B = {X: int; Y: int}
+```
+
+* Type `B` is 16 bytes smaller, not having `8B` Object header + `8B` vTabel
+* `B` is passed as values, therefore not always faster
+
+----
+
+### Padding
+
+```fsharp
+type A = {X: int; Y: int}
+type B = {X: int; Y: int; Y; int}
+```
+
+* Here `B` is padded with 4 bytes extra, from the .NET Allocator
+
+
+----
+
+### Union types
+
+![Discriminated unions](./img/class-vs-struct-union-1.png)
+
+
+----
+
+### Immutable data structures
+
+Records, unions, Lists etc etc.
+
+* Fewer movings parts
+* Thread-safe by default
+* % Not nessesary performance optimal.
+    * Change to use mutable datastructures within a module/function.
+
+----
+
+### Other things to consider
+
+* Hardware, L1, L2, caches
+* OS pointer sizes 32/64b
+* Inlining functions
+
+F# can be very performant - used by stock companies because of this and its safety. But it requires work and knowledge about .Net Il, Hardware and F# of course.
+
+---
+
+## References
+
+* [Writing high performance F# code](https://bartoszsypytkowski.com/writing-high-performance-f-code/)
