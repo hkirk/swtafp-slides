@@ -1,0 +1,9 @@
+digraph G {
+    node [shape=box]
+
+    UI -> BLL
+    DAL -> BLL
+
+    edge[style=invis];    
+    BLL -> DAL
+}
