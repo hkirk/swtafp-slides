@@ -105,10 +105,10 @@ Here we end with implementing the algorithm in the test code, so that do not wor
 
 So the properties of FizzBuzz is:
 
-* multiples of both three and five print 'FizzBuzz'
-* multiples of three print 'Fizz'
-* multiples of five print 'Buzz'
-* prints the numbers
+1. multiples of both three and five print 'FizzBuzz'
+2. multiples of three print 'Fizz'
+3. multiples of five print 'Buzz'
+4. otherwise prints the numbers
 
 ----
 
@@ -120,7 +120,7 @@ We then need
     * numbers that are multiply of 3 and 5
     * numbers that are multiply of 3 but not 5
     * numbers that are multiply of 5 but not 3
-    * Numbers that are not a multiply of 3 and 5
+    * Numbers that are not a multiply of 3 or 5
 
 ```fsharp
 let ```test multiply of three``` (x: MultiplyOfOnly3) =
@@ -187,23 +187,22 @@ Shrunk:
 
 ----
 
-### Properties
+### FsCheck properties 
 
-* FsCheck can test universally properties for functions or data structures
-* Can't work directly on generic types like `'a`
+* Can test universally properties for functions or data structures
+* Can not work directly on generic types like `'a`
 
 ----
 
-### Ways to used Properties
+### Ways to use Properties
 
 * Conditional Properties
-    * form `<condition> ===> <property>`
+    * form: `<condition> ===> <property>`
 * Lazy properties
     * `lazy` keyword - otherwise F# is eager evaluated
 * Exceptions
-    * use `throws<'e :> exn,'a> Lazy<'a>`
-* More to be found [Properties](https://fscheck.github.io/FsCheck//Properties.html)
-    *Quantified, Timed
+    * use: `throws<'e :> exn,'a> Lazy<'a>`
+* More to be found [Properties](https://fscheck.github.io/FsCheck//Properties.html) *Quantified, Timed
 
 ----
 
@@ -268,9 +267,50 @@ Check.One({ Config.Quick with Replay =
          fun x -> abs x >= 0)
 ```
 
+----
+
+## Choosing properties
+
+----
+
+### Different ways
+
+TODO: do x -> do y = 
+      do y -> do x
+
+----
+
+### Negation
+
+TODO: x -> y -> x
+
+
+----
+
+### Non-changing
+
+
+----
+
+### Distint
+
+----
+
+### Smaller problems
+
+----
+
+### Verification
+
+----
+
+### Test oracle
+
+
 
 ---
 
 ## References
 
 * https://fscheck.github.io/FsCheck/
+* https://fsharpforfunandprofit.com/posts/property-based-testing-2/
