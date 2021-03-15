@@ -130,6 +130,12 @@ Works as in bash og Powershell
 
 ----
 
+### Function composition
+
+TODO: >>
+
+----
+
 ## Equality
 
 * Equality works as in other languages with operators `=` and `<>`
@@ -165,6 +171,8 @@ let t = ("foo", 42)
 // val t : string * int = ("foo", 42)
 let t2 = ([12;32], 3, "bar", 'a', t)
 ```
+
+// TODO: Something about (a, b, c) deconstruction
 
 * Deconstuction
 
