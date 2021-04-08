@@ -86,23 +86,94 @@ type CBox2 =
     | Multiple of float*Colour*CBox2
 ```
 
-Notes:
+Note:
 CBox1 is the same as CBox - if you take Cons/Nil into acount
+
 CBox2 is more specific, but inserting into CBox2 is more cumbersome
 
 ---
 
-### Traversing a tree
+## Traversing a tree
 
-![Breadth vs Depth first traverse](./img/depth-breadth-first.gif)
+![Depth vs breadth first traverse](./img/depth-breadth-first.gif)
 
 
 ----
 
+### Example
 
-TODO: Breathfirst vs DepthFirst
+```fsharp
+type ListTree<'a> = Node of 'a * (ListTree<'a> list)
+
+let tree = Node(1, [
+                    Node(2, [
+                        Node(5, [])
+                    ]);
+                    Node(3, []);
+                    Node(4, [
+                        Node(6, []);
+                        Node(7, [])
+                    ])
+                ])
+```
 
 
+----
+
+### Depth first traversel / In order
+
+```fsharp
+let rec depthFirst (Node(x, ts)) =
+    x :: (List.collect depthFirst ts)
+
+depthFirst tree
+// val it : int list = [1; 2; 5; 3; 4; 6; 7]
+```
+
+----
+
+
+### Breadth first traversel
+
+```fsharp
+let breadthFirst tree =
+    let rec breadthFirstList = function
+        | []                    -> []
+        | (Node(x, ts)) :: rest -> 
+            x :: breadthFirstList (rest @ ts)
+    breadthFirstList [tree]
+
+breadthFirst tree
+// val it : int list = [1; 2; 3; 4; 5; 6; 7]
+```
+
+----
+
+### Post Order travesel
+
+```fsharp
+let rec postOrder (Node(x, ts)) =
+    (List.collect postOrder ts) @ [x]
+
+postOrder tree
+val it : int list = [5; 2; 3; 6; 7; 4; 1]
+```
+
+----
+
+### In order traversel
+
+* Properly make most sense on binary trees
+
+```fsharp
+type BinTree<'a> =
+    | Leaf
+    | Node of BinTree<'a> * 'a * BinTree<'a>
+
+let rec inOrder = function
+    | Leaf -> []
+    | Node(l, x, r) -> (inOrder l) @ [x] @ (inOrder r)
+```
 
 ---
 
@@ -126,17 +197,19 @@ type Circuit<'a> =
 
 ### General traversel
 
-```fsharp
-let rec circuitRec c s p tree = function
-    | Comp x      -> c x
+```fsharp [2|3-5|6-8]
+let rec circuitRec fComp fSer fPar = function
+    | Comp x      -> fComp x
     | Ser(c1, c2) -> 
-        s (circuitRec c s p c1) (circuitRec c s p c2)
+        fSer (circuitRec fComp fSer fPar c1)
+             (circuitRec fComp fSer fPar c2)
     | Par(c1, c2) ->
-        p (circuitRec c s p c1) (circuitRec c s p c2)
+        fPar (circuitRec fComp fSer fPar c1)
+             (circuitRec fComp fSer fPar c2)
 // val circuitRec :
-//  c:('a -> 'b) ->
-//  s:('b -> 'b -> 'b) ->
-//  p:('b -> 'b -> 'b) ->
+//  fComp:('a -> 'b) ->
+//  fSer:('b -> 'b -> 'b) ->
+//  fPar:('b -> 'b -> 'b) ->
 //      tree:Circuit<'a> -> 'b
 ```
 
@@ -158,7 +231,7 @@ let rec circuitRec fComp fSer fPar tree =
 //     tree:Circuit<'a> -> 'b
 ```
 
-Notes: 
+Note: 
 
 Should give associations to Gang of Four visitor pattern
 
@@ -168,10 +241,10 @@ Should give associations to Gang of Four visitor pattern
 
 ```fsharp
 let resistance tree = 
-    let c r = r
-    let s (s1, s2)= s1 + s2
-    let p (c1,c2) = 1.0/(1.0/c1 + 1.0/c2)
-    circuitRec c s p tree
+    let fComp r = r
+    let fSer (s1, s2)= s1 + s2
+    let fPar (c1,c2) = 1.0/(1.0/c1 + 1.0/c2)
+    circuitRec fComp fSer fPar tree
 ```
 
 ---
@@ -181,7 +254,7 @@ let resistance tree =
 * From Greek and means Down+Shape
 * Used to collapse a recursive structure to a new value
     * think Fold/FoldBack from List
-* All functions on recusive datastructure can be defined by this 
+* All functions on recusive datastructure can be defined by this technic 
 
 ----
 
@@ -203,6 +276,15 @@ let rec circuitRec fComp fSer fPar tree =
 
 Notice the common return type `'b`
 
+Note: 
+
+```fsharp
+List.fold folder state list = ???
+//  folder: ('state -> 't -> 'state) ->
+//  state: 'state ->
+//  list: 't list ->
+//       -> 'state
+```
 
 ----
 
@@ -256,7 +338,7 @@ let rec circuitRec fComp fSer fPar tree =
               fPar (recursive t2, recursive t3))
 ```
 
-* Circuit looks the same - but handle the new case
+* `circuitRec` looks the same - but handle the new case
 * Sometime its usefull to avoid existing functionality to change becuase datastructure belove changes
 * You can also use [Active Patterns](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/active-patterns) to hide data
 
@@ -299,7 +381,7 @@ type CircuitDescription =
 
 ### Example
 
-```fsharp
+```fsharp [2-3|4-6|7-9]
 let convert tree = 
     let fComp c       =
         Comps (sprintf "Comp %O" c)
@@ -358,14 +440,18 @@ Another example is filesystem
 type FileSystemItem =
     | File of File
     | Directory of Directory
-and File = {name:string; fileSize:int}
-and Directory = {name:string; dirSize:int; subitems:FileSystemItem list}
+and File = { name: string; fileSize: int }
+and Directory = {
+    name: string
+    dirSize: int
+    subitems: FileSystemItem list
+}
 ```
 
 
 ----
 
-### Mutually exclive data types
+### Mutually exclusive data types
 
 ```fsharp
 type Product =
