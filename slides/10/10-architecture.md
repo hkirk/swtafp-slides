@@ -15,7 +15,7 @@
 
 ---
 
-## Problem
+### Problem
 
 
 ![Classic 3 layer architecture](./img/3layer.png)
@@ -26,7 +26,7 @@ Breaks DIP - BLL depends on details in DAL
 
 ----
 
-### Small change
+#### Small change
 
 So to adhere to DIP
 
@@ -34,11 +34,54 @@ So to adhere to DIP
 
 ----
 
-### Onion architecture
+#### Why keep BLL immutable
 
-![Onion architecture](./img/onion-architecture.png)
+* Creating a PDF invoice, requires
+    * Products
+    * Prices before and after taxes
+    * Custumer information
+    * Date
+    * invoice number
 
-Where inner circles have no knowledge of outer circle
+----
+
+#### OOP way of doing this
+
+```csharp
+public void GenerateInvoice(Order order, Customer customer)
+{
+    // ...
+}
+```
+
+* Testing
+    * requires us to compare files
+    * But what about date and invoice number?
+
+----
+
+#### Handling internalization
+
+```csharp
+public void GenerateInvoice(Order order,
+             Customer customer, Language lang) {}
+```
+
+Call `GenerateInvoice` twice on for each language - what problems does this introduce?
+
+![Invoice-lang](./img/invoice-lang.png)
+
+----
+
+#### Problems
+
+So each call to `GeneateInvoice` increments invoice number :(
+
+----
+
+#### Solution
+
+![Invoice-lang-fp](./img/invoice-lang-fp.png)
 
 
 ---
@@ -63,32 +106,50 @@ So IO would be all the places we have side-effects aka. Infrastructure
 
 ----
 
-### Option is a monad
+#### Option is a monad
+
+Two important methods `return` and `bind`
 
 ```fsharp
-let o = Some 3
-let n = None
+return: 'a -> m<'a>
+bind: m<'a> -> (a -> m<'b>) -> m<'b>
+```
+
+----
+
+#### Example
+
+```fsharp
+let o = Some 3 // creation
+let n = None   // creation 
 let f = fun a -> Some (a+3)
 
 o |> Option.bind f // ...
 n |> Option.bind f // ...
 ```
 
-----
-
-TODO: Anything else?
-
 ---
+
+#### Hexagonal architecture
+
+also known as Ports and Adapters
+
+![Hexagonal Architeture](./img/Hexagonal_Architecture.png "https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)") <!-- .element style="height:400px" -->
+
+By Alistair Cockburn 
+
+----
 
 ## Ports & Adapters
 
+* Components - loosely coupled and interchangeable
+    * E.g. database, ui, business logic, etc etc
 * Ports
     * 'Holes' that components can access other components through
 * Adapters
     * Adapters are glue between components and ports
-    *
 
-TODO: What should introduce this
+Note: Not only for FP - but very used especially in F# and Haskell
 
 ----
 
@@ -109,16 +170,27 @@ let check capacity getReservedSeats reservation =
 //      reservation:Reservation -> Result<Reservation,Error>
 ```
 
+Note:
+
+```fsharp
+let connStr = "..."
+let impl = 
+    Validate.reservation
+    >> bind (Capacity.check 10 (getReservedSeatsFromDb connStr))
+    >> map (saveReservation connStr)
+  //>> map (fun res -> (saveReservation connStr) res)
+```
+
 ----
 
-### Inject `getReservedSeats
+### Inject `getReservedSeats`
 
 ```fsharp
 let getReservedSeatsFromDb (connStr: DbContext)
-                           (reservations: Reservation): int = 
+                        (reservations: Reservation): int = 
     failwith "Not implemented"
 
-let getReservedSeats = getReservedSeatsFromDb "..."         
+let getReservedSeats = getReservedSeatsFromDb context
 // val getReservedSeats : (Reservation -> int)
 ```
 
@@ -128,9 +200,9 @@ Here `getReservedSeats` are inpure - but that do not show in the signature.
 
 ### 'Problem'
 
-* Our inpure function check function, will be inpure in production
+* Our pure function check, will be inpure in production
 
-But why do checkCapacity need then getReservedSeats at all? <!-- .element: class="fragment" -->
+But why do checkCapacity need then getReservedSeats at all?  
 
 ----
 
@@ -151,12 +223,12 @@ So now calling check is a bit more involved
 
 ```fsharp
 let connStr = ".."
-let do =
-    Validate.reservation
-        >> map (fun r ->
-            getReservedSeatsFromDb connStr r, r)
-        >> bind (fun (i, r) -> check 10 i r)
-        >> map (saveReservation connStr)
+let impl =
+  Validate.reservation
+    >> map (fun r -> (getReservedSeatsFromDb connStr r, r))
+    >>bind (fun (i, r) -> check 10 i r)
+    >> map (saveReservation connStr)
+  //>> map (fun r -> saveReservation connStr r)
 ```
 
 Note:
@@ -180,9 +252,16 @@ let add1Times2' = add1 >> times2
 * What is business logic?
 * What is application logic?
 
-One could argue that the function `do` should belong in the business logic?
+One could argue that the function `impl` should belong in the business logic?
 
-TODO: need an answer here
+----
+
+The function `Impl`
+* could also argue that this function is part of the controller
+* Thereby not something you would reuse in another application
+* because:
+    * Would you always need to handle resevation validation?
+    * Handle input/output different
 
 ----
 
@@ -219,33 +298,33 @@ Is my function `a` pure or not?
 
 ### Hexagonal architecture
 
-![Hexagonal Architeture](./img/Hexagonal_Architecture.png "https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)") <!-- .element style="height:400px" -->
-
-By Alistair Cockburn 
-
-----
-
-### Hexagonal architecture
-
 * To avoid BL to contaminate e.g. UI
 * Alternative to layered architecture
 * Each component is connection via a number of ports
 * Onion architecture was inspired by Hexogonal architecture
 
-----
-
-### Ports and adapters
-
-* Basicly the same as Hexagonal architecture
 * **Note**: Not always the correct solution
 
+----
+
+### Onion architecture
+
+![Onion architecture](./img/onion-architecture.png) <!-- .element style="height: 300px" -->
+
+* Layered architecture
+    * where inner circles have no knowledge of outer circle
+
+
+----
+
+### Onion pro/cons
+
+* \- e.g. database is accessible from UI, since they are in same layer - not a good idea though.
+* \+ fewer artifacts then ports and adapters
 
 ---
 
-## Other
-
-TODO: something fun
-
+![Free monads](./img/free-monads.png)
 ----
 
 ### Broker architecture

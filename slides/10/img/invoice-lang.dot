@@ -1,0 +1,25 @@
+digraph G {
+
+    GenerateInvoice [ shape=box ]
+    GenerateInvoice1 [ shape=box ]
+    order1 [ label=order, shape=plaintext ]
+    customer1 [ label=customer, shape=plaintext ]
+    GenerateInvoice1 [ label=GenerateInvoice ]
+    PDF1 [ label=PDF, shape=plaintext ]
+    PDF [ shape=plaintext ]
+    order [ shape=plaintext ]
+    customer [ shape=plaintext ]
+    EN [ shape=plaintext ]
+    FR [ shape=plaintext ]
+
+    order -> GenerateInvoice
+    customer -> GenerateInvoice
+    EN -> GenerateInvoice
+
+    order1 -> GenerateInvoice1
+    customer1 -> GenerateInvoice1
+    FR -> GenerateInvoice1
+    
+    GenerateInvoice -> PDF
+    GenerateInvoice1 -> PDF1
+}
