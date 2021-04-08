@@ -182,13 +182,13 @@ let rec foldBoxes fItem fBox fWrapped acc boxes =
 
 So can we avoid pre-calculation and still keep stack safety?
 
-Accumulators <!-- .element: class="fragment" -->
+Continuations <!-- .element: class="fragment" -->
 
 ---
 
 ## FoldBack
 
-So the above implementaion with accumulators 
+So the above implementaton with accumulators 
 
 ```fsharp
 let descriptionWithAccumulators boxes =
@@ -258,19 +258,40 @@ descriptionWithFoldBack (Wrapped (Box (Item 1.0)))
 
 * So like in the list the signatures for both fWrapped is the same
     * `('a -> 'a)`
-* they behave completely different, so we should propler change signatures for easier usage.
+* they behave completely different, so we should properly change signatures for easier usage.
 * Also note - this is slow because of the chain of nested functions
 
 ----
 
 ### Fold/FoldBack generally
 
-1. Create a function paramter to hanle each case
+1. Create a function paramter to handle each case
 2. Add a accumulator paramter
 3. For non-recursive cases pass the accumulator and all case data to the function paramter
+
+```fsharp
+| Item x    -> gen (fItem x)
+```
+
+
+
+----
+
+### Fold/FoldBack gennerally cont.
 4. For recursive cases
+    ```fsharp
+    | Box b     -> 
+    ```
     1. pass the handler the accumulator plus all data associated with the case -> a new accumlator value
+    ```fsharp
+        let newGen i =
+            let newAcc = fBox i
+            gen newAcc
+    ```
     2. then call recursively on the nested value with the new accumulator
+    ```fsharp
+        recursive newGen b
+    ```
 
 ---
 
@@ -340,7 +361,8 @@ let foldArraySubRight (f:OptimizedClosures.FSharpFunc<'T,_,_>) (arr: 'T[]) start
 
 ## Algebraic data sizes
 
-TODO: 
+![Category Theory](./img/category_theory_for_programmer.jpg)<!-- .element style="width:700px" -->
+
 
 ----
 
