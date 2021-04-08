@@ -1,0 +1,33 @@
+digraph G {
+
+    CreateInvoice [ shape=box ]
+    GenerateInvoice [ shape=box ]
+    GenerateInvoice1 [ shape=box ]
+    GetInvoiceTemplate [ shape=box ]
+    GetInvoiceTemplate1 [ shape=box, label=GetInvoiceTemplate ]
+    PDFEN [ shape=plaintext, label="PDF-EN" ]
+    PDFFR [ shape=plaintext, label="PDF-FR" ]
+    order [ shape=plaintext ]
+    customer [ shape=plaintext ]
+    invoiceNumber [ shape=plaintext ]
+    date [ shape=plaintext ]
+    EN [ shape=plaintext ]
+    FR [ shape=plaintext ]
+
+    order -> CreateInvoice
+    customer -> CreateInvoice
+    invoiceNumber -> CreateInvoice
+    date -> CreateInvoice
+    
+    CreateInvoice -> GenerateInvoice
+    CreateInvoice -> GenerateInvoice1
+
+    GenerateInvoice -> PDFEN
+    GenerateInvoice1 -> PDFFR
+    
+    EN -> GetInvoiceTemplate
+    FR -> GetInvoiceTemplate1
+    
+    GetInvoiceTemplate -> GenerateInvoice
+    GetInvoiceTemplate1 -> GenerateInvoice1
+}
