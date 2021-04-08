@@ -16,6 +16,7 @@
   * Functions
 * Lists
 
+TODO: Make sure function is introduced after match - also in example code.
 
 ---
 
