@@ -1,0 +1,15 @@
+digraph G {
+
+  
+  consoleReaderActor -> validationActor [label=filePath]
+  validationActor -> consoleReaderActor [label=ContinueProccessing]
+  validationActor -> fileCoordinatorActor [label=StartTail]
+  validationActor -> consoleWriterActor [label="Messages to user"]
+  fileCoordinatorActor -> fileReaderActor [label="Start actor"]
+  fileReaderActor -> FileObserver
+  FileObserver -> fileReaderActor [label="File data"]
+  fileReaderActor -> consoleWriterActor [label="File data"]
+  
+  FileObserver [shape=box]
+
+}
