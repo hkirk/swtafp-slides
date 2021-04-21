@@ -24,12 +24,12 @@
     * actors
     * messages
 
-
 ----
 
 #### Actor
 
 * actors are lightweight
+    * 2.5-3 mio actors per GB ram
 * can send and receive messages
     * process one message at a time
 * exists in an actor system
@@ -74,7 +74,7 @@ Note: `spawn` `actofOf` and `actorOf2` is functions from `Akka.FSharp`
 
 #### Communications
 
-* Actors can send messages to each oterh
+* Actors can send messages to each other
 * Messages are immutable and strongly typed
 * `<!` sends an async message to the `actor` under the hood
 
@@ -134,12 +134,11 @@ This is of the type `'M -> unit`
 6. Below the actor system, create an instance of your actor
 
 ```fsharp
-    let actor = spawn actorSystem "HelloActor" (actorOf helloActor)
+    let actor = spawn actorSystem "HelloActor"
+                             (actorOf helloActor)
     actor <! "something"
     actor <! "hello"
 ```
-
-TODO: Add different methods of creating actors
 
 ----
 
@@ -150,9 +149,38 @@ TODO: Add different methods of creating actors
 
 ----
 
-### Sending actor
+### Other ways of creating actors
 
-// TODO: ds
+Creating an `Actor<'M> -> 'M -> unit`: 
+
+```fsharp
+// Defining actor
+let test2Actor (mailbox: Actor<Message>) message = 
+    failWith "Handle message here"
+
+// Creating actor
+// assume we have an existing actor system, "myActorSystem"
+let test2Actor = spawn myActorSystem "test2Actor"
+                             (actorOf2 Actors.test2Actor)
+```
+
+----
+
+### Manually creating an actor
+
+```fsharp
+let firstActor (mailbox:Actor<_>) =
+  let rec loop() = actor {
+      let! message = mailbox.Receive()
+      // handle an incoming message
+      return! loop()
+  }
+  loop()
+
+// assume we have an existing actor system, "myActorSystem"
+let myFirstActor = spawn myActorSystem "myFirstActor"
+                                             firstActor
+```
 
 ---
 
@@ -209,7 +237,7 @@ type InputResult =
 
 #### Create Message protocol
 
-In `Messages.fs` create the following types
+In `Messages.fs` create the following type
 
 ```fsharp
 type Hello =
@@ -269,6 +297,11 @@ let myFirstActor = spawn myActorSystem "myFirstActor"
 * Access to different `IActorRef` through the actor context
      * Parent, Children, Sender
 
+```fsharp
+mailbox.Context.Sender
+// or mailbox.Sender
+```
+
 ----
 
 #### Adding new messages
@@ -327,15 +360,15 @@ sender <! Start // send first message to input actor
 actorSystem.WhenTerminated.Wait ()
 ```
 
-1. We have changed the way we creation `HelloActor` since it not sends messages
-2. `senderActor` is a function `ICanTell -> Actor<'M> -> 'M -> unit` which is partially with the `hello` IActorRef
+1. We have changed the way we creation `helloActor` since it is sending messages
+2. `senderActor` is a function `ICanTell -> Actor<'M> -> 'M -> unit` which is partially applied with the `hello` IActorRef
 3. `actorSystem.WhenTerminated.Wait ()` just wait for the actor system to terminate.
 
 ---
 
 ### Actor Hierarchies
 
-TODO: Insert image
+![Actor Hierarchy](./img/actor-hierarchy.png) <!-- .element style="height: 300px" -->
 Why
 
 * To atomize work, turn large data quantities into manageble chunks
@@ -368,7 +401,7 @@ Twitter (uses JVM Akka) breaks down the stream of all tweets down into smaller s
 ### Supervision
 
 * Supervision allows for an actor system to isolate and recover from failures
-* Superivsion ensures errors are contained in only parts of the hierarchy
+* Supervision ensures errors are contained in only parts of the hierarchy
     * while all other actors is not effected
 * Every actor has a supervisor
 
@@ -397,7 +430,6 @@ Twitter (uses JVM Akka) breaks down the stream of all tweets down into smaller s
     * Utility functions like logging 
 * `/user` - Guardian actor / root actor
     * This is where our actors live
-    *
 
 Note:
 
@@ -441,7 +473,7 @@ let b1 = spawn mailbox.context "b1" basicActor
 * Supervision 'starts' when something goes wrong e.g. an exception in a child actor
     * Wrapped in a `Failure` mesages
 * Parent actor handle message based on
-    * 1. how the child filed
+    * 1. how the child failed
     * 2. what directive is executed - based on `SupervisionStrategy`
 
 ----
@@ -481,7 +513,8 @@ let b1 = spawn mailbox.context "b1" basicActor
 ```fsharp
 let aref =
     spawnOpt system "my-actor" (actorOf myActor)
-        [ SpawnOption.SupervisorStrategy (Strategy.OneForOne ((fun error ->
+       [ SpawnOption.SupervisorStrategy (Strategy.OneForOne (
+                (fun error ->
             match error with
                 // maybe non-critical, ignore & keep going
             | :? ArithmeticException -> Directive.Resume
@@ -499,7 +532,7 @@ Note:
 Here the actor handles errors if they no more than 10 errors happens within a 60 second window
 
 
-----
+---
 
 ### Lets see this in action
 
