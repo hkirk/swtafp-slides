@@ -16,7 +16,6 @@
   * Functions
 * Lists
 
-TODO: Make sure function is introduced after match - also in example code.
 
 ---
 
@@ -47,52 +46,53 @@ TODO: Make sure function is introduced after match - also in example code.
 
 ### Plan
 
-![Schedule](./img/Schedule.png "Schedule")
+![Schedule](./img/Schedule.png "Schedule") <!-- .element: style="height: 600px" -->
 
 ----
 
 ### Expectations
 
-- Online:
-  - Use your real name
-  - Show your face - even though this is early Tuesday morning
 - Offline
   - Prepare **and** do exercises
   - Handin assignment on time
-  - Check they have the correct content
-- **Ask** questions and make comments - this is a new course
+    - Check they have the correct content
+- **Ask** questions and make comments - this is still a new course
+- Online:
+  - Use your real name
+  - Show your face - even though this is early Tuesday morning
 
 ----
 
 ### Your expectations
 
 * Slides?
+* Discord?
 * ?
 
 ----
 
 ### Assignments
 
-6 smaller assignment (you need to handin 4)
+5 smaller assignment (you **must** handin 3)
 
-| Name     | Release | Handin |
-|---------|:-------:|-------:|
-| Nokia   | 2       | 4      |
-| Queue   | 5       | 6      |
-| Tetris 1| 7       | 9      |
-| Tetris 2| 9       | 11     |
-| Akka    | 11      | 13     |
-| Error   | 13      | 15     |
+| Name           | Release | Handin |
+|----------------|:-------:|-------:|
+| Nokia          | 3       | 5      |
+| Immutability   | 6       | 7      |
+| Tetris 1| 8       | 10      |
+| Tetris 2| 10       | 12     |
+| Akka    | 12      | 14     | 
+
 
 
 ----
 
 ### Exam
 
-- Take home exam
-  - Equal size to an assignment - and combines 2-3 of these
-- plus 30 minutes oral exam
-  - Examination contain talks about the theory and how this is applied in the written part - you can draw in your assignments.
+- Take home preperation
+  - 16 hours - tests most topics in the course
+- 30 minutes oral exam
+  - Explain theory show how this is applied
 
 ---
 
@@ -105,47 +105,54 @@ Applying and composing of functions
 ### Declarative vs Imperative
 
 - Imparative
-  - Procedural (e.g. C)
+  - Procedural (C)
   - OOP (C++, C#)
 - Declarative
   - Functional (F\#)
   - Logic (Prolog)
-  - ..
-  
-Traditional imperative would iterate over a list and modify a result, where declarative focus on logic without controlflow.
+
+
+----
+
+### In 
+
+* imperative programing one would
+  * use statements to modify state
+  * how the program should achieve its goal
+* declarative the focus is on
+  * expressing commands
+  * what should be accomplished
+
 
 
 ----
 
 ### Side effects
 
-
 - Changing value of varible
-- Printing to console
-- Write from file
+- IO from external source
 - Throwing exception
-
-We are going to try minimize side effects and controlflow - **not** removing them altogheter
+- -> We are going to try minimize side effects and controlflow - **not** removing them altogheter
 
 ----
 
 ### Other concepts
 
-- First class citizen
+- Functions as first class citizen
 - Higher order functions
 - Pure functions
 - Recursion
 - Referential transparency
-- Data structures
+- Immutability
 
 
 ----
 
 ### Why FP
 
-- Helps us develop more modular code
+- Help us develop more modular code
 - Makes writing testable code easy
-- Helps us write 'faster' code
+- Can help us write 'efficient' code
 - Makes us better OOP developers
 - Less code -> fewer bugs
 
@@ -154,6 +161,7 @@ We are going to try minimize side effects and controlflow - **not** removing the
 ### Disadvantages
 
 - Learning curve is steap
+- A bit like starting from scratch
 
 ![Learning curve FP vs OOP](./img/programming_languages_curve.png "Learning curve")
 
@@ -165,18 +173,18 @@ We are going to try minimize side effects and controlflow - **not** removing the
 * Fluent in Scala
 * Know some SML
 * Been using F# since summer 2020
-* A bit like starting from scratch
+
 
 ----
 
-## Why F# #
+## Why F#
 
 - forces you to think in a different way
-- is build by Microsoft
-- has access to .NET standard library
-- fully operational on Windows, Linux and Mac via .Net Core 
 - strong type system
 - can do OO like programing in F#
+- has access to .NET standard library
+- fully operational on Windows, Linux and Mac via .Net Core 
+- is build by Microsoft
 
 ----
 
@@ -185,7 +193,8 @@ We are going to try minimize side effects and controlflow - **not** removing the
 * 'Normal programs'
 * GUI
 * Web backend
-* Web frontend (compiled to JS)
+* Web frontend
+  * Can even be compiled to JS
 * Deployment to Azure
 
 ---
@@ -237,7 +246,7 @@ let main argv =
 ### Interactive shell
 
 - F\# and other functional languages are explorative by nature
-- Interactive lets you try out code easy
+- The interactive shell lets you try out code easy
 
 ----
 
@@ -247,25 +256,38 @@ let main argv =
 
 ----
 
-### Namespaces and Modules
+### Modules
 
+- Modules are used to group code, like types and functions, values
+  - Keeps related code etc. together
+  - If not modules is declared a module with the same name as the file exists
+  - Two types:
+    - Top level
+    - Local level
+  - Can be nested
+
+
+----
+
+### Namespaces
 
 - Namespace lets you organize F\# programming related elements.
   - Must be top level in a file
-  - Cannot contain values/function directly
-- Modules are used to group values, type and functions
-  - Keeps related code etc. together
-  - If not modules is declared a module with the same name as the file exists
+  - All code in that file becomes part of that namespace
+  - Cannot contain functions or values directly
+  - Only contain types and modules
+  - Can be declared implicitly
 
 ----
 
 ### Signature files (.fsi)
 
-- FileName.fsi is signature file for Filename.fs
+- `FileName.fsi` is signature file for `FileName.fs`
 - Signature file describes
   - Types
-  - Values
-  - Members
+  - Namespaces
+  - Modules
+- Note: We will get back to these
 
 ----
 
@@ -320,8 +342,8 @@ Language intro
 
 ### Operators
 - `+`, `-`, `*`, `/`, `%` on all numeric types
-  - Operands must have same type (Not `2 + 3.0`)
-- ** all floats
+  - Operands must have same type (Not '`2 + 3.0`')
+- `**` on floats
 - Bitwise all int
 - Conversion with type name
   - `int 3.0 -> 3`
@@ -332,7 +354,7 @@ Language intro
 
 - Type `bool` has values `true` and `false`
 - Operators `&&`, `||`, and `not`
-- Operators return boolean
+- Operators that return boolean
   - `=`, `<`, `<=`, `=>`, `>`, `<>`
 
 ----
@@ -340,9 +362,14 @@ Language intro
 ### Conditional
 
 - if-then-else expresion
-- `if x > 0 then 1 else 0`
+```fsharp
+if x > 0 then 1 else 0
+```
 - Note: the two branches must have same type
-  - Not `if x > 0 then 1 else 'a'`
+  - Not
+  ```fsharp
+  if x > 0 then 1 else 'a'
+  ```
 
 ----
 
@@ -355,7 +382,7 @@ Language intro
 
 ### Strings:
 - Type `string`
-- Can represent `string` as `char list` (more on this later)
+- Can represent `string` as `char list` (more on lists later)
 - Operators `+`, `.[i]`, `.[i..j]`, `.[i..]`, `.[..i]`
 - Functional vs 'dot' operator
   - `String.Length "Hello f#"`
@@ -377,11 +404,13 @@ Language intro
 
 ### Declaring functions
 
-- `let max x y = if x > y then x else y`
-  - Type: `val max : x:'a -> y:'a -> 'a when 'a : comparison`
+```fsharp
+let max x y = if x > y then x else y
+// val max : x:'a -> y:'a -> 'a when 'a : comparison
+```
 - Can also declare variables
 - `let pi = 3.14159`
-  - Type: `val pi : float = 3.14159`
+  - Type: `val phi : float = 3.14159`
 
 ----
 
@@ -391,6 +420,9 @@ Language intro
 
 ```fsharp
 fun a b -> a + b
+// Or
+let fn = fun a b -> a + b
+// Or with types
 fun (a: int) (b: int) -> a + b
 ```
 
@@ -398,12 +430,14 @@ fun (a: int) (b: int) -> a + b
 
 ### Type declaration
 
-- Note we did not give types to `max` or `pi`
-  - F\# has a strong *type inference*
-- Can explicit give types
-- `let maxInt (x: int) y = if x > y then x else y`
-  - Type: `val maxInt : x:int -> y:int -> int`
+- Not forced to type functions to `max` or `phi`
+  - F\# has a really strong *type inference*
+- Possible to explicit define types
 
+```fsharp
+let maxInt (x: int) y = if x > y then x else y
+// val maxInt : x:int -> y:int -> int`
+```
 
 ----
 
@@ -411,9 +445,9 @@ fun (a: int) (b: int) -> a + b
 
 - Examples: factorial: 
   - `0! = 1`
-  - `n! = n*(n-1)!` for `n > 0`
-- Keyword `rec`
+  - `n! = n * ((n-1)!)` for `n > 0`
 - In F\#?
+   - Keyword `rec`
 
 ```fsharp
 let rec factorial n =
@@ -427,7 +461,7 @@ let rec factorial n =
 ### Pattern Matching
 
 - Pattern matching allows another definition in F\# for factorial
-- F\# case construct expresion
+- F# case construct expresion
 
 ```fsharp
 match expr with
@@ -452,6 +486,16 @@ let rec factorial n =
 ```
 
 Here `_` is a wildcard that mactches everything
+
+Note:
+
+Keyword `function` is a shorthand for `fun` and a `match` in functions that takes a singel argument
+
+```fsharp
+let rec factororial = function
+  | 0 -> 1
+  | _ -> n * factorial (n-1)
+```
 
 ----
 
@@ -485,15 +529,23 @@ match result with
 
 ----
 
-### Types 
+### Simpel types 
 
-- Typles `(1,2)` or `(1, "a")`
-  - Type: `val it : int * int = (1, 2)`
-  - Type: `val it : int * string = (1, "a")`
-    - Access with pattern mathing
-    - `fst it` or `snd it`
-- Lists `[1; 2; 3; 4]`
-  - Type: `int list`
+- Typles 
+```fsharp
+(1,2)
+// val it : int * int = (1, 2)
+(1, "a")
+// val it : int * string = (1, "a")
+```
+    - Access with:
+      - functions '`fst`' or '`snd`'
+      - pattern mathing
+- Lists
+```fsharp
+[1; 2; 3; 4]
+// val it: int list = [1; 2; 3; 4]
+```
 
 ---
 
@@ -508,17 +560,18 @@ match result with
 
 ### Construction
 
-Building list can be done staticly with the `[]` list constructor or
+Building list can be done staticly with the `[]` list constructor
 
 ```fsharp
 let l1 = [1; 2; 3; 4; 5]
 ```
 
-with the `::` (prononced cons) operator
+or dynamicly with the `::` (prononced cons) operator
 
 ```fsharp
-let l2 = 1::(2::(3::(4::(5::[]))))
-let l3 = 1::2::3::4::5::[]
+let l2 = 1::2::3::4::5::[]
+let l3 = 1::(2::(3::(4::(5::[]))))
+
 ```
 `::` is right-assiciative
 
@@ -526,7 +579,7 @@ let l3 = 1::2::3::4::5::[]
 
 ### Visualize a list
 
-![List](./img/list.jpg "List") <!-- .element style="width:700px" -->
+![List](./img/list.jpg "List") <!-- .element: style="width:700px" -->
 
 
 ----
@@ -541,6 +594,8 @@ List.head l1 // => "abc"
 List.isEmpty l1 // => false
 List.length l1 // => 3
 ```
+
+We will get back to the List module in next week
 
 ----
 
@@ -560,7 +615,7 @@ let l1Plus2' = l1 @ l2
 
 ----
 
-### Defining a sum function
+### Defining a sum function for lists
 
 ```fsharp
 let rec sum l =
@@ -572,17 +627,24 @@ let rec sum l =
 or with pattern matching
 
 ```fsharp
-let rec sum = function
+let rec sum l =
+  match l with
   | [] -> 0
   | (x::xs) -> x + sum xs
 ```
 
 ----
 
-### two things about last example
+### Two things about last example
 
 * Pattern matching can decompose 'any' data structures in the pattern
 * `function` vs `match x with`
+
+```fsharp
+let rec sum = function
+  | [] -> 0
+  | (x::xs) -> x + sum xs
+```
 
 ---
 
@@ -591,5 +653,8 @@ let rec sum = function
 ----
 
 ## References
+
+* [Namespaces](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/namespaces)
+* [Module](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/modules)
 
 * [List module](https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html)
