@@ -52,14 +52,10 @@
 
 ### Expectations
 
-- Offline
-  - Prepare **and** do exercises
-  - Handin assignment on time
-    - Check they have the correct content
+- Prepare **and** do exercises
 - **Ask** questions and make comments - this is still a new course
-- Online:
-  - Use your real name
-  - Show your face - even though this is early Tuesday morning
+- Handin assignment on time
+  - Check they have the correct content
 
 ----
 
@@ -68,6 +64,8 @@
 * Slides?
 * Discord?
 * ?
+
+Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [https://forms.gle/KoBbCUbQ46MEFyYn6](https://forms.gle/KoBbCUbQ46MEFyYn6) <!-- .element:  class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -102,9 +100,9 @@ Applying and composing of functions
 
 ----
 
-### Declarative vs Imperative
+### Imperative vs Declarative
 
-- Imparative
+- Imperative
   - Procedural (C)
   - OOP (C++, C#)
 - Declarative
@@ -118,21 +116,20 @@ Applying and composing of functions
 
 * imperative programing one would
   * use statements to modify state
-  * how the program should achieve its goal
+  * focus on how the program should achieve its goal
 * declarative the focus is on
   * expressing commands
-  * what should be accomplished
-
-
+  * focus on what should be accomplished
 
 ----
+
 
 ### Side effects
 
 - Changing value of varible
 - IO from external source
 - Throwing exception
-- -> We are going to try minimize side effects and controlflow - **not** removing them altogheter
+- -> We are going to try minimize and control side effects and controlflow - **not** removing them altogheter
 
 ----
 
@@ -155,6 +152,12 @@ Applying and composing of functions
 - Can help us write 'efficient' code
 - Makes us better OOP developers
 - Less code -> fewer bugs
+- Fairly simple and clean syntax
+
+Note:
+
+- No higher kinded types
+- Fewer OOP features
 
 ----
 
@@ -171,11 +174,11 @@ Applying and composing of functions
 
 * Been using FP with OOP since 2012
 * Fluent in Scala
-* Know some SML
+* Know some SML and Haskell
 * Been using F# since summer 2020
 
 
-----
+---
 
 ## Why F#
 
@@ -183,8 +186,8 @@ Applying and composing of functions
 - strong type system
 - can do OO like programing in F#
 - has access to .NET standard library
-- fully operational on Windows, Linux and Mac via .Net Core 
-- is build by Microsoft
+- fully operational on Windows, Linux and Mac via .Net Core
+- builds to .Net IL
 
 ----
 
@@ -192,12 +195,13 @@ Applying and composing of functions
 
 * 'Normal programs'
 * GUI
+* Scripting
 * Web backend
 * Web frontend
   * Can even be compiled to JS
 * Deployment to Azure
 
----
+----
 
 ## Program files
 
@@ -258,13 +262,12 @@ let main argv =
 
 ### Modules
 
-- Modules are used to group code, like types and functions, values
+- Modules are used to group code, like types, functions and values
   - Keeps related code etc. together
-  - If not modules is declared a module with the same name as the file exists
+  - If no module is declared a module with the same name as the file exists
   - Two types:
     - Top level
-    - Local level
-  - Can be nested
+    - Local level (Can be nested)
 
 
 ----
@@ -277,6 +280,7 @@ let main argv =
   - Cannot contain functions or values directly
   - Only contain types and modules
   - Can be declared implicitly
+* Styleguide prefer Namespaces in all files - cause of interopbillity
 
 ----
 
@@ -319,6 +323,14 @@ module Module1 =
         member type1.method2() =
             printfn "type1.method2"
 ```
+
+----
+
+### Scripting files (fsx)
+
+* As other scripting langauge (bash, powershell)
+* Is not compiled
+* Run: `dotnet fsi filename.fsx`
 
 ---
 
@@ -383,7 +395,8 @@ if x > 0 then 1 else 0
 ### Strings:
 - Type `string`
 - Can represent `string` as `char list` (more on lists later)
-- Operators `+`, `.[i]`, `.[i..j]`, `.[i..]`, `.[..i]`
+- Operators `+`, `[i]`, `[i..j]`, `[i..]`, `[..i]`
+  * ~~`.[i]`, `.[i..j]`, `.[i..]`, `.[..i]`~~
 - Functional vs 'dot' operator
   - `String.Length "Hello f#"`
   - `"Hello F#".Length`
@@ -409,8 +422,11 @@ let max x y = if x > y then x else y
 // val max : x:'a -> y:'a -> 'a when 'a : comparison
 ```
 - Can also declare variables
-- `let pi = 3.14159`
-  - Type: `val phi : float = 3.14159`
+
+```fsharp
+let phi = 3.14159
+// val phi : float = 3.14159
+```
 
 ----
 
@@ -430,7 +446,7 @@ fun (a: int) (b: int) -> a + b
 
 ### Type declaration
 
-- Not forced to type functions to `max` or `phi`
+- Not forced to write types to expression `max` or `phi`
   - F\# has a really strong *type inference*
 - Possible to explicit define types
 
@@ -443,7 +459,7 @@ let maxInt (x: int) y = if x > y then x else y
 
 ### Recursion
 
-- Examples: factorial: 
+- Factorial definition: 
   - `0! = 1`
   - `n! = n * ((n-1)!)` for `n > 0`
 - In F\#?
@@ -460,17 +476,18 @@ let rec factorial n =
 
 ### Pattern Matching
 
-- Pattern matching allows another definition in F\# for factorial
 - F# case construct expresion
+  ```fsharp
+  match expr with
+    | pattern1 [when condition] -> expr1
+    | pattern2 -> expr2
+  ```
 
-```fsharp
-match expr with
-  | pattern1 -> expr1
-  | pattern2 -> expr2
-```
+- Cases are checked in order, first match is executed
+- Compiler will warn if cases are not exhausted
+- Pattern matching allows another definition in F\# for factorial
 
-- cases are checked in order, first match is executed
-- compiler will warn if cases are not exhausted
+
 
 ----
 
@@ -541,11 +558,7 @@ match result with
     - Access with:
       - functions '`fst`' or '`snd`'
       - pattern mathing
-- Lists
-```fsharp
-[1; 2; 3; 4]
-// val it: int list = [1; 2; 3; 4]
-```
+- Lists - in next slides
 
 ---
 
@@ -586,7 +599,7 @@ let l3 = 1::(2::(3::(4::(5::[]))))
 
 ### Working with lists
 
-There are a number of functions for list, all found in the List module.
+There are a number of functions for list, all found in the [List module](https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html).
 
 ```fsharp
 let l1 = ["abc", "def", "ghi"]
@@ -624,7 +637,7 @@ let rec sum l =
   else List.head l + sum (List.tail l)
 ```
 
-or with pattern matching
+or with pattern matching <!-- .element:  class="fragment" data-fragment-index="1" -->
 
 ```fsharp
 let rec sum l =
@@ -632,6 +645,7 @@ let rec sum l =
   | [] -> 0
   | (x::xs) -> x + sum xs
 ```
+ <!-- .element:  class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -656,5 +670,6 @@ let rec sum = function
 
 * [Namespaces](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/namespaces)
 * [Module](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/modules)
-
+* [Match](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/pattern-matching)
 * [List module](https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html)
+* [Convention](https://docs.microsoft.com/en-us/dotnet/fsharp/style-guide/conventions)
