@@ -47,7 +47,6 @@
     "gulp-connect": "^5.7.0",
     "gulp-eslint": "^6.0.0",
     "gulp-header": "^2.0.9",
-    "gulp-sass": "^4.0.2",
     "gulp-tap": "^2.0.0",
     "gulp-zip": "^5.0.1",
     "highlight.js": "^10.0.3",
@@ -56,6 +55,7 @@
     "qunit": "^2.10.0",
     "rollup": "^2.26.4",
     "rollup-plugin-terser": "^7.0.0",
+    "sass": "^1.32.13",
     "yargs": "^15.1.0"
   },
   "browserslist": "> 0.5%, IE 11, not dead",
@@ -95,5 +95,9 @@
       "no-eq-null": 2,
       "no-unused-expressions": 0
     }
+  },
+  "dependencies": {
+    "npm": "^8.4.1",
+    "start": "^5.1.0"
   }
 }

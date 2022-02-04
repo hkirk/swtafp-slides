@@ -10,11 +10,11 @@ const {terser} = require('rollup-plugin-terser')
 const babel = require('@rollup/plugin-babel').default
 const commonjs = require('@rollup/plugin-commonjs')
 const resolve = require('@rollup/plugin-node-resolve').default
+const sass = require('sass')
 
 const gulp = require('gulp')
 const tap = require('gulp-tap')
 const zip = require('gulp-zip')
-const sass = require('gulp-sass')
 const header = require('gulp-header')
 const eslint = require('gulp-eslint')
 const minify = require('gulp-clean-css')
