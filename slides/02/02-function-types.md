@@ -61,6 +61,29 @@ let applyTwo g a b = g a b
 * All functions are curried
 * Partial application
 
+----
+
+### Specifying types
+
+```fsharp
+let multiply a b = a * b
+// val multiply: a: int -> b: int -> int
+let multiplyFloat (a: float) (b:float) : float = a*b
+// val multiplyFloat: a: float -> b: float -> float
+```
+
+----
+
+# Inner functions
+
+```fsharp
+let generateList max =
+  let rec generateList i max =
+    if (i < max) 
+    then i :: (generateList (i+1) max)
+    else [max]
+  generateList 0 max
+```
 
 ----
 
@@ -149,7 +172,7 @@ List.filter (fun y -> y < 4) <| [2;3;4;5;6;6]
 
 * Or 'function appliation operators'
 * Operators `|>`, `||>` and `|||>`
-* Works as in bash og Powershell
+* Works as in bash, Powershell and maybe in [js](https://github.com/tc39/proposal-pipeline-operator)
 
 ![Pipe](./img/pipe.jpg "Pipe") <!-- .element style="height: 250px;" -->
 
@@ -250,7 +273,7 @@ To create values of Course type
 
 ```fsharp
 let swafp = {name = "SWAF"; semester = "F21"; 
-             students = []; teacher = 33 };;
+             students = []; teacher = 33 }
 // val swafp : Course = { name = "SWAF"
 //      semester = "F21"  students = []
 //                        teacher = 33 }
@@ -292,10 +315,10 @@ Can use pattern to decompose records
 ```fsharp
 let {name = n; semester = s; students = l; teacher = t } 
                     = swafp
-val t : int = 33
-val s : string = "F21"
-val n : string = "SWAF"
-val l : int list = []
+// val t : int = 33
+// val s : string = "F21"
+// val n : string = "SWAF"
+// val l : int list = []
 ```
 
 ---
