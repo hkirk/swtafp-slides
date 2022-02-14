@@ -16,12 +16,33 @@
 
 ---
 
+## Equality
+
+* Equality is structural and not referenctial be default
+* Equality works with operators `=` and `<>` 
+```fsharp
+let eq x y = if (x <> y) then "not equal" else "equal"
+//val eq : x:'a -> y:'a -> string when 'a : equality
+```
+* which means any type with equality
+
+----
+
+## Ordering
+
+* Operators `>`, `>=`, `<=` and `<`
+```fsharp
+let greater x y = if (x > y) then "greater" else "smaller"
+//val greater : x:'a -> y:'a -> string when 'a : comparison
+```
+* Do not work on functions - for same reasons as equality
+
+----
+
 ## Types
 
 > Data dominates. If you've chosen the right data structures and organized things well, the algorithms will almost always be self-evident. Data structures, not algorithms, are central to programming.
 > - Rob Pike in 1989
-
-Note: TODO: something about types?
 
 ----
 
@@ -31,7 +52,7 @@ Note: TODO: something about types?
 
 ```fsharp
 type ProductName = string
-type parseProductName = ProductName -> Option<ProductName>
+type ParseProductName = ProductName -> Option<ProductName>
 ```
 
 ----
@@ -67,9 +88,14 @@ type Meassurement = Cm | Meter | Kilometer
 type IntOrBool =
   | I of Int
   | B of Bool
+// type Meassurement' =
+//  | Cm
+//  | Meter
+//  | Kilometer
 ```
 
-Notes: TODO: Explain how a 'of SomeRecord' can be changed into the union type by up-cast
+Note: 
+
 
 ----
 
@@ -79,6 +105,8 @@ Notes: TODO: Explain how a 'of SomeRecord' can be changed into the union type by
 type Option<'a> =
    | Some of 'a
    | None
+let someValue = Some 3
+// val someValue: Option<int> = Some 3
 ```
 
 ----
@@ -89,7 +117,27 @@ type Option<'a> =
   * Uses `Equal` and `int` value
 
 ```fsharp
-type Meassurement = CM = | Meter = 1 | Kilometer = 2
+type Meassurement = CM = 0 | Meter = 1 | Kilometer = 2
+// [<Struct>]
+//type Meassurement =
+//  | CM = 0
+//  | Meter = 1
+//  | Kilometer = 2
+let cm = Meassurement.CM
+```
+
+----
+
+### Unit of Measure
+
+```fsharp
+[<Measure>] type cm
+// or
+[<Measure>] type ml = cm^3
+let length = 3<cm>
+let volume = 34<ml>
+let v1 = 3.4<ml/cm>;; 
+//val v1: float<ml/cm> = 3.4
 ```
 
 ---
@@ -100,7 +148,21 @@ type Meassurement = CM = | Meter = 1 | Kilometer = 2
 
 ----
 
+### Types as tools
+
+* Types can help us understand a domain
+* Enforce domain rules
+  * make states unrepresentable
+* Help us refactor
+* Keep and explicit TODO list
+* F# makes this **easy**
+
+
+----
+
 ### Domain 
+
+`$$ ax^2 + bx + c = 0$$`
 
 ``` fsharp [1|2|4]
 type Equation = float * float * float
@@ -118,10 +180,10 @@ Solution:
 ### Solution
 
 ```fsharp [7|2,6|4]
-let solve a b c =
+let solve (a, b, c) =
   let d = b*b - 4.0*a*c
   if d < 0.0 || a = 0.0
-  then failWith "discrimant is negative or a is zero"
+  then failwith "discrimant is negative or a is zero"
   else 
     let sqrtD = sqrt d
     ((-b + sqrtD) / (2.0*a), (-b - sqrtD) / (2.0*a))
@@ -171,14 +233,14 @@ type Contact = {
 * Create Email in on places
 
 ```fsharp [1-4|8-12]
-type Email = | Email of string
+type Email = private | Email of string
 
 module Email =
-  let createEmail (s: String): Option<Email>
-     = failWith "implement"
+  let createEmail (s: string): Option<Email>
+     = failwith "implement"
 
 type NameInfo = {
-  FirstName: String50
+  FirstName: string50
   MiddleName: string50 option
   LastName: string50
 
@@ -237,9 +299,9 @@ type VerifyEmailSerice =
   (Email * Hash) -> VerifiedEmail option
 
 type EmailInfo =
+  private
   | Verified of VerifiedEmail
   | UnVerifiedEmail of Email
-
 ```
 
 ----
@@ -261,7 +323,7 @@ type EmailInfo =
 ```fsharp [3-4]
 type Contact = {
   name: NameInfo
-  email: EmailInfo opton
+  email: EmailInfo option
   postal: PostalInfo option
 }
 ```
@@ -307,11 +369,12 @@ What about if there should be a secondary contact address?
 
 ### Domain
 
-```fsharp [1-6|8-11 ]
+```fsharp [1-6|9-12 ]
 // Register
 type Code = string
 type Name = string
-type Price = int
+[<Measure>] type Money
+type Price = int<Money>
 
 type Register = (Code * (Name*Price)) list
 
@@ -372,8 +435,10 @@ let colorContries = Map -> Country list -> Coloring
 ```
 
 
-Note: Break down of the functions from colorMap
-TODO: Add notes for students
+Note: 
+
+* Break down of the functions from colorMap
+TODO: Add notes for students - how to breakdown
 
 ---
 
@@ -387,19 +452,32 @@ TODO: Add notes for students
 
 ```fsharp
 // Auxiliary types
-type MessageHandler = unit -> Timed<unit>;;
+type MessageHandler = unit -> Timed<unit>
 
 // State data
-type ReadyData = Timed<TimeSpan list>;;
+type ReadyData = Timed<TimeSpan list>
 type ReceivedMessageData =
-        Timed<TimeSpan list * MessageHandler>;;
-type NoMessageData = Timed<TimeSpan list>;;
+        Timed<TimeSpan list * MessageHandler>
+type NoMessageData = Timed<TimeSpan list>
 ```
 
-Note: Message handler keeps that state clean of the concrete data
+Note: 
 
-End state don't need any data in this example
+* `MessageHandler` keeps that state clean of the concrete data
+* End state don't need any data in this example
 
+```fsharp
+open System
+
+type Timed<'a> =
+    {
+        Started : DateTimeOffset
+        Stopped : DateTimeOffset
+        Result : 'a 
+    }
+    member this.Duration = this.Stopped - this.Started
+
+```
 
 ----
 
@@ -412,7 +490,7 @@ type PollingConsumer =
   | ReadyState of ReadyData
   | ReceivedMessageState of ReceivedMessageData
   | NoMessageState of NoMessageData
-  | StoppedState;;
+  | EndState
 ```
 
 ----
@@ -422,14 +500,14 @@ type PollingConsumer =
 Aiming for a transition function from each state
 
 ```fsharp
-type transitionFromStopped =
-      unit -> PollingConsumer;;
+type transitionFromEnd =
+          unit -> PollingConsumer
 type transitionFromNoMessage =
-      NoMessageData -> PollingConsumer;;
+          NoMessageData -> PollingConsumer
 type transitionFromReceived =
-      ReceivedMessageData -> PollingConsumer;;
+          ReceivedMessageData -> PollingConsumer
 type transitionFromReady =
-      ReadyData -> PollingConsumer;;
+          ReadyData -> PollingConsumer
 ```
 
 ----
@@ -442,7 +520,9 @@ Starting with transitionFromNoMessage
 let transitionFromNoMessage (nm : NoMessageData) =
     if shouldIdle nm
     then idle () |> ReadyState
-    else StoppedState
+    else EndState
+// error FS0039: The value or constructor 'shouldIdle' is not defined.
+// error FS0039: The value of constructor 'idle' is not defined.
 ```
 
 ----
@@ -457,7 +537,7 @@ let transitionFromNoMessage (nm : NoMessageData) =
 let transitionFromNoMessage (nm : NoMessageData) =
     if shouldIdle nm
     then idle () |> ReadyState
-    else StoppedState
+    else EndState
 ```
 
 Since this does not compiles - refactoring into
@@ -467,7 +547,7 @@ let transitionFromNoMessage shouldIdle idle
                          (nm : NoMessageData) =
     if shouldIdle nm
     then idle () |> ReadyState
-    else StoppedState
+    else EndState
 // val transitionFromNoMessage :
 //   shouldIdle:(NoMessageData -> bool) ->
 //     idle:(unit -> ReadyData) -> nm:NoMessageData
@@ -478,7 +558,8 @@ let transitionFromNoMessage shouldIdle idle
 
 ### Still not done
 
-*   Model the domain directly in code
+* Model the domain directly in code
+* Type system is 'easy' to work with
 * Type system helps with refactoring
 * Keeps a todo list
 
