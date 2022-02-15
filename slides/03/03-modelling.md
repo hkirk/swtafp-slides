@@ -136,7 +136,7 @@ let cm = Meassurement.CM
 [<Measure>] type ml = cm^3
 let length = 3<cm>
 let volume = 34<ml>
-let v1 = 3.4<ml/cm>;; 
+let v1 = 3.4<ml/cm> 
 //val v1: float<ml/cm> = 3.4
 ```
 
@@ -261,7 +261,7 @@ type NameInfo = {
   MiddleName: string50 option
   LastName: string50
 }
-type EmailInfo {
+type EmailInfo = {
   EmailAddress: Email
   IsEmailVerified: bool
 }
@@ -279,7 +279,7 @@ type Contact = {
 - Business logic in types
 
 ```fsharp
-type EmailInfo {
+type EmailInfo = {
   EmailAddress: Email
   IsEmailVerified: bool
 }
@@ -335,7 +335,7 @@ type Contact = {
 ### Make illegal states unrepresentable
 
 ```fsharp [2-3|4|8]
-type Contactinfo =
+type ContactInfo =
   | OnlyEmail of EmailInfo
   | OnlyPostal of PostalInfo
   | BothEmailAndPostal of EmailInfo * PostalInfo
@@ -427,11 +427,11 @@ type colorMap = Map -> Coloring
 ### Functions
 
 ```fsharp
-let areNeighbours = Country -> Country -> bool
-let canBeExtendedBy = Map -> Color -> Country -> bool
-let extendColoring = Map -> Coloring -> Country -> Coloring
-let countries = Map -> Country list
-let colorContries = Map -> Country list -> Coloring
+type areNeighbours = Country -> Country -> bool
+type canBeExtendedBy = Map -> Color -> Country -> bool
+type extendColoring = Map -> Coloring -> Country -> Coloring
+type countries = Map -> Country list
+type colorContries = Map -> Country list -> Coloring
 ```
 
 
