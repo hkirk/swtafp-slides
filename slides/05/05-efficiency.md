@@ -106,11 +106,14 @@ This is tail recursive - last call is the recursive call
 Looping on a special form:
 
 ```fsharp
-let rec tr p f h z = if p z then tr p f h (f z) else h z;;
-val tr : p:('a -> bool) ->
-         f:('a -> 'a) ->
-         h:('a -> 'b) ->
-         z:'a -> 'b
+let rec tr checker cont last value =
+    if checker value
+    then tr checker cont last (cont value)
+    else last value
+// val tr : checker:('input -> bool) ->
+//          cont:('input -> 'input) ->
+//          last:('input -> 'output) ->
+//          value:'input -> 'output
 ```
 
 ----
@@ -118,14 +121,14 @@ val tr : p:('a -> bool) ->
 ### Implementing factorial by `tr`
 
 ```fsharp
-let fact' = tr (fun (n,_) -> n<>0)
-               (fun (n,m) -> (n-1, m*n))
+let fact' = tr (fun (n,_) -> n<>0L)
+               (fun (n,m) -> (n-1L, m*n))
                (fun (_,m) -> m)
 
 // For reference
 let rec fact = function
-    | (0, m) -> m
-    | (n, m) -> fact (n-1, n*m)
+    | (0L, m) -> m
+    | (n, m) -> fact (n-1L, n*m)
 ```
 
 ----
@@ -148,10 +151,10 @@ val it : int = 1409286144
 
 ### Properties of tail recursive functions
 
-* Evaluation `tr p f h (f z)` will not build large expressions
-    * `f z` will be evaluated at each step
-* This can be O(n) - in the fact example
-* The same evironment/stack frame can be reused
+* Evaluation<br/> `tr checker cont last (cont value)`<br/> will not build large expressions
+    * `cont value`<br/> will be evaluated at each step
+* This can be $O(n)$ - in the fact example
+* The same evironment/stack frame can be reused - So $ O(1)$ space consumption
 
 ----
 
@@ -163,9 +166,9 @@ val it : int = 1409286144
 In general we will transform:
 
 ```fsharp
-f: 'a -> 'b
+f: 'input -> 'output
 // into
-f: 'a -> ('a -> 'b) -> 'b
+f: 'input -> ('input -> 'output) -> 'output
 ```
 
 ----
@@ -273,6 +276,25 @@ let foldArraySubRight (f:OptimizedClosures.FSharpFunc<'T,_,_>) (arr: 'T[]) start
 
 ----
 
+#### Map example
+
+```fsharp
+let rec foldBackOpt (f:OptimizedClosures.FSharpFunc<_,_,_,_>) m x = 
+        match m with 
+        | MapEmpty -> x
+        | MapOne(k,v) -> f.Invoke(k,v,x)
+        | MapNode(k,v,l,r,_) -> 
+            let x = foldBackOpt f r x
+            let x = f.Invoke(k,v,x)
+            foldBackOpt f l x
+
+    let foldBack f m x = foldBackOpt (OptimizedClosures.FSharpFunc<_,_,_,_>.Adapt(f)) m x
+```
+
+
+
+----
+
 ### Performance
 
 ```fsharp
@@ -313,7 +335,7 @@ Records, unions, Lists etc etc.
 * Fewer movings parts
 * Thread-safe by default
 * % Not nessesary performance optimal.
-    * Change to use mutable datastructures within a module/function.
+    * Change to use mutable datastructures within a module/function to gain performance.
 
 ----
 
@@ -330,3 +352,11 @@ F# can be very performant - used by stock companies because of this and its safe
 ## References
 
 * [Writing high performance F# code](https://bartoszsypytkowski.com/writing-high-performance-f-code/)
+
+----
+
+### Other sources
+
+[![Lock-Free Algorithms For Ultimate Performance](./img/lock-free.png)](https://www.infoq.com/presentations/Lock-free-Algorithms/ "Lock-Free Algorithms For Ultimate Performance")
+
+<video data-autoplay src=""></video>
