@@ -3,6 +3,9 @@
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
+notes:
+TODO: Make it visible how to use the types e.g. in the cash-register example. Since they is not strictly needed.
+
 ----
 
 ## Agenda
