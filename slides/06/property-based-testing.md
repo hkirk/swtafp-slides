@@ -152,7 +152,10 @@ let ``Reverse of reverse of a list is the original list ``
   List.rev(List.rev xs) = xs
 ```
 
-Output: 
+----
+
+### Output
+
 ```nohighlight
 Tests.Reverse of reverse of a list is the original list 
 
@@ -235,9 +238,17 @@ let expectDivideByZero() =
 
 ```fsharp
 let chooseFromList xs = 
-  gen { let! i = Gen.choose (0, List.length xs-1) 
-        return List.item i xs }
+  gen {
+        let! i = Gen.choose (0, List.length xs-1) 
+        return List.item i xs
+      }
 ```
+
+note:
+
+From FsCheck:
+
+Generators are built from the function choose, which makes a random choice of a value from an interval, with a uniform distribution.
 
 ----
 
@@ -253,6 +264,14 @@ let chooseFromList xs =
     * plus many more
 
 
+note:
+
+* `two g`: generates two g's
+* `growingElements xs`: grows with an element from xs
+* `listOf g`: generates a list of t's 
+
+More at https://fscheck.github.io/FsCheck/TestData.html#Useful-Generator-Combinators
+
 ----
 
 ### Other properties with FsCheck
@@ -262,51 +281,122 @@ let chooseFromList xs =
 * Can replay failed tests
 
 ```fsharp
-Check.One({ Config.Quick with Replay =
-     Some <| Random.StdGen (1145655947,296144285) },
-         fun x -> abs x >= 0)
+Check.One(
+    {
+        Config.Quick with Replay =
+            Some <| Random.StdGen (1145655947,296144285)
+    },
+    fun x -> abs x >= 0
+)
 ```
 
 ----
 
+<!-- .slide: data-background-image="./img/check.jpeg" -->
+
 ## Choosing properties
+
+note:
+
+Photo by Karolina Grabowska from Pexels
 
 ----
 
 ### Different ways
 
-TODO: do x -> do y = 
-      do y -> do x
+![Commutative](./img/property_commutative.png "Commutative") <!-- .element: style="height: 300px" -->
+
+note:
+
+Example:
+
+`List.sort xs` -> `List.map (fun x -> x+1)` equal to
+`List.map (fun x -> x+1)` -> `List.sort xs`
 
 ----
 
 ### Negation
 
-TODO: x -> y -> x
+![Inverse](./img/property_inverse.png "Inverse") <!-- .element: style="height: 300px" -->
 
+note:
+
+`List.rev(List.rev xs)` equal to `xs`
 
 ----
 
 ### Non-changing
 
+![Invariant](./img/property_invariant.png "Invariant") <!-- .element: style="height: 300px" -->
+
+note:
+
+`sorted list` equals to `List.sort (sorted list)`
 
 ----
 
 ### Distint
 
+![Idempotence](./img/property_idempotence.png "Idempotence") <!-- .element: style="height: 300px" -->
+
+note:
+
+`List.toSet xs` equals `List.toSet (List.toSet xs)`
+
+`x + 0` equals `x + 0 + 0`
+
+
 ----
 
 ### Smaller problems
 
+![Induction](./img/property_idempotence.png "Induction") <!-- .element: style="height: 300px" -->
+
+
+note:
+
+Mathematical induction proves that we can climb as high as we like on a ladder, by proving that we can climb onto the bottom rung (the basis) and that from each rung we can climb up to the next one (the step).
+
+— Concrete Mathematics, page 3 margins.
+
+`[]` is sorted
+
+`[head]` is sorted
+
+`f :: s :: []` is sorted iff `f <= s`
+
+`f :: s :: rest` is sorted iff `f <= s && (isSorted s::rest)`
+
 ----
 
-### Verification
+### Easy Verification
+
+![Verification](./img/property_easy_verification.png "Verification") <!-- .element: style="height: 300px" -->
+
+note:
+
+`string.split str |> string.concat` equals `str`
 
 ----
 
 ### Test oracle
 
+![Test Oracle](./img/property_test_oracle.png "Test Oracle") <!-- .element: style="height: 300px" -->
 
+---
+
+### vs TDD
+
+* TDD works on specific examples
+* PBT on universel properties
+
+This means
+
+* PBT provides better description of requirements
+* You write fewer test cases
+    * but better security
+* PBT forces you to consider what to implement
+* PBT forces clean design.
 
 ---
 
