@@ -108,10 +108,10 @@ type ListTree<'a> = Node of 'a * (ListTree<'a> list)
 let tree = Node(1, [
                     Node(2, [
                         Node(5, [])
-                    ]);
-                    Node(3, []);
+                    ])
+                    Node(3, [])
                     Node(4, [
-                        Node(6, []);
+                        Node(6, [])
                         Node(7, [])
                     ])
                 ])
@@ -306,6 +306,11 @@ So why should you use catamorphisms in pratice
     * Only have recusive logic in one place
     * Seperate the 'how' and 'what' (Sounds like SRP)
 
+note:
+
+Seperations of concern
+
+
 ----
 
 ### Encapsulation
@@ -339,7 +344,7 @@ let rec circuitRec fComp fSer fPar tree =
 ```
 
 * `circuitRec` looks the same - but handle the new case
-* Sometime its usefull to avoid existing functionality to change becuase datastructure belove changes
+* Sometimes it's usefull to avoid existing functionality to change becuase datastructure below changes
 * You can also use [Active Patterns](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/active-patterns) to hide data
 
 ----
@@ -399,7 +404,7 @@ let convert tree =
 
 ----
 
-### DeepCopy
+### Deep Copy
 
 Could also be used to make a clone of the origianl value
 
