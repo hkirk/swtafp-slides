@@ -1,5 +1,5 @@
 <!-- .slide: data-background="#003d73" -->
-## Finite trees 2
+## Algebraic data types
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
@@ -45,9 +45,9 @@ let rec cataBoxes fItem fBox boxes =
 
 ```fsharp
 let createNestedBoxes n =
-    let rec createNestedBoxesRec circuit = function
-        | 0 -> circuit
-        | n -> createNestedBoxesRec (Box circuit) (n-1)
+    let rec createNestedBoxesRec content = function
+        | 0 -> content
+        | n -> createNestedBoxesRec (Box content) (n-1)
 
     createNestedBoxesRec (Item 1.0) n
 ```
@@ -115,10 +115,18 @@ let rec foldBoxes fItem fBox acc boxes =
 //  acc:'a -> boxes:Boxes -> 'b
 ```
 
+----
+
+# Comparison
+
 Notice changes in method signature
 
-Note:
 ```fsharp
+val foldBoxes :
+ fItem:('a -> float -> 'b) ->
+ fBox:('a -> 'a) ->
+ acc:'a -> boxes:Boxes -> 'b
+// vs
 val cataBoxes : 
   fItem:(float -> 'a) ->
   fBox:('a -> 'a) ->
@@ -180,7 +188,7 @@ let rec foldBoxes fItem fBox fWrapped acc boxes =
 
 ### Precalculate
 
-So can we avoid pre-calculation and still keep stack safety?
+Can we avoid pre-calculation and still keep stack safety?
 
 Continuations <!-- .element: class="fragment" -->
 
@@ -256,10 +264,10 @@ descriptionWithFoldBack (Wrapped (Box (Item 1.0)))
 
 ### Like `List.fold` and `List.foldBack`
 
-* So like in the list the signatures for both fWrapped is the same
+* Like in the list the signatures for both fWrapped is the same
     * `('a -> 'a)`
 * they behave completely different, so we should properly change signatures for easier usage.
-* Also note - this is slow because of the chain of nested functions
+* Also note - this is slower because of the chain of nested functions
 
 ----
 
@@ -316,6 +324,7 @@ Note:
 
 * cata version 
     * safely when nesting is 'small'
+    * generalization of fold into ADT
 * fold version otherwise
 * foldback
     * if you need the inner accumulator
@@ -357,9 +366,10 @@ let foldArraySubRight (f:OptimizedClosures.FSharpFunc<'T,_,_>) (arr: 'T[]) start
                 foldArraySubRight f arr 0 (arrn - 1) state
 ```
 
+
 ---
 
-## Algebraic data sizes
+## Algebraic data types sizes
 
 ![Category Theory](./img/category_theory_for_programmer.jpg)<!-- .element style="width:700px" -->
 
