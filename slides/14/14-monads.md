@@ -15,6 +15,24 @@
 
 ---
 
+TODO: Where to place?
+![Free monads](./img/free-monads.png)
+
+----
+
+TODO: Where to place?
+### Free monad
+
+![Free Monad](./img/decision-flowchart-for-free-monads.png)
+
+Note:
+Free monads uses an AST to represent a computation and at the same time keep the computation AST decoupled from the way it is interpreted.
+
+
+---
+
+
+
 ### Monads
 
 * Apply a function that returns a wrapped value

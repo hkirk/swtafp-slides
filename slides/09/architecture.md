@@ -99,8 +99,8 @@ So each call to `GeneateInvoice` increments invoice number :(
 So IO would be all the places we have side-effects aka. Infrastructure
 
 * IO is a monad.
-* Another example on a monads is F# Option type
-* Monads can be combined with `bind`
+* Another example of monads is F#'s `Option`
+* Monads can be combined with '`bind`'
 
 **Note**: We will come back to monads.
 
@@ -108,16 +108,21 @@ So IO would be all the places we have side-effects aka. Infrastructure
 
 #### Return and Bind
 
-Two important methods `return` and `bind`
+Two important methods are '`return`' and '`bind`'
 
 ```fsharp
-val return: 'a -> m<'a>
-val bind: m<'a> -> (a -> m<'b>) -> m<'b>
+val return: 'a -> M<'a>
+val bind:   M<'a> -> (a -> M<'b>) -> M<'b>
 ```
+
+
+note: 
+
+Monads also have some rules
 
 ----
 
-#### F# Option type
+#### Example with F#'s Option
 
 ```fsharp
 let o = Some 3 // creation
@@ -142,12 +147,13 @@ By Alistair Cockburn
 
 ## Ports & Adapters
 
-* Components - loosely coupled and interchangeable
-    * E.g. database, ui, business logic, etc etc
+* Components
+    * loosely coupled and interchangeable
+    * e.g. database, ui, business logic, etc. etc.
 * Ports
-    * 'Holes' that components can access other components through
+    * 'holes' that components can access other components through
 * Adapters
-    * Adapters are glue between components and ports
+    * glue between components and ports
 
 Note: Not only for FP - but very used especially in FP so e.g. F# and Haskell
 
@@ -157,15 +163,13 @@ Note: Not only for FP - but very used especially in FP so e.g. F# and Haskell
 
 * Resturant check if reservation can be accepted
 
-TODO: Rename impl!
-
 
 ```fsharp
 let connStr = "..."
-let impl = 
+let reserveTable = 
     Validate.reservation
     >> bind (Capacity.check 10 (getReservedSeatsFromDb connStr))
-    >> map (saveReservation connStr)
+    >> map (saveReservation connStr) // same as below
   //>> map (fun res -> (saveReservation connStr) res)
 ```
 
@@ -193,23 +197,23 @@ let check capacity getReservedSeats reservation =
 ### Inject `getReservedSeats`
 
 ```fsharp
-let getReservedSeatsFromDb (connStr: DbContext)
+let getReservedSeatsFromDb (connStr: string)
                            (reservations: Reservation): int = 
     failwith "Not implemented"
 
-let getReservedSeats = getReservedSeatsFromDb context
+let getReservedSeats = getReservedSeatsFromDb connStr
 // val getReservedSeats : (Reservation -> int)
 ```
 
-So `getReservedSeats` are inpure - but that do not show in the signature.
+So '`getReservedSeats`' are inpure - but that do not show in the signature.
 
 ----
 
 ### 'Problem'
 
-* Our pure function check, will be inpure in production
+* Our pure function '`check`', will be inpure in production
 
-* But why do checkCapacity need getReservedSeats at all?  
+* But why do checkCapacity need getReservedSeats at all?  <!-- .element: class="fragment" -->
 
 ----
 
@@ -226,14 +230,14 @@ let check capacity reservedSeats reservation =
 
 ### Calling check
 
-So now calling check is a bit more involved
+So now calling '`check`' is a bit more tedious
 
 ```fsharp
 let connStr = ".."
-let impl =
+let reserveTable =
   Validate.reservation
     >> map  (fun r -> (getReservedSeatsFromDb connStr r, r))
-    >> bind (fun (i, r) -> check 10 i r)
+    >> bind (fun (i, r) -> Capacity.check 10 i r)
     >> map  (saveReservation connStr)
   //>> map (fun r -> saveReservation connStr r)
 ```
@@ -258,17 +262,16 @@ let add1Times2' = add1 >> times2
 
 * What is business logic?
 * What is application logic?
-
-* One could argue that the function `impl` should belong in the business logic?
+* Should `reserveTable` belong in the business logic layer? 
 
 ----
 
-The function `Impl`
-* could also argue that this function is part of the controller
-* Thereby not something you would reuse in another application
-* because:
-    * Would you always need to handle resevation validation?
-    * Handle input/output different
+The function `reserveTable`
+1. could also argue that this function is part of the controller
+2. thereby not something you would reuse in another application
+3. because:
+    * would you always need to handle resevation validation?
+    * handle input/output different
 
 ----
 
@@ -279,7 +282,6 @@ The function `Impl`
 3. Use returned data to perform side-effects
 
 ---
-
 
 ## Abstractions
 
@@ -305,19 +307,20 @@ Is my function `a` pure or not?
 
 ### Hexagonal architecture
 
-* To avoid BLL to contaminate e.g. UI
+* To avoid DAL to contaminate e.g. BLL
 * Alternative to layered architecture
-* Each component is connection via a number of ports
-* Onion architecture was inspired by Hexogonal architecture
+* Each component is connected through a number of ports
 
-* **Note**: Not always the correct solution
+
+**Note**: Not always the correct solution
 
 ----
 
 ### Onion architecture
 
-![Onion architecture](./img/onion-architecture.png) <!-- .element style="height: 300px" -->
+![Onion architecture](./img/onion-architecture.png) <!-- .element style="height: 260px" -->
 
+* Onion architecture was inspired by Hexogonal architecture
 * Layered architecture
     * where inner circles have no knowledge of outer circle
 
@@ -326,13 +329,11 @@ Is my function `a` pure or not?
 
 ### Onion pro/cons
 
-* \- e.g. database is accessible from UI, since they are in same layer - not a good idea though.
+* \- e.g. database is accessible from UI
+    * they are in same layer - not a good idea though.
 * \+ fewer artifacts then ports and adapters
 
 ---
-
-![Free monads](./img/free-monads.png)
-----
 
 ### Broker architecture
 
@@ -346,14 +347,9 @@ Looks like microservices, right?
 
 ![Pipe and Filter](./img/pipe-and-filter.jpg "https://csblogpro.wordpress.com/2017/11/05/pipe-and-filter-architecture/")
 
-----
+note:
 
-### Free monad
-
-![Free Monad](./img/decision-flowchart-for-free-monads.png)
-
-Note:
-Free monads uses an AST to represent a computation and at the same time keep the computation AST decoupled from the way it is interpreted.
+We will take a closer look at this later
 
 ---
 
