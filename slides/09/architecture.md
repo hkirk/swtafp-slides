@@ -34,14 +34,14 @@ So to adhere to DIP
 
 ----
 
-#### Why keep BLL immutable
+#### Why keep BLL pure
 
 * Creating a PDF invoice, requires
     * Products
     * Prices before and after taxes
     * Custumer information
     * Date
-    * invoice number
+    * Invoice number
 
 ----
 
@@ -106,18 +106,18 @@ So IO would be all the places we have side-effects aka. Infrastructure
 
 ----
 
-#### Option is a monad
+#### Return and Bind
 
 Two important methods `return` and `bind`
 
 ```fsharp
-return: 'a -> m<'a>
-bind: m<'a> -> (a -> m<'b>) -> m<'b>
+val return: 'a -> m<'a>
+val bind: m<'a> -> (a -> m<'b>) -> m<'b>
 ```
 
 ----
 
-#### Example
+#### F# Option type
 
 ```fsharp
 let o = Some 3 // creation
@@ -149,28 +149,16 @@ By Alistair Cockburn
 * Adapters
     * Adapters are glue between components and ports
 
-Note: Not only for FP - but very used especially in F# and Haskell
+Note: Not only for FP - but very used especially in FP so e.g. F# and Haskell
 
 ----
 
-### An example
+### A Resturant example
 
-```fsharp
-type Error = CapacityExceeded
-type Reservation = {Quantity: int}
+* Resturant check if reservation can be accepted
 
-let check capacity getReservedSeats reservation =
-    let reservedSeats = getReservedSeats reservation
-    if (capacity < reservation.Quantity + reservedSeats)
-    then Result.Error CapacityExceeded
-    else Result.Ok reservation
-// val check :
-//  capacity:int ->
-//    getReservedSeats:(Reservation -> int) ->
-//      reservation:Reservation -> Result<Reservation,Error>
-```
+TODO: Rename impl!
 
-Note:
 
 ```fsharp
 let connStr = "..."
@@ -183,18 +171,37 @@ let impl =
 
 ----
 
+### Closer look at `Capacity.Check`
+
+```fsharp
+type Error = CapacityExceeded
+type Reservation = {Quantity: int}
+
+let check capacity getReservedSeats reservation =
+    let reservedSeats = getReservedSeats reservation
+    if (capacity < reservation.Quantity + reservedSeats)
+    then Result.Error CapacityExceeded
+    else Result.Ok reservation
+// val check :
+//  capacity:int ->
+//  getReservedSeats:(Reservation -> int) ->
+//  reservation:Reservation -> Result<Reservation,Error>
+```
+
+----
+
 ### Inject `getReservedSeats`
 
 ```fsharp
 let getReservedSeatsFromDb (connStr: DbContext)
-                        (reservations: Reservation): int = 
+                           (reservations: Reservation): int = 
     failwith "Not implemented"
 
 let getReservedSeats = getReservedSeatsFromDb context
 // val getReservedSeats : (Reservation -> int)
 ```
 
-Here `getReservedSeats` are inpure - but that do not show in the signature.
+So `getReservedSeats` are inpure - but that do not show in the signature.
 
 ----
 
@@ -202,7 +209,7 @@ Here `getReservedSeats` are inpure - but that do not show in the signature.
 
 * Our pure function check, will be inpure in production
 
-But why do checkCapacity need then getReservedSeats at all?  
+* But why do checkCapacity need getReservedSeats at all?  
 
 ----
 
@@ -225,9 +232,9 @@ So now calling check is a bit more involved
 let connStr = ".."
 let impl =
   Validate.reservation
-    >> map (fun r -> (getReservedSeatsFromDb connStr r, r))
-    >>bind (fun (i, r) -> check 10 i r)
-    >> map (saveReservation connStr)
+    >> map  (fun r -> (getReservedSeatsFromDb connStr r, r))
+    >> bind (fun (i, r) -> check 10 i r)
+    >> map  (saveReservation connStr)
   //>> map (fun r -> saveReservation connStr r)
 ```
 
@@ -252,7 +259,7 @@ let add1Times2' = add1 >> times2
 * What is business logic?
 * What is application logic?
 
-One could argue that the function `impl` should belong in the business logic?
+* One could argue that the function `impl` should belong in the business logic?
 
 ----
 
@@ -298,7 +305,7 @@ Is my function `a` pure or not?
 
 ### Hexagonal architecture
 
-* To avoid BL to contaminate e.g. UI
+* To avoid BLL to contaminate e.g. UI
 * Alternative to layered architecture
 * Each component is connection via a number of ports
 * Onion architecture was inspired by Hexogonal architecture
