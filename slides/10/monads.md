@@ -15,36 +15,45 @@
 
 ---
 
-TODO: Where to place?
-![Free monads](./img/free-monads.png)
+## We still have a problem
+
+```fsharp
+let monadicAdd (a: int option)
+               (b: int option)
+               (c: int option) =
+    a |> Option.bind (fun a' ->
+        b |> Option.bind (fun b' ->
+            c |> Option.bind (fun c' ->
+                Some (a' + b' + c')
+    )))
+```
 
 ----
 
-TODO: Where to place?
-### Free monad
-
-![Free Monad](./img/decision-flowchart-for-free-monads.png)
-
-Note:
-Free monads uses an AST to represent a computation and at the same time keep the computation AST decoupled from the way it is interpreted.
-
-
----
-
-
-
 ### Monads
 
+* Design pattern which can combine code fragments
 * Apply a function that returns a wrapped value
     * to a wrapped value
-
-Monad functions
+* Monad functions
 
 ```fsharp
 val return': a -> m a
 // Also `bind` or `liftM`
 val (>>=): (a -> m b) -> m a -> m b
 ```
+
+----
+
+### True use of monads
+
+![True use](./img/monads.png "")
+
+note:
+
+From: https://medium.com/descript-software/monads-are-useful-part-1-c407e342e117
+
+Function composition
 
 ----
 
@@ -81,10 +90,34 @@ bind f (bind g (Some 2))
 
 #### When to look for monads
 
-* You have a function that performs some sideeffect
+* You have a function that performs some side-effect
     * a function taking 'plain' input like `int`, `string` or `Person` and
-    * returning `option`, `Promise` or `Result`
+    * returning `option`, `Promise`, `Result` etc.
 
+---
+
+### Variations
+
+![Free monads](./img/free-monads.png)
+
+----
+
+### Free monad
+
+![Free Monad](./img/decision-flowchart-for-free-monads.png)
+
+Note:
+Free monads uses an AST to represent a computation and at the same time keep the computation AST decoupled from the way it is interpreted.
+
+----
+
+### Also
+
+* Comonads
+    * Can be seens as a reduction from a computation back down to values
+* Additive monads
+    * Monad with binary operators 'mplus' and 'mzero'
+    * E.g. List with '[]' and '::'
 
 ---
 
@@ -226,10 +259,13 @@ let option = OptionBuilder()
 
 * A mapping in an elevated worlds between 'types'
     * using 'normal' functions
-* From category theory
-    * mapping between categories
 * They are structure preseving
     * e.g. `List<string> -> List<int>`
+
+note: 
+
+From category theory
+    * mapping between categories
 
 
 ----
@@ -251,6 +287,13 @@ List.map id [1;2;3;4;5]
     * mapping over `f` and then `g` should yield same result as
     * mapping over `f >> g`
 
+```fsharp
+let compTrue value =
+     let a = value |> map f |> map g
+     let b = value |> map (f >> g)
+     a = b
+```
+
 
 ----
 
@@ -263,6 +306,12 @@ let times2 b = 2 * b
 [1;2;3;4] |> List.map times2 |> List.map string
 ```
 
+----
+
+### Using functors
+
+* Look for a functor whenever you have a type with a generic type argument
+
 ---
 
 ### Applicatives
@@ -274,7 +323,7 @@ And two functions
 
 ```fsharp
 val pure: a -> f a
-val (<*>): f (a -> b) -> f a -> f b
+val (<*>): f (a -> b) -> f a -> f b  // Also called lift
 // E.g
 val pureList: a -> a list
 val applyToList: (a -> b) list -> a list -> b list
@@ -289,9 +338,9 @@ Note:
 
 ```fsharp
 module List =
-    let apply fs l = fs
-                     |> List.collect (fun f -> l
-                                               |> List.map f)
+    let apply fs l = 
+        fs |> List.collect (fun f ->
+                l |> List.map f)
 // val apply : fs:('a -> 'b) list -> l:'a list -> 'b list
 let odds = [1;3;5;7;9]
 let evens = [2;4;6;8;0]
