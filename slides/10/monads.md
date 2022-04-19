@@ -15,7 +15,24 @@
 
 ---
 
-## We still have a problem
+## Todays problem
+
+```fsharp
+let add (a: int option) (b: int option) (c: int option) =
+        match a with
+        | None -> None
+        | Some aa -> 
+            match b with
+            | None -> None
+            | Some bb -> 
+                match c with
+                | None -> None
+                | Some cc -> Some(aa + bb + cc)
+```
+
+----
+
+### Or like this
 
 ```fsharp
 let monadicAdd (a: int option)
@@ -24,9 +41,16 @@ let monadicAdd (a: int option)
     a |> Option.bind (fun a' ->
         b |> Option.bind (fun b' ->
             c |> Option.bind (fun c' ->
-                Some (a' + b' + c')
-    )))
+                Some (a' + b' + c') 
+                )
+            )
+        )
 ```
+
+```fsharp
+val bind: ('T -> 'U option) -> 'T option -> 'U option
+```
+<!-- .element: class="fragment" -->
 
 ----
 
@@ -39,8 +63,8 @@ let monadicAdd (a: int option)
 
 ```fsharp
 val return': a -> m a
-// Also `bind` or `liftM`
-val (>>=): (a -> m b) -> m a -> m b
+// Operator (>>=) also called 'liftM'
+val bind: (a -> m b) -> m a -> m b
 ```
 
 ----
@@ -57,9 +81,7 @@ Function composition
 
 ----
 
-#### Examples
-
-Known stuff :)
+#### Bind in detail
 
 ```fsharp
 let bind f = function
@@ -67,7 +89,20 @@ let bind f = function
     | None   -> None
 
 bind (fun v -> Some (v+1)) (Some 4)
+// val it: int option = Some 5
 ```
+
+```fsharp
+let monadicAdd (a: int option)
+               (b: int option)
+               (c: int option) =
+    a |> Option.bind (fun a' ->
+        b |> Option.bind (fun b' ->
+            c |> Option.bind (fun c' ->
+                Some (a' + b' + c') 
+    )))
+```
+<!-- .element: class="fragment" -->
 
 ----
 
@@ -126,6 +161,7 @@ Free monads uses an AST to represent a computation and at the same time keep the
 * Existing computation expressions
     * `async {}`
     * `actor {}`
+    * `...`
 * Creating your own computation expression is possible
 
 ```
@@ -148,7 +184,7 @@ expr { match! ... }
 
 ----
 
-#### CE is a class types
+#### CE is a class type
 
 ```fsharp
 type OptionBuilder() =
@@ -195,6 +231,8 @@ type OptionBuilder() =
 ----
 
 ### Why creating a option CE
+
+Remember?
 
 ```fsharp
 let monadicAdd (a: int option)
@@ -284,7 +322,7 @@ List.map id [1;2;3;4;5]
 #### Functor laws - composition
 
 * given two functions `f` and `g` you get the same result by
-    * mapping over `f` and then `g` should yield same result as
+    * mapping over `f` and then `g` as
     * mapping over `f >> g`
 
 ```fsharp
@@ -323,11 +361,17 @@ And two functions
 
 ```fsharp
 val pure: a -> f a
-val (<*>): f (a -> b) -> f a -> f b  // Also called lift
+val apply: f (a -> b) -> f a -> f b 
+// Operator: (<*>), also called lift
+```
+
+```fsharp
 // E.g
 val pureList: a -> a list
 val applyToList: (a -> b) list -> a list -> b list
 ```
+<!-- .element: class="fragment" -->
+
 
 Note:
 `<*>` is also called `liftA2` and sometimes `apply` :)
@@ -387,8 +431,10 @@ apply [add1] [1]= apply [fun a -> a 1] [add1]
 
 #### Using applicatives
 
+* Apply a list of functions to some argument(s)
 * When having a function taking multiple arguments
     * but having the arguments wrapped in something like `Result`
+
 
 
 ----
@@ -404,13 +450,13 @@ map f x = apply (pure f)
 
 ---
 
-### Changing our examples to applicatives
+### Using Applicatives in our example
 
 ```fsharp
 module Option =
     let apply fOpt xOpt = 
         match (fOpt, xOpt) with
-        | (Some f, Some x) -> Some <| f x
+        | (Some f, Some x) -> f x |> Some
         | _                -> None
     let (<*>) = Option.apply
 
@@ -419,9 +465,7 @@ let applicativeAdd (a: int option)
                    (c: int option) =
     let add3 x y z = x + y + z
     (Some add3)
-        <*> a
-        <*> b
-        <*> c
+        <*> a <*> b <*> c
 ````
 
 ----
