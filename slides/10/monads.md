@@ -422,9 +422,10 @@ Note:
 
 ```fsharp
 List.map string [1;2;3;4] = apply [string] [1;2;3;4]
-// Interchange in F#
 
-apply [add1] [1]= apply [fun a -> a 1] [add1]
+// Interchange in F#
+apply [add1] [1] = apply [fun a -> a 1] [add1]
+// We can change the parameters and apply - this forces us to create a function (lambda) expression which takes a functions and apply - for the types to be correct.
 ```
 
 ----
