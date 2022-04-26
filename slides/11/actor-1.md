@@ -155,6 +155,7 @@ This is of the type `'M -> unit`
                              (actorOf helloActor)
     actor <! "something"
     actor <! "hello"
+    actorSystem.WhenTerminated.Wait()
 ```
 
 ----
