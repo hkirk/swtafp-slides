@@ -19,8 +19,9 @@
 
 ### What is Akka.Net
 
-* an actor framework - (inspired from Scala Akka)
-* consists of
+* An actor framework - (ported from Scala Akka)
+    * Actor model is from SmallTalk - OO done right :)
+* Consists of
     * actors
     * messages
 
@@ -28,11 +29,12 @@
 
 #### Actor
 
-* actors are lightweight
-    * 2.5-3 mio actors per GB ram
-* can send and receive messages
+* Actors are lightweight
+    * 2.5-3 mio. actors per GB ram
+* Can send and receive messages
     * process one message at a time
-* exists in an actor system
+    * synchronized
+* Exists in an actor system
 
 ----
 
@@ -50,6 +52,10 @@ let myActorSystem = System.create "MyActorSystem"
 All actors live inside an actor system.
 
 Note: This is a heavy object, so only create one per application
+
+----
+
+!["Actor system"](./img/akka-actor-component-system.png "Actor system")
 
 ----
 
@@ -76,13 +82,18 @@ Note: `spawn` `actofOf` and `actorOf2` is functions from `Akka.FSharp`
 
 * Actors can send messages to each other
 * Messages are immutable and strongly typed
-* `<!` sends an async message to the `actor` under the hood
+* Tell command: `<!` - sends an async message to the `actor` referenced - under the hood
 
 ```fsharp
 actor <! "This is a message"
 ```
 
+note:
+`<!` - tell operator
+
 ----
+
+<!-- .slide: data-background="#dcedc1" -->
 
 #### Creating an Akka.Net application
 
@@ -97,7 +108,9 @@ actor <! "This is a message"
 
 ----
 
-#### Continueing
+<!-- .slide: data-background="#dcedc1" -->
+
+#### Continuing
 
 4. In you main function create an actor system
 ```fsharp
@@ -109,6 +122,8 @@ let main argv =
 ```
 
 ----
+
+<!-- .slide: data-background="#dcedc1" -->
 
 #### Creating our first actor
 
@@ -129,6 +144,8 @@ This is of the type `'M -> unit`
 
 ----
 
+<!-- .slide: data-background="#dcedc1" -->
+
 #### Cont.
 
 6. Below the actor system, create an instance of your actor
@@ -142,6 +159,8 @@ This is of the type `'M -> unit`
 
 ----
 
+<!-- .slide: data-background="#dcedc1" -->
+
 7. Run the application.
 
 ![Output](./img/greeter.png)
@@ -151,7 +170,7 @@ This is of the type `'M -> unit`
 
 ### Other ways of creating actors
 
-Creating an `Actor<'M> -> 'M -> unit`: 
+Creating an: `Actor<'M> -> 'M -> unit`: 
 
 ```fsharp
 // Defining actor
@@ -186,9 +205,10 @@ let myFirstActor = spawn myActorSystem "myFirstActor"
 
 ### Messages
 
-* F# types `tuples`, `records` and `discriminated unions` can be used as messages.
+* F# types: `tuples`, `records` and `discriminated unions` can be used as messages.
 * Messages are send with the `tell` command we saw above `<!`
-* Handling messages is optional, but normally pattern matching is used
+* How to andle messages is optional
+    * normally pattern matching is used
 
 ```fsharp
 match msg with
@@ -200,7 +220,7 @@ match msg with
 
 #### Unknown messages
 
-* If a messages receives an unknown messages it should be ignored and possibly logged
+* If an actor receives an unknown messages it should be ignored and possibly logged
 * If we change the actor from above
 
 ```fsharp
@@ -217,15 +237,12 @@ Note: There exists an actor type `ReceiveActor` which `handles` unknown messages
 #### Messages in F#
 
 * Its a good idea to use a set of predefiend messages for each Actor.
-
-E.g.
-
+    * e.g.
 ```fsharp
 // Messages.fs
 type ErrorType =
 | Null
 | Validation
-
 // Discriminated union to determine whether or not the
 // user input was valid.
 type InputResult =
@@ -234,6 +251,8 @@ type InputResult =
 ```
 
 ----
+
+<!-- .slide: data-background="#dcedc1" -->
 
 #### Create Message protocol
 
@@ -244,7 +263,7 @@ type Hello =
     | Hello of string
 ```
 
-and change actor in `Actors.fs`
+and change helloActor in `Actors.fs`
 
 ```fsharp
 let helloActor msg =
@@ -253,6 +272,8 @@ let helloActor msg =
 ```
 
 ----
+
+<!-- .slide: data-background="#dcedc1" -->
 
 #### Sending messages
 
@@ -271,22 +292,21 @@ And run the program - notice than first messages is swallowed
 
 * Reference/handle to another actor
 * Used to send message through the `ActorSystem`
-    * We never talk directly to an actor
+    * we never talk directly to an actor
 * `ActorSystem` helps communications between actors
-    * Wraps messages in an envelope with metadata
-    * Allow location transparency  - which actor lives on another machine
+    * wraps messages in an envelope with metadata
+    * allow location transparency
+        * actor can lives on another machine
 
 ----
 
 #### Getting an `IActorRef`
 
 1. Create an actor
-
 ```fsharp
 let myFirstActor = spawn myActorSystem "myFirstActor"
                              (actorOf firstActor)
 ```
-
 2. Look up the actor via the `ActorPath` - we will see this later
 
 ----
@@ -298,11 +318,19 @@ let myFirstActor = spawn myActorSystem "myFirstActor"
      * Parent, Children, Sender
 
 ```fsharp
-mailbox.Context.Sender
-// or mailbox.Sender
+// Parent
+mailbox.Context.Parent
+// Sender
+mailbox.Context.Sender // or mailbox.Sender
+// Children
+let child = spawn mailbox.Context "myChildActor" (actorOf childActor)
+// or
+mailbox.Child // GetChildren
 ```
 
 ----
+
+<!-- .slide: data-background="#dcedc1" -->
 
 #### Adding new messages
 
@@ -315,6 +343,8 @@ type SenderMessages =
 ```
 
 ----
+
+<!-- .slide: data-background="#dcedc1" -->
 
 #### Refactoring our hello actor
 
@@ -332,6 +362,8 @@ Notice we use the context to access the `Sender` actor ref
 
 ----
 
+<!-- .slide: data-background="#dcedc1" -->
+
 #### Adding the new input actor
 
 In `Actors.fs` add the following function
@@ -347,29 +379,27 @@ let senderActor hello (mailbox: Actor<_>) _ =
 
 ----
 
+<!-- .slide: data-background="#dcedc1" -->
+
 #### Changing `Program.fs`
 
+1. We have changed the way we creation `helloActor` since it is sending messages
+2. `senderActor` is a function `ICanTell -> Actor<'M> -> 'M -> unit` which is partially applied with the `hello` IActorRef
+3. `actorSystem.WhenTerminated.Wait ()` just wait for the actor system to terminate.
 ```fsharp [1-2|3-4|6|8]
 let hello = spawn actorSystem "HelloActor"
                              (actorOf2 helloActor)
 let sender = spawn actorSystem "SenderActor"
                              (actorOf2 (senderActor hello))
-
 sender <! Start // send first message to input actor
-
 actorSystem.WhenTerminated.Wait ()
 ```
 
-1. We have changed the way we creation `helloActor` since it is sending messages
-2. `senderActor` is a function `ICanTell -> Actor<'M> -> 'M -> unit` which is partially applied with the `hello` IActorRef
-3. `actorSystem.WhenTerminated.Wait ()` just wait for the actor system to terminate.
-
 ---
 
-### Actor Hierarchies
+### Why Actor Hierarchies
 
 ![Actor Hierarchy](./img/actor-hierarchy.png) <!-- .element style="height: 300px" -->
-Why
 
 * To atomize work, turn large data quantities into manageble chunks
 * To make system reliable and ressilient
@@ -382,9 +412,11 @@ Why
 * 'Leaf' actors can then be very specialized
 * Break data down recursively until it is easy to handle
 
-E.g.
+----
 
-Twitter (uses JVM Akka) breaks down the stream of all tweets down into smaller streams - for each user.
+#### Real world example
+
+* Twitter (uses JVM Akka) breaks down the stream of all tweets down into smaller streams - for each user.
 
 ----
 
@@ -392,18 +424,19 @@ Twitter (uses JVM Akka) breaks down the stream of all tweets down into smaller s
 
 * Different levels og risk and specialization
 * Like an army
-    * Actors close to the root is doing strategy/supervision
-    * Actors closer to the leafs is handling riskier tasks
+    * actors close to the root is doing strategy / supervision
+    * actors closer to the leafs is handling riskier tasks
 * If error occur in a leaf actor, it can be e.g restarted without effecting the rest of the sytem.
 
 ----
 
 ### Supervision
 
-* Supervision allows for an actor system to isolate and recover from failures
-* Supervision ensures errors are contained in only parts of the hierarchy
-    * while all other actors is not effected
-* Every actor has a supervisor
+* Every actor we create has a supervisor
+* Allows for an actor system to isolate and recover from failures
+* Ensures errors are contained in only parts of the hierarchy
+    * while other actors is not effected
+
 
 ----
 
@@ -469,7 +502,7 @@ let b1 = spawn mailbox.context "b1" basicActor
 
 #### Supervision
 
-* Actor only supervise actors directly below
+* Actor only supervise children
 * Supervision 'starts' when something goes wrong e.g. an exception in a child actor
     * Wrapped in a `Failure` mesages
 * Parent actor handle message based on
@@ -534,6 +567,8 @@ Here the actor handles errors if they no more than 10 errors happens within a 60
 
 ---
 
+<!-- .slide: data-background="#dcedc1" -->
+
 ### Lets see this in action
 
 We extends out system so we can write to a file instead of the console.
@@ -547,6 +582,8 @@ type WriterMessages =
 ```
 
 ----
+
+<!-- .slide: data-background="#dcedc1" -->
 
 2. And change our `helloActor` to a writer actor in `Actors.fs`
 ```fsharp
@@ -565,6 +602,8 @@ let writerActor (_: Actor<WriterMessages>) msg =
 This can now handle 3 types of messages and write these to the console
 
 ----
+
+<!-- .slide: data-background="#dcedc1" -->
 
 3. The responsibility of our sender actor is now to send text from console to the correct actor
 
@@ -608,6 +647,8 @@ type SenderMessages =
 
 ----
 
+<!-- .slide: data-background="#dcedc1" -->
+
 4. We then introduce a `fileCoordinatorActor` in `Actors.fs`
 
 ```fsharp
@@ -638,6 +679,8 @@ type CoordinatorMessages =
 
 ----
 
+<!-- .slide: data-background="#dcedc1" -->
+
 5. And finally we introduce the `fileWriterActor` which actually is responsible for writing to the file.
 
 ```fsharp
@@ -667,6 +710,8 @@ type FileWriterMessage =
 ```
 
 ----
+
+<!-- .slide: data-background="#dcedc1" -->
 
 6. Lastly we change `Program.fs` so we start the new actor with a strategy
 
