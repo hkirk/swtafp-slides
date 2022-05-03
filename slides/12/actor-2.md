@@ -7,12 +7,84 @@
 
 ### Agenda
 
-* ActorSelection
 * Actor lifecycle
+* ActorSelection
 * State machines
 * Router
 
 
+---
+
+### Actor lifecycle
+
+Actor have 5 stage life cycle
+
+`Starting`, `Recieving`, `Stopping`, `Terminated` and `Restarting`
+
+![Lifecycle](./img/lifecycle.png) <!--- .element style="height: 300px" --->
+
+
+----
+
+#### Lifecycle stages
+
+* `Starting`: Actor is waking up
+* `Recieving`: Actor is accepting messages
+* `Stopping`: Actor is cleaning up its state, or saving state if restarting
+* `Terminated`: Actor is dead
+* `Restarting`: Actor is about to restart
+
+----
+
+#### Lifecycle hooks
+
+* `PreStart`: Run before receiving - used to initialize
+* `PreRestart`: Can be used to cleanup before restart
+* `PostStop`: Called when actor has stopped recieving. Cleanup - called as part of `PreRestart`
+* `PostRestart`: Called after `PreRestart` and before `PreStart`. Additional reporting/diagnosis
+
+
+----
+
+#### How to do you do this in F#
+
+Method 1)
+
+```fsharp
+let preStart = Some(fun () ->
+        Console.WriteLine "preStart Called"
+        |> ignore)
+let mySampleActor = spawnOvrd system "actor"
+             (actorOf sampleActor) <|
+                {defOvrd with PreStart = preStart}
+```
+
+----
+
+#### Only for `PreStart` and/or `PostStop`
+
+Method 2)
+
+```fsharp
+let sampleActor (mailbox:Actor<_>) =
+    // this section works like pre-start
+    printf "pre-start"  
+    // this registers a function to be called on PostStop
+    mailbox.Defer (fun () -> printf "post-stop")
+    let rec loop () =
+        actor {
+            let! msg = mailbox.Receive ()
+            // do some work
+            return! loop ()
+        }
+    loop ()
+
+let aref = spawn system "actor" (sampleActor)
+```
+
+Note: 
+
+This syntax is called a computation expresion - we will briefly touch on this in week 13/14 - otherwise the HR chapter 12.
 
 ---
 
@@ -113,78 +185,6 @@ let selection' = select "akka://user/barActor"
 selection' <! someMessage
 ```
 
----
-
-### Actor lifecycle
-
-Actor have 5 stage life cycle
-
-`Starting`, `Recieving`, `Stopping`, `Terminated` and `Restarting`
-
-![Lifecycle](./img/lifecycle.png) <!--- .element style="height: 300px" --->
-
-
-----
-
-#### Lifecycle stages
-
-* `Starting`: Actor is waking up
-* `Recieving`: Actor is accepting messages
-* `Stopping`: Actor is cleaning up its state, or saving state if restarting
-* `Terminated`: Actor is dead
-* `Restarting`: Actor is about to restart
-
-----
-
-#### Lifecycle hooks
-
-* `PreStart`: Run before receiving - used to initialize
-* `PreRestart`: Can be used to cleanup before restart
-* `PostStop`: Called when actor has stopped recieving. Cleanup - called as part of `PreRestart`
-* `PostRestart`: Called after `PreRestart` and before `PreStart`. Additional reporting/diagnosis
-
-
-----
-
-#### How to do you do this in F#
-
-Method 1)
-
-```fsharp
-let preStart = Some(fun () ->
-        Console.WriteLine "preStart Called"
-        |> ignore)
-let mySampleActor = spawnOvrd system "actor"
-             (actorOf sampleActor) <|
-                {defOvrd with PreStart = preStart}
-```
-
-----
-
-#### If only `PreStart` and/or `PostStop`
-
-Method 2)
-
-```fsharp
-let sampleActor (mailbox:Actor<_>) =
-    // this section works like pre-start
-    printf "pre-start"  
-    // this registers a function to be called on PostStop
-    mailbox.Defer (fun () -> printf "post-stop")
-    let rec loop () =
-        actor {
-            let! msg = mailbox.Receive ()
-            // do some work
-            return! loop ()
-        }
-    loop ()
-
-let aref = spawn system "actor" (sampleActor)
-```
-
-Note: 
-
-This syntax is called a computation expresion - we will briefly touch on this in week 13/14 - otherwise the HR chapter 12.
 
 ---
 
@@ -254,44 +254,29 @@ let rec authenticating () =
           -> ()
     return! authenticating ()
   }
-```
+  and unauthenticated () =
+    actor {
+      let! message = mailbox.Receive ()
 
-----
-
-##### and
-
-```fsharp
-and unauthenticated () =
-  actor {
-    let! message = mailbox.Receive ()
-
-    match message with
-    | RetryAuthentication -> return! authenticating ()
-    | IncomingMessage (roomId, msg) when roomId = chatroomId
-                -> ()
-    | OutgoingMessage (roomId, msg) when roomId = chatroomId
-                -> ()
-    return! authenticating ()
-  }
-```
-
-----
-
-##### And
-
-```fsharp
-and authenticated () =
-  actor {
-    let! message = mailbox.Receive ()
-
-    match message with
-    | IncomingMessage (roomId, msg) when roomId = chatroomId
+      match message with
+      | RetryAuthentication -> return! authenticating ()
+      | IncomingMessage (roomId, msg) when roomId = chatroomId
                   -> ()
-    | OutgoingMessage (roomId, msg) when roomId = chatroomId
+      | OutgoingMessage (roomId, msg) when roomId = chatroomId
                   -> ()
-    return! authenticated ()
-  }
+      return! authenticating ()
+    }
+  and authenticated () =
+    actor {
+      let! message = mailbox.Receive ()
 
+      match message with
+      | IncomingMessage (roomId, msg) when roomId = chatroomId
+                    -> ()
+      | OutgoingMessage (roomId, msg) when roomId = chatroomId
+                    -> ()
+      return! authenticated ()
+    }
 ```
 
 ----
@@ -325,6 +310,7 @@ let rec authenticating () =
     return! authenticating ()
   }
 ```
+
 ----
 
 #### Stashed messages
@@ -355,7 +341,7 @@ let mySampleActor = spawnOvrd system "actor"
 
 #### Pool Router
 
-* The own (supervise) their routee children
+* This owns (supervise) their routee children
 * Makes it possible to control pool size
 
 ----
