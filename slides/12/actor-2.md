@@ -284,7 +284,7 @@ let rec authenticating () =
 #### Unhandled messages
 
 * Actors has a `Stash` which is a stack like structure
-    * Calling `mailbxo.Stash ()` put current message into stack
+    * Calling `mailbox.Stash ()` put current message into stack
 * `mailbox.Unstash ()` puts the top message in front of the inbox
 * `mailbox.UnstashAll ()` unstashed all messages.
     * Preserves FIFO order
