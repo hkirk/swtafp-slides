@@ -17,7 +17,7 @@
 
 ### Problem
 
-* Users in a normal program consists of
+* A 'normal' program consists of
   1. Validation
   2. Reading data from db/api
   3. Complete functions in buisiness logic
@@ -108,11 +108,11 @@ We need a way to compose functions into a single use-case function like:
 ```fsharp
 let useCase (json:string) =
   let person = validatePerson json
-  if person.ssn = "123" then
+  if person != null then
     let ssn = db.readSSN person
-    if (ssn = "1234") then
+    if (ssn != null) then
       let bornIn = api.findMunicipality ssn
-      if bornIn = "Aarhus" then
+      if string.IsNullOrEmpty bornIn then
         let newData = createNewPerson bornIn
         db.updateMunicipality newData
       else "Municipality not found"
@@ -128,7 +128,7 @@ let useCase (json:string) =
 #### Less OOP like
 
 ```fsharp
-let useCase json =
+let useCase json: Return =
   let person = validatePerson json
   match person with
   | Some p -> 
@@ -168,10 +168,10 @@ type Return =
 Drawbacks:
 * Hard to match on
 * Will consist of all error types in our application
-* or many Return types, we need to navigate in.
+* or many `Return` types, we need to navigate in. 
 
 
-----
+---
 
 #### Simplification
 
@@ -183,7 +183,7 @@ type Result<'TError, 'TSuccess> =
   | Error of 'TError
 ```
 
----
+----
 
 ### F# built in Result
 
@@ -205,8 +205,10 @@ type Errors =
   | VerificationError
   /// ...
 
-let ourUseCase (): Result<Success, Errors> = failwith ""
-let ourUseCase2 (): Result<Success, Errors list> = failwith ""
+let ourUseCase (): Result<Success, Errors> =
+    failwith ""
+let ourUseCase2 (): Result<Success, Errors list> =
+    failwith ""
 ```
 
 ----
@@ -229,14 +231,19 @@ let result: Result<int, string> =
 
 ----
 
-#### Monad
+#### Monad to the Rescue
 
-So until next week a monad is a type with
+<iframe src="https://giphy.com/embed/l0Hlxvd5L0Qrn4JP2" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/southparkgifs-l0Hlxvd5L0Qrn4JP2">via GIPHY</a></p>
+
+----
 
 * return - wraps a data type in monand type
-  * `val return: 'A -> M<'A>`
-* bind - transform the encapsulated value by a function `'A -> M<'B>`
-  * `val bind: ('A -> M<'B>) -> M<'A> -> M<'B>`
+* bind - transform the encapsulated value by a function `'A -> M<'B>` 
+
+```fsharp
+val return: 'A -> M<'A>
+val bind: ('A -> M<'B>) -> M<'A> -> M<'B>
+```
 
 Note: 
 
@@ -251,12 +258,12 @@ There are some monadic laws also.
 ```fsharp
 type person = {email: string; name: string}
 let validatePerson input =
-  if validEmail input.email then
+  if validEmail (fst input) then
     Error "Email not valid"
-  elif validName input.name then
+  elif validName (snd input) then
     Error "Name not valid"
   else
-    Ok input
+    Ok {email = fst input; name = snd input }
 ```
 
 note:
@@ -290,14 +297,15 @@ let validName (str: string) =
 ```fsharp
 type person = {email: string; name: string}
 let validatePerson input =
-  if validEmail input.email then
+  if validEmail (fst input) then
     Error "Email not valid"
-  elif validName input.name then
+  elif validName (snd input) then
     Error "Name not valid"
   else
-    Ok input
+    Ok {email = fst input; name = snd input }
 
 let readSSN (person: Person): Result<string, SSN> = 
+  failwith ""
 ```
 
 So how to compose these functions?
@@ -316,11 +324,11 @@ So how to compose these functions?
 
 #### Composing in general
 
-* Functions like: `f1: 'A -> 'B` and `f2: 'B -> 'C` can be composed
+* Functions like: <br/>`f1: 'A -> 'B` and `f2: 'B -> 'C`<br/> can be composed
   * `f1 >> f2`
-* Or `f3: ('A*'B) -> ('C*'D)` and `f4: ('C*'D) -> ('E*'F)`
+* Or <br/>`f3: ('A*'B) -> ('C*'D)` and </br>`f4: ('C*'D) -> ('E*'F)`
   * `f3 >> f4`
-* So ordinary functions or function `Result -> Result` is easy to compose
+* So ordinary functions or function `'Input -> 'Result` is easy to compose
 
 ----
 
@@ -367,7 +375,7 @@ let bind3 func = function
   | Error e  -> Error e
 ```
 
-Both functions doing excatly the same as the above one. 
+**Note**: Both functions doing excatly the same as the above one. 
 
 Note:
 
@@ -433,7 +441,7 @@ let validate x =
 
 Data vs function oriented method - but same result.
 
-Notes:
+Note:
 
 ```fsharp
 let (>>=) twoTrackInput switchFunction = 
@@ -449,6 +457,7 @@ Alternative to the above method, we can convert
 ```fsharp
 val a: 'A -> Result<'B, 'D>
 val b: 'B -> Result<'C, 'D>
+
 // into
 
 val aAndB: 'A -> Result<'C, 'D>
@@ -482,9 +491,9 @@ let (>=>) aFun bFun =
 
 #### Comparision
 
-* `Bind` - Converts a single function into what blog calls a two-track function
+* **`Bind`** - Converts a 'switch function' into what blog calls a 'two-track function'
   * Used when combining single function
-* `SwitchComposition` - Converts two switch function into a single new switch function
+* **`SwitchComposition`** - Converts two 'switch functions' into a single new 'switch function'
   * Chaining a number of functions together
 
 ----
@@ -495,17 +504,18 @@ let (>=>) aFun bFun =
 let cannotFail input = input
 
 // Convert to 'A -> Result<'A, 'TError>
+
 let switch f input =
   f input |> Ok
 ```
 
 ----
 
-#### Functions with no output
+#### Functions with side effects
 
-E.g.
-* Save output
-* Log
+* E.g.
+  * Save output
+  * Log
 
 ```fsharp
 let log msg: unit = printfn "-- %O" msg
@@ -556,7 +566,7 @@ let doStuff (input: string) =
 
 ### Parallel validation
 
-Lets think fold :) combining two2one.
+Lets think fold :) combining pairwise
 
 ```fsharp
 let plus combineOks combineErrors switch1 switch2 x = 
