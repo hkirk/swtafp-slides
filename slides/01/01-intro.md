@@ -38,7 +38,7 @@
 
 * Lecture:
   * 4 hours per week
-  * `$\frac{1}{2}$` lecturing / videos
+  * `$\frac{1}{2}$` lecturing
   * `$\frac{1}{2}$` exercises
 * Homework before, exercises after
 
@@ -52,9 +52,9 @@
 
 ### Expectations
 
-- Prepare **and** do exercises
-- **Ask** questions and make comments - this is still a new course
-- Handin assignment on time
+- &#128187; Prepare **and** do exercises
+- &#128587; **Ask** questions and make comments
+- &#9200; Handin assignment on time
   - Check they have the correct content
 
 ----
@@ -65,7 +65,7 @@
 * Discord?
 * ?
 
-Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [https://forms.gle/KoBbCUbQ46MEFyYn6](https://forms.gle/KoBbCUbQ46MEFyYn6) <!-- .element:  class="fragment" data-fragment-index="1" -->
+Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [https://forms.gle/UMnDWFjw99s46Mwe6](https://forms.gle/UMnDWFjw99s46Mwe6) <!-- .element:  class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -112,7 +112,7 @@ Applying and composing of functions
 
 ----
 
-### In 
+### In ...
 
 * imperative programing one would
   * use statements to modify state
@@ -126,10 +126,12 @@ Applying and composing of functions
 
 ### Side effects
 
-- Changing value of varible
+- Changing value of variable
 - IO from external source
 - Throwing exception
-- -> We are going to try minimize and control side effects and controlflow - **not** removing them altogheter
+- &#9758; We are going to try minimize and control side-effects
+  - **not** removing them altogheter
+  - the same with controlflow
 
 ----
 
@@ -147,10 +149,10 @@ Applying and composing of functions
 
 ### Why FP
 
+- Makes us better OOP developers
 - Help us develop more modular code
 - Makes writing testable code easy
 - Can help us write 'efficient' code
-- Makes us better OOP developers
 - Less code -> fewer bugs
 - Fairly simple and clean syntax
 
@@ -184,10 +186,11 @@ Note:
 
 - forces you to think in a different way
 - strong type system
-- can do OO like programing in F#
+- easy to learn syntax
 - has access to .NET standard library
-- fully operational on Windows, Linux and Mac via .Net Core
+- works with .Net
 - builds to .Net IL
+- can do OO like programing in F#
 
 ----
 
@@ -196,9 +199,9 @@ Note:
 * 'Normal programs'
 * GUI
 * Scripting
-* Web backend
-* Web frontend
-  * Can even be compiled to JS
+* Web 
+  * backend
+  * can even be compiled to JS
 * Deployment to Azure
 
 ----
@@ -263,7 +266,7 @@ let main argv =
 ### Modules
 
 - Modules are used to group code, like types, functions and values
-  - Keeps related code etc. together
+  - Keeps related code together
   - If no module is declared a module with the same name as the file exists
   - Two types:
     - Top level
@@ -344,27 +347,32 @@ Language intro
 
 ### Numeric types
 
-- int - 32 bit integers (1, -10021, 21, 42, ...)
-- float - 64 bit float (1.0, -10021.0, -0.2, -1.2001, 3.2e2, ...)
-- int64 - 64 bit integer (1L, -10021L, 42L)
-- single - 32 bit float (1.0f, 3.14159f, 42.2e3, 000)
+- '`int`' - 32 bit integers (1, -10021, 21, 42, ...)
+- '`float`' - 64 bit float (1.0, -10021.0, -0.2, -1.2001, 3.2e2, ...)
+- '`int64`' - 64 bit integer (1L, -10021L, 42L)
+- '`single`' - 32 bit float (1.0f, 3.14159f, 42.2e3, 000)
  
 
 ----
 
 ### Operators
 - `+`, `-`, `*`, `/`, `%` on all numeric types
-  - Operands must have same type (Not '`2 + 3.0`')
-- `**` on floats
-- Bitwise all int
-- Conversion with type name
+  - Operands must have same type
+  ```fsharp
+  // Not
+  2 + 3.0
+  //  The type 'float' does not match the type 'int'
+  ```
+- `**` on '`floats`'
+- Bitwise on int
+- Conversion with function named after type
   - `int 3.0 -> 3`
 
 ----
 
 ### Boolean values
 
-- Type `bool` has values `true` and `false`
+- Type '`bool`' has values `true` and `false`
 - Operators `&&`, `||`, and `not`
 - Operators that return boolean
   - `=`, `<`, `<=`, `=>`, `>`, `<>`
@@ -378,27 +386,31 @@ Language intro
 if x > 0 then 1 else 0
 ```
 - Note: the two branches must have same type
-  - Not
   ```fsharp
+  // not
   if x > 0 then 1 else 'a'
+  // All branches of an 'if' expression must return
+  // values implicitly convertible to the type of
+  // the first branch, which here is 'int'. This
+  // branch returns a value of type 'char'.
   ```
 
 ----
 
 ### Char
 
-- Type `char` 
+- Type '`char`' 
 - Syntax `'c', 'a', 'b', '\t', '\n'`
 
 ----
 
 ### Strings:
-- Type `string`
+- Type '`string`'
 - Can represent `string` as `char list` (more on lists later)
 - Operators `+`, `[i]`, `[i..j]`, `[i..]`, `[..i]`
   * ~~`.[i]`, `.[i..j]`, `.[i..]`, `.[..i]`~~
 - Functional vs 'dot' operator
-  - `String.Length "Hello f#"`
+  - `String.length "Hello f#"`
   - `"Hello F#".Length`
 - Concat like in C#
   - `let result = "Hello" + " World!"`
@@ -409,23 +421,25 @@ if x > 0 then 1 else 0
 
 - Syntax without parentheses around arguments
   - `sqrt 10.0`
-  - `String.Length "Hello F#"`
+  - `String.length "Hello F#"`
 - Function application bind hardest
   - `sqrt 10.0 + 2.0` => `(sqrt 10.0) + 2.0`
 
 ----
 
-### Declaring functions
+### Binding values
 
-```fsharp
-let max x y = if x > y then x else y
-// val max : x:'a -> y:'a -> 'a when 'a : comparison
-```
-- Can also declare variables
-
+- variables
 ```fsharp
 let phi = 3.14159
 // val phi : float = 3.14159
+```
+- functions 
+```fsharp
+let identity a = a
+// val identity: a: 'a -> 'a
+let max x y = if x > y then x else y
+// val max : x:'a -> y:'a -> 'a when 'a : comparison
 ```
 
 ----
@@ -447,12 +461,15 @@ fun (a: int) (b: int) -> a + b
 ### Type declaration
 
 - Not forced to write types to expression `max` or `phi`
-  - F\# has a really strong *type inference*
+  - F\# has strong *type inference*
 - Possible to explicit define types
 
 ```fsharp
 let maxInt (x: int) y = if x > y then x else y
 // val maxInt : x:int -> y:int -> int`
+// let maxInt (x: int) (y:int) = if x > y then x else y
+// let maxInt (x: int) (y:int) : int =
+//       if x > y then x else y
 ```
 
 ----
@@ -462,8 +479,8 @@ let maxInt (x: int) y = if x > y then x else y
 - Factorial definition: 
   - `0! = 1`
   - `n! = n * ((n-1)!)` for `n > 0`
-- In F\#?
-   - Keyword `rec`
+- In F\#
+   - Keyword '`rec`'
 
 ```fsharp
 let rec factorial n =
