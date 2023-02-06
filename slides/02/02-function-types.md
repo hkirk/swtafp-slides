@@ -76,7 +76,7 @@ let multiplyFloat (a: float) (b:float) : float = a*b
 
 # Inner functions
 
-```fsharp
+```fsharp[2-5]
 let generateList max =
   let rec generateList i max =
     if (i < max) 
@@ -92,9 +92,9 @@ let generateList max =
 * Functions in F# are first class citizen
   * functions can be input and output from functions
 * First-order functions
-  * Takes values as paramters and/or returns values
+  * *values* as paramters and/or returns values
 * Higher order functions
-  * Takes functions as parameters and/or return functions
+  * *functions* as parameters and/or return functions
 
 Note:
 C#, Java, etc also have functions as first class citizen
@@ -272,11 +272,11 @@ type [accessibility-modifier] typename =
 To create values of Course type
 
 ```fsharp
-let swafp = {name = "SWAF"; semester = "F21"; 
-             students = []; teacher = 33 }
+let swafp = {name = "SWAF"; semester = "F23"; 
+             students = []; teacher = 31 }
 // val swafp : Course = { name = "SWAF"
-//      semester = "F21"  students = []
-//                        teacher = 33 }
+//      semester = "F23"  students = []
+//                        teacher = 31 }
 ```
 
 **Note**: type is inferred by type system
@@ -343,7 +343,7 @@ let alphabet = ['a'; 'b'; 'c'; 'd']
 let x::xs = alphabet // matches a list
 ```
 
-fails on empty list
+*Note*: fails on empty list
 
 ```fsharp
 > match alphabet with                        
@@ -351,7 +351,7 @@ fails on empty list
 -   | x::xs -> "first element " + (string x);;
 // val it : string = "first element a"
 ```
-<!-- .element: class="fragment" -->
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -401,6 +401,9 @@ This is not efficient because of the way `@` is works
 [x0;x1;x2;x3] @ ys = x0 :: ([x1;x2;x3] @ ys)
 ```
 
+Note:
+
+Point - use std - since this is optimized
 
 ----
 
@@ -447,12 +450,12 @@ List.map (fun element -> string element) list
 ```fsharp
 let tempSF = [59;61;62;64;63;67;66;67;70;70;64;64;58;64]
 
-let tempSFCelcisu = List.map
+let tempSFCelcius = List.map
   (fun fahrenheit -> ((float fahrenheit) - 32.0) * (5.0/9.0))
   tempSF
 let tempSFCelciusRounded =
   List.map (fun celcius -> Math.Round(celcius))
-  tempSFCelcisu
+  tempSFCelcius
 //val it : float list =
 //  [15.0; 16.0; 17.0; 18.0; 17.0; 19.0; 19.0; 19.0; 
 //   21.0; 21.0; 18.0; 18.0; 14.0; 18.0]
@@ -462,12 +465,12 @@ let tempSFCelciusRounded =
 
 ### map works on many types
 
-* Generally speaking maps applies an function `f` to a wrapped element(s)
-* Given a 'normal' function `f: 'a -> 'b`
-    * map applies this to zero, one or many wrapped elements e.g.
-    * `'a list`, `Set<'a>`, `Map<'a>`
-    * `'a option`
-    * etc.
+* Generally speaking maps applies a function `f` to wrapped element(s)
+* Given a function `f: 'a -> 'b`
+    * map applies this to all wrapped elements e.g.
+      * `'a list`, `Set<'a>`, `Map<'a>`
+      * `'a option`
+      * etc.
 * Map is always 
 `$ O(n) $`
 
@@ -478,13 +481,14 @@ let tempSFCelciusRounded =
 Definition:
 
 ```
-List.fold: ('a -> 'b -> 'a) -> 'a -> 'b list -> 'a
+List.fold: ('State -> 'T -> 'State) -> 
+                  'State -> 'T list -> 'State
 ```
 
 Accumulates a list given a initial value and a function that takes a list element and a accumulative value.
 
-* `('a -> 'b -> 'a)` function that accumulate a list element and a partial result
-* `'a` an initial value
+* `('State -> 'T -> 'State)` function that accumulate a list element and a partial result
+* `'State` an initial value
 
 ----
 
@@ -518,8 +522,7 @@ Insertion sort defined by List.fold
 ```fsharp
 List.fold (fun acc i ->
   let (f, b) = span (fun e -> e < i) acc
-  f @ (i :: b)
-) [] [12;54;2;1;15;6;21;1;5;5;6]
+  f @ (i :: b)) [] [12;54;2;1;15;6;21;1;5;5;6]
 // val it : int list = [1; 1; 2; 5; 5; 6; 6; 12; 15; 21; 54]
 ```
 
@@ -541,7 +544,7 @@ let span p list =
 ### fold in general
 
 * Fold like map is defined on many types
-     * Sets, Maps, and many more
+     * `Set`, `Map`, etc.
 * Fold is tail recursive - stack secure
 * Fold is specific in the direction it calculates
 * Fold is always `$ O(n) $`
@@ -553,7 +556,8 @@ let span p list =
 Definition
 
 ```
-foldBack: ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+foldBack: ('T -> 'State -> 'State) ->
+                   'T list -> 'State -> 'State
 ```
 
 * Accumulate in the opposite order from `fold`
@@ -641,7 +645,7 @@ Stopped due to error
 * __Only expressions__ 
   * Avoid side effects
 * __No explicit recursion__ No `let rec`
-  * Learning HoF like map
+  * Learning HoF like map, fold, etc
 * __Generic building blocks__ e.g. use collections instead of list
   * easier to write resuable code
 
@@ -651,9 +655,9 @@ Stopped due to error
 
 * __Side effects at boundaries__ core business logic should have no side effects
   * Control where side effects happens
-* __Only infinite sequences__[2] only depend on infinite sequnces, no lists
+* __Only infinite sequences__ only depend on infinite sequnces ('seq'), no lists
   * Could increase performance because of the lazy properties
-* __One argument functions__[1] Each function should have a single argument - not depending on currying
+* __One argument functions__[1] Every function should have a single argument - not depending on currying
 
 
 ----
@@ -662,11 +666,7 @@ Stopped due to error
 
 [1] Hard
 
-[2] No taught in details here but look at chapter 11 
-
 
 ---
 
 ## References
-
-TODO: insert ref to The Rules
