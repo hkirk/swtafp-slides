@@ -3,9 +3,6 @@
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
-notes:
-TODO: Make it visible how to use the types e.g. in the cash-register example. Since they is not strictly needed.
-
 ----
 
 ## Agenda
@@ -57,6 +54,8 @@ let greater x y = if (x > y) then "greater" else "smaller"
 type ProductName = string
 type ParseProductName = ProductName -> Option<ProductName>
 ```
+
+* Types are not preserved in .NET Framework MSIL code
 
 ----
 
@@ -233,7 +232,7 @@ type Contact = {
 #### Single choice types
 
 * Two strings are not interchangeable
-* Create Email in on places
+* Create Email type - private constructor
 
 ```fsharp [1-4|8-12]
 type Email = private | Email of string
@@ -293,7 +292,7 @@ type EmailInfo = {
 
 ----
 
-### Constraint 2
+### Constraint cont.
 
 ```fsharp
 type VerifiedEmail = VerifiedEmail of Email
@@ -372,6 +371,8 @@ What about if there should be a secondary contact address?
 
 ### Domain
 
+* Design from bottom and up
+
 ```fsharp [1-6|9-12 ]
 // Register
 type Code = string
@@ -399,10 +400,12 @@ type Bill = Info list * Price
 
 // Functions
 type findArticle = Code -> Register -> (Name*Price)
-type makeBill = Register -> Purchase-> Bill
+type makeBill = Register -> Purchase -> Bill
 ```
 
-Note: The more general type actually given by F#
+note: 
+
+* The more general type actually given by F#
 
 ---
 
