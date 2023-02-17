@@ -75,16 +75,16 @@ We could also use .fsi files to declare functions
 
 ```fsharp
 type empty<'a>    = unit -> BST<'a>
-type insert<'a>   = 'a -> BST<'a> -> BST<'a>
-type remove<'a>   = 'a -> BST<'a> -> BST<'a>
-type contains<'a> = 'a -> BST<'a> -> bool
+type insert<'a>   = 'a   -> BST<'a> -> BST<'a>
+type remove<'a>   = 'a   -> BST<'a> -> BST<'a>
+type contains<'a> = 'a   -> BST<'a> -> bool
 ```
 
 Could be extended with
-* Map
-* Filter
-* Fold
-* etc
+* `map`
+* `filter`
+* `fold`
+* etc.
 
 ----
 
@@ -122,7 +122,15 @@ Could be extended with
 
 ### Step 3
 
-![BST](./img/insert3.png "Binary search tree") <!-- .element style="height: 500px;" -->
+![BST](./img/insert3.png "Binary search tree") <!-- .element style="height: 500px; float: right" -->
+
+Notice:
+
+* Only copy a small part</br>of the tree
+    * How much?
+* Does it effect run-time</br> for `insert`
+
+
 
 
 ---
@@ -147,13 +155,13 @@ Red-Black tree: [OKASAKI, C. (1999). Red-black trees in a functional setting. Jo
 ### Set Creations
 
 ```
-set [1;2;3;4;5]
+let s1 = set [1;2;3;4;5]
 
-Set.ofList [1;2;3;4;5]
+let s2 = Set.ofList [1;2;3;4;5]
 
-Set.add 6 (set [1;2;3;4;5])
+let s1' = Set.add 6 s1
 
-Set.remove 3 (set [1;2;3;4;5])
+let s1'' = Set.remove 3 s1
 ```
 
 ----
@@ -203,7 +211,7 @@ Set.difference first third
 * Look per key
 * Immutable
 * Implemented using `BBT<'a>`
-* As Map requires ordering is defined for key type
+* As Set, Map requires ordering is defined for key type
 
 Note:
 BBT: balanced binary three
@@ -217,13 +225,14 @@ Creation is straightforward
 ```fsharp
 let m1 = Map.empty
 // From list
-let m2 = Map.ofList [("k1", 1); ("k2", 2); ("k3", 3), ("k3", 4)]
-// val it : Map<string,int> =
+let m2 = Map.ofList [("k1", 1); ("k2", 2); ("k3", 3),
+                     ("k3", 4)]
+// val m2 : Map<string,int> =
 //     map [("k1", 1); ("k2", 2); ("k3", 4)]
 
-Map.add "k5" 5 it
+let m2' = Map.add "k5" 5 m2
 
-Map.remove "k1" it
+let m2'' = Map.remove "k1" m2
 ```
 
 ----
@@ -332,7 +341,7 @@ let cachedNat = Seq.cache nat
 ### Amortized bounds
 
 * An extension to the Big-O notation from DOA
-* Used to analysis avarage run time
+* Used to analysis average run time
     * Usually used when some operations are fast and other are slow
 
 * C# List is an example, its worst case bounds
@@ -365,12 +374,12 @@ module Queue
 
 type Queue<'a> = 'a list * 'a list
 
-val empty: Queue<'a>
+val empty:   Queue<'a>
 val isEmpty: Queue<'a> -> bool
 
-val cons: 'a -> Queue<'a> -> Queue<'a>
-val head: Queue<'a> -> 'a
-val tail: Queue<'a> -> Queue<'a>
+val cons:    'a -> Queue<'a> -> Queue<'a>
+val head:    Queue<'a> -> 'a
+val tail:    Queue<'a> -> Queue<'a>
 ```
 
 * Could be done with a single list <!-- .element: class="fragment" -->
@@ -396,19 +405,20 @@ let rec tail = function
 
 ### Using lazy evaluation
 
-To optimize our queue C. Okasaki proposes to use lazy lists (Seq in F#)
+* To optimize our queue C. Okasaki proposes to use lazy lists.
+    * Almost seq in F#
 
 ```fsharp
 module LazyQueue
 
 type LazyQueue<'a> = seq<'a> * seq<'a>
 
-val empty: LazyQueue<'a>
+val empty:   LazyQueue<'a>
 val isEmpty: LazyQueue<'a> -> bool
 
-val cons: 'a -> LazyQueue<'a> -> LazyQueue<'a>
-val head: LazyQueue<'a> -> 'a
-val tail: LazyQueue<'a> -> LazyQueue<'a>
+val cons:    'a -> LazyQueue<'a> -> LazyQueue<'a>
+val head:    LazyQueue<'a> -> 'a
+val tail:    LazyQueue<'a> -> LazyQueue<'a>
 ```
 <!-- .element: class="fragment" -->
 
