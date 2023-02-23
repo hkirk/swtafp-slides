@@ -92,8 +92,8 @@ Could be extended with
 
 * **if** `Empty` return false
 * **else**
-    * **if** x < n then `look in left subtree`
-    * **if** x > n then `look in right subtree`
+    * **if** x < n **then** `contains left_subtree`
+    * **else if** x > n **then** `contains right_subtree`
     * **else** return true
 
 ----
@@ -137,6 +137,7 @@ Notice:
 
 ## `Set<'a>`
 
+* From .NET F# lib
 * Finite
 * Only elements where `ordering` is defined
 * Elements are unique
@@ -204,8 +205,9 @@ Set.difference first third
 
 ---
 
-## `Maps<'a>`
+## `Map<'a>`
 
+* From .NET F# lib
 * Key / value pair
 * Key is unique
 * Look per key
@@ -321,8 +323,8 @@ Seq.item 5 nat
 // val it: int 5
 ```
 
-* `Seq.item 5 nat` evaluates the 5th element, but not 0-4
-* Calling `Seq.item 5 nat` will evaluate the 5 elements again
+* `Seq.item 5 nat` evaluates the 5th element, but not elements `0-4` and `6->`
+* Calling `Seq.item 5 nat` will evaluate the 5th element again
 
 ----
 
@@ -353,11 +355,11 @@ let cachedNat = Seq.cache nat
 
 ### C# List analysis over time
 
-* `$ \rightarrow $` `n` insertions is `$ O(n^2) $`
+* `$ \rightarrow $` `n` insertions are `$ O(n^2) $` worst case
 * You can make the amortized analysis that shows <!-- .element: class="fragment"  data-fragment-index="1" -->
-    * `n` insertions is `$ O(2n) $` <!-- .element: class="fragment"  data-fragment-index="1" -->
-    * So amortized bounds is `$ O(1) $` for all operations <!-- .element: class="fragment"  data-fragment-index="1" -->
-* Se references for detailed analysis<!-- .element: class="fragment"  data-fragment-index="1" -->
+    * `n` insertions are `$ O(2n) $` <!-- .element: class="fragment"  data-fragment-index="1" -->
+    * So amortized bounds are `$ O(1) $` for all operations <!-- .element: class="fragment"  data-fragment-index="1" -->
+* See references for detailed analysis<!-- .element: class="fragment"  data-fragment-index="1" -->
 
 ---
 
