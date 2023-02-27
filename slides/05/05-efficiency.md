@@ -7,11 +7,76 @@
 
 ### Agenda
 
+* Active Patterns
 * Stack/Heap
 * Big-O
 * Recursion
   * Tail recursion
 * Optimization
+
+
+---
+
+### Active patterns
+
+* Hide complex code in type construction
+
+```fsharp
+let (|FileExtension|) (s: string) = 
+    System.IO.Path.GetExtension s
+// val (|FileExtension|) : s: string -> string
+
+
+let (FileExtension ext) = "Some_file.txt"
+// val ext: string = ".txt"
+// or
+let a = ["asdf.txt"; "afs.ods"] |>   
+        List.map (fun (FileExtension s) -> s)
+// val a: string list = [".txt"; ".ods"]
+```
+
+----
+
+#### Another example
+
+```fsharp
+let (|Even|Odd|) (num: int) =
+    if (num % 2 = 0) then      
+        Even                     
+    else Odd
+// val (|Even|Odd|) : num: int -> Choice<unit,unit>
+
+match 3 with 
+| Even -> printfn "3 is even"
+| Odd -> printfn "3 is odd"
+// outputs: 3 is odd
+```
+
+----
+
+#### Partial active pattern
+
+```fsharp
+let (|IsEven|_|) (num: int) =
+    if (num % 2 = 0) then
+        Some num
+    else None
+// val (|IsEven|_|) : num: int -> int option
+let (|IsOdd|_|) (num: int) =
+    if (not (num % 2 = 0)) then
+          Some num
+    else None
+// val (|IsOdd|_|) : num: int -> int option
+
+match 3 with
+| IsEven v -> printfn $"{v} is even"
+| IsOdd v -> printfn $"{v} is odd"
+
+//  match 3 with
+//  ------^
+//  warning FS0025: Incomplete pattern matches on this expression
+// outputs: 3 is odd
+```
 
 ---
 
