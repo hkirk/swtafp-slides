@@ -27,6 +27,7 @@
 * Holds primitive values
     * Some objects
 * Reference for objects on Heap
+* Stackframes
 
 ----
 
@@ -83,7 +84,7 @@ let rec pow = function
     | (s: string, n) -> s + pow (s, n-1)
 ```
 
-After the recusive call there are still work in this function - add s to result
+After the recusive call there are still work todo in this function - add '`s`' to result
 
 ----
 
@@ -153,7 +154,7 @@ val it : int = 1409286144
 
 * Evaluation<br/> `tr checker cont last (cont value)`<br/> will not build large expressions
     * `cont value`<br/> will be evaluated at each step
-* This can be $O(n)$ - in the fact example
+* This are $O(n)$ - in the fact example
 * The same evironment/stack frame can be reused - So $ O(1)$ space consumption
 
 ----
@@ -183,8 +184,8 @@ let rec bigListC n c =
         c((n-1)::res)
     )
 
-bigListC 3 (fun a -> a);;
-// val it : int list = [1; 1; 1]
+bigListC 3 (fun a -> a)
+// val it : int list = [2; 1; 0]
 ```
 
 ----
@@ -193,7 +194,7 @@ bigListC 3 (fun a -> a);;
 
 * Accumulation is much faster than continuation based
     * Even more visible compared to iterative methods
-* Continuations can handle deeper recursion
+* Continuations will work in all places 
 
 
 ----
@@ -227,7 +228,7 @@ let rec countC t c =
 ```
 
 * So continuations based versions also works with multiple recursion
-* One of the continuations can be replaced with an accumulative version
+* **Optimization**: One of the continuations can be replaced with an accumulative version
 
 ---
 
@@ -313,7 +314,7 @@ type B = {X: int; Y: int}
 
 ```fsharp
 type A = {X: int; Y: int}
-type B = {X: int; Y: int; Y; int}
+type B = {X: int; Y: int; Y: int}
 ```
 
 * Here `B` is padded with 4 bytes extra, from the .NET Allocator
@@ -345,7 +346,7 @@ Records, unions, Lists etc etc.
 * OS pointer sizes 32/64b
 * Inlining functions
 
-F# can be very performant - used by stock companies because of this and its safety. But it requires work and knowledge about .Net Il, Hardware and F# of course.
+F# can be very [performant](https://www.youtube.com/@FastFSharp) - used by stock companies because of this and its safety. But it requires work and knowledge about .Net Il, Hardware and F# of course.
 
 ---
 
