@@ -15,7 +15,7 @@
 
 ---
 
-## Finite trees / recursive data types
+## Finite trees
 
 * Recursive data types
 * Avoid infinityly recursive data types
@@ -29,13 +29,15 @@
 
 ## Chinese boxes
 
-or Rusian dolls
+or Matryoshka  dolls
 
-!["Rusian Dolls"](./img/dolls.jpg "Rusian dolls") <!-- .element style="width: 400px;" -->
+!["Matryoshka  Dolls"](./img/dolls.jpg "Matryoshka  dolls") <!-- .element style="width: 400px;" -->
 
 ----
 
 ### Definition
+
+Colored Boxes (CBox)
 
 1. Nothing is a CBox
 2. A CBox contains a number, color and a CBox
@@ -70,14 +72,16 @@ let tree =
 ### Working with CBox
 
 ```fsharp
-let rec count = function
+let rec size = function
     | Nothing -> 0
-    | Cube(v, c, box) -> 1 + count box
+    | Cube(v, c, box) -> 1 + size box
 ```
 
 ----
 
-### Representation as list
+### Alternative representation
+
+As a `list` or without `Nothing`
 
 ```fsharp
 type CBox1 = (float*Colour) list
@@ -254,7 +258,7 @@ let resistance tree =
 * From Greek and means Down+Shape
 * Used to collapse a recursive structure to a new value
     * think Fold/FoldBack from List
-* All functions on recusive datastructure can be defined by this technic 
+* All functions on recusive datastructure can be defined by this technique 
 
 ----
 
@@ -369,11 +373,11 @@ let handledComp fComp tree =
 
 ### Mapping
 
-So remember than catamorphisms collapses a recursive data structure to a new value.
+So remember that catamorphisms collapses a recursive data structure to a new value.
 
 * Can be a primitive value as `float`
 * Can be a new recursive data structure
-     * Easier if they are similar in shape
+     * In this case - easier if shape are similar
 
 ```fsharp
 type CircuitDescription =
@@ -426,13 +430,13 @@ let fComp comp = Comp comp
 
 ---
 
-### Rules for catamorphism
+### Creating a Catamorphism
 
 1. Create a function to handle each case in the data structure
 2. For non-recursive cases pass the function all the data associated with this type
 3. For recursive data
     * First call the catamorphism recursively on the nested value
-    * Then pass then function the results from the catamorphism
+    * Then pass thet function the result from the recursive call
 
 
 ----
