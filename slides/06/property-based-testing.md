@@ -129,6 +129,20 @@ let ```test multiply of three``` (x: MultiplyOfOnly3) =
 ```
 <!-- .element: class="fragment" -->
 
+----
+
+### Generator
+
+```fsharp
+[<Property>]
+let ``Only divisible by three`` () =
+    Arb.generate<int32>
+    |> Gen.filter (fun i -> i % 3 = 0 && not (i % 5 = 0))
+    |> Arb.fromGen
+    |> Prop.forAll <| fun i ->
+        FizzBuzz.fizzBuzz i = "Fizz"
+```
+
 ---
 
 ## FsCheck
@@ -142,7 +156,7 @@ let ```test multiply of three``` (x: MultiplyOfOnly3) =
 
 ### Testing `int list`
 
-In xUnit a tests looks like this
+With xUnit a tests looks like this
 
 ```fsharp [4|5-6|7]
 open FsCheck
@@ -366,7 +380,7 @@ note:
 
 ### Smaller problems
 
-![Induction](./img/property_idempotence.png "Induction") <!-- .element: style="height: 300px" -->
+![Induction](./img/property_induction.png "Induction") <!-- .element: style="height: 300px" -->
 
 
 note:
@@ -412,7 +426,7 @@ This means
 
 * PBT provides better description of requirements
 * You write fewer test cases
-    * but better security
+    * but get better security
 * PBT forces you to consider what to implement
 * PBT forces clean design
 
