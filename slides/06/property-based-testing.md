@@ -220,7 +220,7 @@ Generic types not implemented due to the many constraints that can exists for th
 ### Ways to use Properties
 
 * Conditional Properties
-    * form: `<condition> ===> <property>`
+    * form: `<condition> ==> <property>`
 * Lazy properties
     * `lazy` keyword - otherwise F# is eager evaluated
 * Exceptions
