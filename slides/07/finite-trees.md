@@ -7,7 +7,7 @@
 
 ### Agenda
 
-* Finite treees
+* Finite trees
 * Examples
     * Chinese boxes
     * Electronic Circuits
@@ -18,8 +18,8 @@
 ## Finite trees
 
 * Recursive data types
-* Avoid infinityly recursive data types
-* Found everywhere in the real world
+* Avoid infinitely recursive data types
+* Found everywhere in the 'real world'
     * JSON
     * File system
     * Parsers / Compilers
@@ -212,9 +212,9 @@ let rec circuitRec fComp fSer fPar = function
              (circuitRec fComp fSer fPar c2)
 // val circuitRec :
 //  fComp:('a -> 'b) ->
-//  fSer:('b -> 'b -> 'b) ->
-//  fPar:('b -> 'b -> 'b) ->
-//      tree:Circuit<'a> -> 'b
+//  fSer: ('b -> 'b -> 'b) ->
+//  fPar: ('b -> 'b -> 'b) ->
+//        tree:Circuit<'a> -> 'b
 ```
 
 ----
@@ -230,9 +230,9 @@ let rec circuitRec fComp fSer fPar tree =
     | Par (p1, p2) -> fPar (recursive p1, recursive p2)
 //val circuitRec :
 //  fComp:('a -> 'b) ->
-//  fSer:('b * 'b -> 'b) ->
-//  fPar:('b * 'b -> 'b) ->
-//     tree:Circuit<'a> -> 'b
+//  fSer: ('b * 'b -> 'b) ->
+//  fPar: ('b * 'b -> 'b) ->
+//        tree:Circuit<'a> -> 'b
 ```
 
 Note: 
@@ -273,9 +273,9 @@ let rec circuitRec fComp fSer fPar tree =
     | Par (p1, p2) -> fPar (recursive p1, recursive p2)
 //val circuitRec :
 //  fComp:('a -> 'b) ->
-//  fSer:('b * 'b -> 'b) ->
-//  fPar:('b * 'b -> 'b) ->
-//     tree:Circuit<'a> -> 'b
+//  fSer: ('b * 'b -> 'b) ->
+//  fPar: ('b * 'b -> 'b) ->
+//        tree:Circuit<'a> -> 'b
 ```
 
 Notice the common return type `'b`
@@ -308,7 +308,9 @@ So why should you use catamorphisms in pratice
 
 * Recursive datastructure can be quite complex
     * Only have recusive logic in one place
-    * Seperate the 'how' and 'what' (Sounds like SRP)
+    * Seperate the 'how' and 'what'
+        * FP in a nutshell
+        * Sounds like SRP
 
 note:
 
@@ -319,7 +321,7 @@ Seperations of concern
 
 ### Encapsulation
 
-* if Clients uses circuit and not pattern matching we can
+* if Clients uses circuit and do not pattern match we can
     * rename cases
     * add cases e.g.
 
