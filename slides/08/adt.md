@@ -76,9 +76,11 @@ let rec priceAcc costSoFar = function
     | Item i -> costSoFar + i
     | Box b -> priceAcc (costSoFar+1.0) b
 
-createNestedBoxes 1000000000 |> priceAcc 0.0
-// Real: 00:02:27.801, CPU: 00:02:19.659, GC gen0: 3834, gen1: 1318, gen2: 6
-// val it : float = 1000000001.0
+let data = createNestedBoxes 1000000000
+
+data |> priceAcc 0.0
+// Real: 00:00:53.702, CPU: 00:00:52.521, GC gen0: 0, gen1: 0, gen2: 0
+// val it: float = 1000000001.0
 ```
 <!-- .element: class="fragment" -->
 
@@ -123,14 +125,15 @@ Notice changes in method signature
 
 ```fsharp
 val foldBoxes :
- fItem:('a -> float -> 'b) ->
- fBox:('a -> 'a) ->
- acc:'a -> boxes:Boxes -> 'b
+  fItem: ('a -> float -> 'b) ->
+  fBox: ('a -> 'a) ->
+  acc: 'a ->
+  boxes: Boxes -> 'b
 // vs
 val cataBoxes : 
-  fItem:(float -> 'a) ->
-  fBox:('a -> 'a) ->
-  boxes:Boxes -> 'a
+  fItem: (float -> 'a) ->
+  fBox: ('a -> 'a) ->
+  boxes: Boxes -> 'a
 ```
 
 ----
@@ -143,9 +146,9 @@ let priceWithFold boxes =
     let fBox costSoFar = costSoFar + 1.0
     foldBoxes fItem fBox 0.0 boxes
 
-createNestedBoxes 100000000 |> priceWithFold
-// Real: 00:00:13.667, CPU: 00:00:14.414, GC gen0: 896, gen1: 135, gen2: 4
-// val it : float = 100000001.0
+data |> priceWithFold
+// Real: 00:02:43.443, CPU: 00:02:53.139, GC gen0: 5102, gen1: 21, gen2: 1
+// val it: float = 1000000001.0
 ```
 
 ----
@@ -259,6 +262,35 @@ let descriptionWithFoldBack boxes =
 descriptionWithFoldBack (Wrapped (Box (Item 1.0)))
 // val it : string = "An item 1 in a box wrapped in paper"
 ```
+
+----
+
+#### Cost of continuations
+
+```fsharp
+let priceWithFoldBack boxes =
+    let fItem r = r
+    let fBox costSoFar = costSoFar + 1.0
+
+    foldBackBoxes fItem fBox (fun t -> t) boxes
+
+data |> 
+// Real: 00:15:34.643, CPU: 00:13:52.932, GC gen0: 10206, gen1: 2695, gen2: 3
+// val it: float = 1000000001.0
+```
+
+note:
+Small rewrite of above foldback
+
+let rec foldBackBoxes fItem fBox gen boxes = 
+    let recursive = foldBackBoxes fItem fBox
+    match boxes with
+    | Item x    -> gen (fItem x)
+    | Box b     -> 
+        let newGen i =
+            let newAcc = fBox i
+            gen newAcc
+        recursive newGen b
 
 ----
 
