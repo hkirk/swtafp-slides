@@ -58,6 +58,11 @@ public void GenerateInvoice(Order order, Customer customer)
     * requires us to compare files
     * But what about date and invoice number?
 
+Note:
+
+* Invoice number is generated (or gotten from a DB)
+* Date is 'read'
+
 ----
 
 #### Handling internalization
@@ -90,7 +95,7 @@ So each call to `GeneateInvoice` increments invoice number :(
 
 * IO is from Haskell
 * Used to force inpure code away from pure code
-* Baked in to type system
+* Baked in to Haskell type system
 
 ----
 
@@ -108,7 +113,7 @@ So IO would be all the places we have side-effects aka. Infrastructure
 
 #### Return and Bind
 
-Two important methods are '`return`' and '`bind`'
+Two important methods for Monads are '`return`' and '`bind`'
 
 ```fsharp
 val return: 'a -> M<'a>
@@ -175,7 +180,7 @@ let reserveTable =
 
 ----
 
-### Closer look at `Capacity.Check`
+### Closer look at `Capacity.check`
 
 ```fsharp
 type Error = CapacityExceeded
@@ -199,7 +204,7 @@ let check capacity getReservedSeats reservation =
 ```fsharp
 let getReservedSeatsFromDb (connStr: string)
                            (reservations: Reservation): int = 
-    failwith "Not implemented"
+    // TODO: load reserved seats from database
 
 let getReservedSeats = getReservedSeatsFromDb connStr
 // val getReservedSeats : (Reservation -> int)
@@ -236,10 +241,9 @@ So now calling '`check`' is a bit more tedious
 let connStr = ".."
 let reserveTable =
   Validate.reservation
-    >> map  (fun r -> (getReservedSeatsFromDb connStr r, r))
+    >> map  (getReservedSeatsFromDb connStr r, r)
     >> bind (fun (i, r) -> Capacity.check 10 i r)
     >> map  (saveReservation connStr)
-  //>> map (fun r -> saveReservation connStr r)
 ```
 
 Note:
