@@ -1,3 +1,8 @@
+<!-- .slide: data-background-image="./img/i8kiw31h.jpeg" -->
+
+---
+
+
 <!-- .slide: data-background="#003d73" -->
 ## Functional Architecture
 
