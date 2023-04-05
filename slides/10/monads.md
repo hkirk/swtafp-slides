@@ -19,15 +19,15 @@
 
 ```fsharp
 let add (a: int option) (b: int option) (c: int option) =
-        match a with
+    match a with
+    | None -> None
+    | Some aa -> 
+        match b with
         | None -> None
-        | Some aa -> 
-            match b with
+        | Some bb -> 
+            match c with
             | None -> None
-            | Some bb -> 
-                match c with
-                | None -> None
-                | Some cc -> Some(aa + bb + cc)
+            | Some cc -> Some(aa + bb + cc)
 ```
 
 ----
@@ -84,6 +84,7 @@ Function composition
 #### Bind in detail
 
 ```fsharp
+// Option.bind
 let bind f = function
     | Some v -> f v
     | None   -> None
@@ -116,7 +117,7 @@ let return' a = Some a
 bind f (Some 1) = f 1
 // Right identity
 bind return' (Some 1) = Some 1
-// Assosiative
+// Associative
 bind f (bind g (Some 2))
     = bind (fun x -> bind f (g x)) (Some 2)
 ```
@@ -133,7 +134,7 @@ bind f (bind g (Some 2))
 
 ### Variations
 
-![Free monads](./img/free-monads.png)
+![Free monads](./img/free-monads.png) <!-- .element: style="height: 500px" -->
 
 ----
 
@@ -160,6 +161,7 @@ Free monads uses an AST to represent a computation and at the same time keep the
 
 * Existing computation expressions
     * `async {}`
+    * `task {}`
     * `actor {}`
     * `...`
 * Creating your own computation expression is possible
@@ -167,6 +169,49 @@ Free monads uses an AST to represent a computation and at the same time keep the
 ```
 builder-expr { cexper }
 ```
+
+----
+
+### Async programming in F#
+
+* `task {}` is used to consume `Task<T>` otherwise 
+* `async {}` should be used
+
+`async` are specifications of work, `task` are representation of work
+
+----
+
+### `async` examples
+
+```fsharp
+let printTotalFileBytesUsingAsync (path: string) =
+    async {
+        let! bytes = File.ReadAllBytesAsync(path)
+                     |> Async.AwaitTask
+        let fileName = Path.GetFileName(path)
+        printfn $"File {fileName} has %d{bytes.Length} bytes"
+    }
+
+[<EntryPoint>]
+let main argv =
+    printTotalFileBytesUsingAsync "path-to-file.txt"
+    |> Async.RunSynchronously
+    0
+```
+
+note:
+printTotalFileBytesUsingAsync: string -> Async<unit>
+
+Async computation is first started when `Async.RunSynchronously` is executed
+
+
+----
+
+### Control execution
+
+* `Async.Parallel`
+* `Async.Sequential`
+* ...
 
 ----
 
@@ -260,8 +305,6 @@ let addThreeOptions (a: int option)
         return a' + b' + c'        
     }
 ```
-
-
 
 ----
 
@@ -360,8 +403,8 @@ let times2 b = 2 * b
 And two functions
 
 ```fsharp
-val pure: a -> f a
-val apply: f (a -> b) -> f a -> f b 
+val pure: a -> 'F a
+val apply: 'F (a -> b) -> 'F a -> 'F b 
 // Operator: (<*>), also called lift
 ```
 
@@ -379,6 +422,13 @@ Note:
 ----
 
 #### Examples
+
+```fsharp
+type allFaces = []
+type allSuits = []
+let fullDeck = [fun f s -> { Face = f; Suit = s }] <*> allFaces <*> allSuits
+```
+
 
 ```fsharp
 module List =
@@ -436,8 +486,6 @@ apply [add1] [1] = apply [fun a -> a 1] [add1]
 * When having a function taking multiple arguments
     * but having the arguments wrapped in something like `Result`
 
-
-
 ----
 
 #### Applicative and Functors
@@ -448,6 +496,8 @@ Every `applicative` is a `functor`, since `map` can be defined by using `pure` a
 //map f x = pure f <*> x
 map f x = apply (pure f)
 ```
+
+![Applicative and functors visualized](https://blog.ploeh.dk/content/binary/functors-applicatives-bifunctors.png "") <!-- .element: style="height:300px" -->
 
 ---
 
@@ -521,3 +571,4 @@ type OptionBuilder() =
 
 * [Computation expressions](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/computation-expressions)
 * [Computation expression explained](https://www.youtube.com/watch?v=pC4ZIeOmgB0)
+* [Mark Seeman about category theory](https://blog.ploeh.dk/2018/03/19/functors-applicatives-and-friends/)
