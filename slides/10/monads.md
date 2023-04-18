@@ -30,7 +30,7 @@ let add (a: int option) (b: int option) (c: int option) =
             | Some cc -> Some(aa + bb + cc)
 ```
 
-----
+<!-- ----
 
 ### Or like this
 
@@ -51,6 +51,7 @@ let monadicAdd (a: int option)
 val bind: ('T -> 'U option) -> 'T option -> 'U option
 ```
 <!-- .element: class="fragment" -->
+ 
 
 ----
 
@@ -172,46 +173,20 @@ builder-expr { cexper }
 
 ----
 
-### Async programming in F#
+### Why creating a option CE
 
-* `task {}` is used to consume `Task<T>` otherwise 
-* `async {}` should be used
-
-`async` are specifications of work, `task` are representation of work
-
-----
-
-### `async` examples
+Remember?
 
 ```fsharp
-let printTotalFileBytesUsingAsync (path: string) =
-    async {
-        let! bytes = File.ReadAllBytesAsync(path)
-                     |> Async.AwaitTask
-        let fileName = Path.GetFileName(path)
-        printfn $"File {fileName} has %d{bytes.Length} bytes"
-    }
-
-[<EntryPoint>]
-let main argv =
-    printTotalFileBytesUsingAsync "path-to-file.txt"
-    |> Async.RunSynchronously
-    0
+let monadicAdd (a: int option)
+               (b: int option)
+               (c: int option) =
+    a |> Option.bind (fun a' ->
+        b |> Option.bind (fun b' ->
+            c |> Option.bind (fun c' ->
+                Some (a' + b' + c')
+    )))
 ```
-
-note:
-printTotalFileBytesUsingAsync: string -> Async<unit>
-
-Async computation is first started when `Async.RunSynchronously` is executed
-
-
-----
-
-### Control execution
-
-* `Async.Parallel`
-* `Async.Sequential`
-* ...
 
 ----
 
@@ -275,39 +250,6 @@ type OptionBuilder() =
 
 ----
 
-### Why creating a option CE
-
-Remember?
-
-```fsharp
-let monadicAdd (a: int option)
-               (b: int option)
-               (c: int option) =
-    a |> Option.bind (fun a' ->
-        b |> Option.bind (fun b' ->
-            c |> Option.bind (fun c' ->
-                Some (a' + b' + c')
-    )))
-```
-
-----
-
-### Why creating a option CE 2
-
-```fsharp
-let addThreeOptions (a: int option)
-                    (b: int option)
-                    (c: int option) =
-    option {
-        let! a' = a
-        let! b' = b
-        let! c' = c
-        return a' + b' + c'        
-    }
-```
-
-----
-
 #### Returning directly from CE
 
 ```fsharp
@@ -333,6 +275,67 @@ type OptionBuilder() =
 
 let option = OptionBuilder()
 ```
+
+----
+
+### Why creating a option CE 2
+
+```fsharp
+let addThreeOptions (a: int option)
+                    (b: int option)
+                    (c: int option) =
+    option {
+        let! a' = a
+        let! b' = b
+        let! c' = c
+        return a' + b' + c'        
+    }
+```
+
+
+---
+
+### Async programming in F#
+
+* `task {}` is used to consume `Task<T>` otherwise 
+* use `async {}` 
+
+`async` are specifications of work, `task` are representation of work
+
+----
+
+### `async` examples
+
+```fsharp
+let printTotalFileBytesUsingAsync (path: string) =
+    async {
+        let! bytes = File.ReadAllBytesAsync(path)
+                     |> Async.AwaitTask
+        let fileName = Path.GetFileName(path)
+        printfn $"File {fileName} has %d{bytes.Length} bytes"
+    }
+
+[<EntryPoint>]
+let main argv =
+    printTotalFileBytesUsingAsync "path-to-file.txt"
+    |> Async.RunSynchronously
+    0
+```
+
+note:
+printTotalFileBytesUsingAsync: string -> Async<unit>
+
+Async computation is first started when `Async.RunSynchronously` is executed
+
+
+----
+
+### Control execution
+
+* `Async.Parallel`
+* `Async.Sequential`
+* ...
+
 
 ---
 
@@ -403,8 +406,8 @@ let times2 b = 2 * b
 And two functions
 
 ```fsharp
-val pure: a -> 'F a
-val apply: 'F (a -> b) -> 'F a -> 'F b 
+val pure: 'a -> F 'a
+val apply: F ('a -> 'b) -> F 'a -> F 'b 
 // Operator: (<*>), also called lift
 ```
 
