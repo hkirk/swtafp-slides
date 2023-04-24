@@ -384,8 +384,8 @@ let senderActor hello (mailbox: Actor<_>) _ =
 
 #### Changing `Program.fs`
 
-1. We have changed the way we creation `helloActor` since it is sending messages
-2. `senderActor` is a function `ICanTell -> Actor<'M> -> 'M -> unit` which is partially applied with the `hello` IActorRef
+1. We have changed the way we are creating `helloActor` since it is sending messages
+2. `senderActor` is a function "`ICanTell -> Actor<'M> -> 'M -> unit`" which is partially applied with the `hello` IActorRef
 3. `actorSystem.WhenTerminated.Wait ()` just wait for the actor system to terminate.
 ```fsharp [1-2|3-4|6|8]
 let hello = spawn actorSystem "HelloActor"
@@ -615,7 +615,7 @@ let senderActor writer coordinator
     match msg with
     | Start            -> 
         writer <! WriterMessages.Command
-                             "Writer filepath to write to: "
+                             "Write filepath to write to: "
         readLine (fun path -> coordinator <! Path path)
     | Continue         -> 
         readLine (fun path -> coordinator <! Path path)
@@ -653,7 +653,7 @@ type SenderMessages =
 4. We then introduce a `fileCoordinatorActor` in `Actors.fs`
 
 ```fsharp
-let writerCoordinatorActor writer 
+let fileCoordinatorActor writer 
                   (mailbox: Actor<CoordinatorMessages>) msg =
     match msg with
     | Path path ->
@@ -728,7 +728,7 @@ let actorSystem = System.create "MyActorSystem"
 let writer = spawn actorSystem "WriterActor"
                                  (actorOf2 writerActor)
 let coordinator = spawnOpt actorSystem "FileCoordinator"
-                (actorOf2 (writerCoordinatorActor writer))
+                (actorOf2 (fileCoordinatorActor writer))
                 [SpawnOption.SupervisorStrategy(strategy())]
 // rest is unchanged (more or less)
 ```
