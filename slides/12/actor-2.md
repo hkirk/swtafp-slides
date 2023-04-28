@@ -159,12 +159,12 @@ select "akka://MyActorSystem/user/AuthenticateActor"
 ```
 
 2. Handoff work to a pool of worker actors.
-3. When processing a messages and `Sender` is not enough
+3. When processing a message and `Sender` is not enough
 4. Send to multiple actors
 
 ----
 
-#### Don't send these around
+#### Don't send `ActorPaths` around
 
 Because:
 * ActorSelection can be relative
@@ -197,7 +197,7 @@ selection' <! someMessage
 
 ### FSM
 
-* We all know FSM from I4SWD and GoF State Pattern
+* We all know FSM from SW4SWD and GoF State Pattern
 * Many state machines have some sort of time perspective
     * We change state after some time
     * We should stay in a state for some time
@@ -283,7 +283,7 @@ let rec authenticating () =
 
 #### Unhandled messages
 
-* Actors has a `Stash` which is a stack like structure
+* Actors has a `Stash` which acts like stack structure
     * Calling `mailbox.Stash ()` put current message into stack
 * `mailbox.Unstash ()` puts the top message in front of the inbox
 * `mailbox.UnstashAll ()` unstashed all messages.
@@ -332,7 +332,7 @@ let mySampleActor = spawnOvrd system "actor"
 
 ### Router
 
-* Special actor type
+* Special actor types
 * Can handle multiple messages at a time (Whuut!)
 * Router actors can only forward messages (puh)
 * Routers can be configured programaticly or using conf files
