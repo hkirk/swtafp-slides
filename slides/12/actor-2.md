@@ -39,7 +39,7 @@ Actor have 5 stage life cycle
 #### Lifecycle hooks
 
 * `PreStart`: Run before receiving - used to initialize
-* `PreRestart`: Can be used to cleanup before restart
+* `PreRestart`: used to cleanup before restart
 * `PostStop`: Called when actor has stopped recieving. Cleanup - called as part of `PreRestart`
 * `PostRestart`: Called after `PreRestart` and before `PreStart`. Additional reporting/diagnosis
 
@@ -90,7 +90,7 @@ This syntax is called a computation expresion - we will briefly touch on this in
 
 ### ActorSelection
 
-* Can be used send messages to actor to which you don't have an `IActorRef`
+* Used to send messages to actor(s) to which you don't have an `IActorRef`
 * Done by actor path
 
 ![Actor Path](./img/actor_path.png)
@@ -120,7 +120,7 @@ This syntax is called a computation expresion - we will briefly touch on this in
 #### Location transparancy
 
 * Means that we don't care where the actor is running
-    * Could be in the same process or
+    * could be in the same process _or_
     * on a different computer
 
 ----
@@ -158,7 +158,7 @@ select "akka://MyActorSystem/user/AuthenticateActor"
                      mailbox.Context.System <! username
 ```
 
-2. Handoff work to a pool of worker actors.
+2. Handoff work to a pool of worker actors
 3. When processing a message and `Sender` is not enough
 4. Send to multiple actors
 
