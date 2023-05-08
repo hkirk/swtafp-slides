@@ -237,7 +237,7 @@ let result: Result<int, string> =
 
 ----
 
-* return - wraps a data type in monand type
+* return - wraps a data type in monad type
 * bind - transform the encapsulated value by a function `'A -> M<'B>` 
 
 ```fsharp
@@ -465,6 +465,8 @@ val aAndB: 'A -> Result<'C, 'D>
 
 ----
 
+### SwitchComposition
+
 ```fsharp
 let (>=>) aFun bFun x =
  match aFun x with
@@ -582,4 +584,4 @@ let plus combineOks combineErrors switch1 switch2 x =
 
 ### References
 
-* Some images from: https://swlaschin.gitbooks.io/fsharpforfunandprofit/content/posts/recipe-part1.html
+* Some images from: [https://fsharpforfunandprofit.com/](https://fsharpforfunandprofit.com/)
