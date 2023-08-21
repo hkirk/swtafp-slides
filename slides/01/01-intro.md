@@ -38,8 +38,8 @@
 
 * Lecture:
   * 4 hours per week
-  * `$\frac{1}{2}$` lecturing
-  * `$\frac{1}{2}$` exercises
+  * ~`$\frac{1}{2}$` lecturing
+  * ~`$\frac{1}{2}$` exercises
 * Homework before, exercises after
 
 ----
@@ -65,7 +65,7 @@
 * Discord?
 * ?
 
-Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [https://forms.gle/UMnDWFjw99s46Mwe6](https://forms.gle/UMnDWFjw99s46Mwe6) <!-- .element:  class="fragment" data-fragment-index="1" -->
+Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [Precourse form](https://forms.gle/TztvK1RxnVSrY18a8) <!-- .element:  class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -80,6 +80,11 @@ Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [http
 | Tetris 1| 8       | 10      |
 | Tetris 2| 10       | 12     |
 | Akka    | 12      | 14     | 
+<!-- .element: style="font-size: 26px" -->
+
+Approved if
+* Deadline expected
+* Shows that you tried to solve the problem
 
 
 
@@ -90,7 +95,7 @@ Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [http
 - Take home preperation
   - 16 hours - tests most topics in the course
 - 30 minutes oral exam
-  - Explain theory show how this is applied
+  - Explain theory **and** show how this is applied
 
 ---
 
@@ -168,7 +173,7 @@ Note:
 - Learning curve is steap
 - A bit like starting from scratch
 
-![Learning curve FP vs OOP](./img/programming_languages_curve.png "Learning curve")
+![Learning curve FP vs OOP](./img/programming_languages_curve.png "Learning curve") <!-- .element: style="width: 500px" -->
 
 ----
 
@@ -408,7 +413,7 @@ if x > 0 then 1 else 0
 - Type '`string`'
 - Can represent `string` as `char list` (more on lists later)
 - Operators `+`, `[i]`, `[i..j]`, `[i..]`, `[..i]`
-  * ~~`.[i]`, `.[i..j]`, `.[i..]`, `.[..i]`~~
+  * *Depracated* ~~`.[i]`, `.[i..j]`, `.[i..]`, `.[..i]`~~ 
 - Functional vs 'dot' operator
   - `String.length "Hello f#"`
   - `"Hello F#".Length`
@@ -446,7 +451,7 @@ let max x y = if x > y then x else y
 
 ### Lambda
 
-* Lambda in F# can be defined by the `fun` keyword
+* Lambdas in F# can be defined by the `fun` keyword
 
 ```fsharp
 fun a b -> a + b
@@ -565,7 +570,7 @@ match result with
 
 ### Simpel types 
 
-- Typles 
+- Tuples
 ```fsharp
 (1,2)
 // val it : int * int = (1, 2)
@@ -574,8 +579,7 @@ match result with
 ```
     - Access with:
       - functions '`fst`' or '`snd`'
-      - pattern mathing
-- Lists - in next slides
+      - **or** pattern mathing
 
 ---
 
@@ -583,7 +587,7 @@ match result with
 ## Lists
 
 * List in F# can be arbitrary long but **must** contain elements of same type
-  * Give type `'a` then a list of `'a`'s have type `'a list`
+  * Give type "`'a`" then a list of `'a`'s have type<br/> "`'a list`"
   * Examples `int list`, `char list`, `string list`, `('a -> 'b) list`
 
 ----
@@ -645,7 +649,10 @@ let l1Plus2' = l1 @ l2
 
 ----
 
-### Defining a sum function for lists
+### Functions on list
+
+
+Defining a sum function for lists:
 
 ```fsharp
 let rec sum l =
@@ -664,11 +671,12 @@ let rec sum l =
 ```
  <!-- .element:  class="fragment" data-fragment-index="1" -->
 
+
 ----
 
 ### Two things about last example
 
-* Pattern matching can decompose 'any' data structures in the pattern
+* Pattern matching can decompose 'any' data structures directly in the pattern
 * `function` vs `match x with`
 
 ```fsharp
