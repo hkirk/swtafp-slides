@@ -61,7 +61,6 @@
 
 ### Your expectations
 
-* Slides?
 * Discord?
 * ?
 
@@ -83,8 +82,8 @@ Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [Prec
 <!-- .element: style="font-size: 26px" -->
 
 Approved if
-* Deadline expected
-* Shows that you tried to solve the problem
+* Deadline respected
+* Honest try at solving the problem
 
 
 
@@ -193,9 +192,9 @@ Note:
 - strong type system
 - easy to learn syntax
 - has access to .NET standard library
-- works with .Net
-- builds to .Net IL
-- can do OO like programing in F#
+- works with .NET
+- builds to .NET IL
+- OOP possible in F#
 
 ----
 
@@ -270,12 +269,13 @@ let main argv =
 
 ### Modules
 
-- Modules are used to group code, like types, functions and values
-  - Keeps related code together
-  - If no module is declared a module with the same name as the file exists
-  - Two types:
-    - Top level
-    - Local level (Can be nested)
+- Modules are used to group code, 
+  - types, functions, and values
+  - keeps related code together
+  - if no module is declared a module with the same name as the file exists
+  - two types:
+    - top level
+    - local level (can be nested)
 
 
 ----
@@ -288,7 +288,8 @@ let main argv =
   - Cannot contain functions or values directly
   - Only contain types and modules
   - Can be declared implicitly
-* Styleguide prefer Namespaces in all files - cause of interopbillity
+* Styleguide prefer Namespaces in all files
+  - because of interopbillity
 
 ----
 
@@ -299,7 +300,9 @@ let main argv =
   - Types
   - Namespaces
   - Modules
-- Note: We will get back to these
+
+
+**Note**: We will get back to these
 
 ----
 
