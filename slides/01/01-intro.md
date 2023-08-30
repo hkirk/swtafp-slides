@@ -75,10 +75,10 @@ Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [Prec
 | Name           | Release | Handin |
 |----------------|:-------:|-------:|
 | Nokia          | 3       | 5      |
-| Immutability   | 6       | 7      |
-| Tetris 1| 8       | 10      |
-| Tetris 2| 10       | 12     |
-| Akka    | 12      | 14     | 
+| Immutability   | 5       | 7      |
+| Tetris 1       | 7       | 9      |
+| Tetris 2       | 9       | 12     |
+| Akka           | 12      | 15     | 
 <!-- .element: style="font-size: 26px" -->
 
 Approved if
