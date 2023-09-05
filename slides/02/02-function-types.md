@@ -172,7 +172,7 @@ List.filter (fun y -> y < 4) <| [2;3;4;5;6;6]
 
 * Or 'function appliation operators'
 * Operators `|>`, `||>` and `|||>`
-* Works as in bash, Powershell and maybe in [js](https://github.com/tc39/proposal-pipeline-operator)
+* Works as '`|`' in bash, Powershell and maybe in [js](https://github.com/tc39/proposal-pipeline-operator)
 
 ![Pipe](./img/pipe.jpg "Pipe") <!-- .element style="height: 250px;" -->
 
@@ -187,6 +187,12 @@ let addOne a = a+1
 let convertToFloat a = float a
 let whatIsThis = addOne >> convertToFloat
 let result = whatIsThis 41
+```
+
+note:
+
+```fsharp
+let inline (>>) f g x = g(f x)
 ```
 
 ---
@@ -485,7 +491,7 @@ List.fold: ('State -> 'T -> 'State) ->
                   'State -> 'T list -> 'State
 ```
 
-Accumulates a list given a initial value and a function that takes a list element and a accumulative value.
+*Accumulates a list*, given an initial value **and** a function that takes a list element **and** an accumulative value.
 
 * `('State -> 'T -> 'State)` function that accumulate a list element and a partial result
 * `'State` an initial value
@@ -544,7 +550,7 @@ let span p list =
 ### fold in general
 
 * Fold like map is defined on many types
-     * `Set`, `Map`, etc.
+     * `list`, `Set`, `Map`, `option` etc.
 * Fold is tail recursive - stack secure
 * Fold is specific in the direction it calculates
 * Fold is always `$ O(n) $`
@@ -643,7 +649,7 @@ Stopped due to error
 * __No intermediate variables__ Do not use any variables in functions
   * Better understading of pipelines and composition
 * __Only expressions__ 
-  * Avoid side effects
+  * Avoid side effects - we will learn to control them later
 * __No explicit recursion__ No `let rec`
   * Learning HoF like map, fold, etc
 * __Generic building blocks__ e.g. use collections instead of list
