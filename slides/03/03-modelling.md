@@ -83,7 +83,7 @@ type StructPoint =
 ### Sum
 
 * Discriminated Unions
-* uses of `of`
+* uses of '`of`'
 
 ```fsharp
 type Meassurement = Cm | Meter | Kilometer
@@ -162,7 +162,7 @@ let v1 = 3.4<ml/cm>
 
 ----
 
-### Domain 
+### Understand the Domain 
 
 `$$ ax^2 + bx + c = 0$$`
 
@@ -181,13 +181,14 @@ Solution:
 
 ### Solution
 
-```fsharp [7|2,6|4]
-let solve (a, b, c) =
+```fsharp [7-8]
+let solve (a, b, c) = // Equation in
   let d = b*b - 4.0*a*c
   if d < 0.0 || a = 0.0
   then failwith "discrimant is negative or a is zero"
   else 
     let sqrtD = sqrt d
+    // Solution out
     ((-b + sqrtD) / (2.0*a), (-b - sqrtD) / (2.0*a))
 ```
 
@@ -195,7 +196,9 @@ _Left as a exercise to try and capture the possible solutions (2 roots, 1 root, 
 
 ---
 
-## Modelling
+## Enforce domain rules
+
+`Contact` type for a webapplication
 
 ```fsharp
 type Contact = {
@@ -234,21 +237,22 @@ type Contact = {
 * Two strings are not interchangeable
 * Create Email type - private constructor
 
-```fsharp [1-4|8-12]
-type Email = private | Email of string
+```fsharp
+// Email.fsi
+module FSharpTest.Email
 
-module Email =
-  let createEmail (s: string): Option<Email>
-     = failwith "implement"
+type T
+val create : string -> T option
+val value : T -> string
+```
 
-type NameInfo = {
-  FirstName: string50
-  MiddleName: string50 option
-  LastName: string50
+```fsharp
+// Email.fs
+module FSharpTest.Email
 
-  Email: Email
-  IsEmailVerified: bool
-}
+type T = EmailAddr of string
+let create (s: string) = Some (EmailAddr s)
+let value (EmailAddr str) = str
 ```
 
 ----
@@ -264,7 +268,7 @@ type NameInfo = {
   LastName: string50
 }
 type EmailInfo = {
-  EmailAddress: Email
+  EmailAddress: EmailAddr
   IsEmailVerified: bool
 }
 
@@ -282,29 +286,31 @@ type Contact = {
 
 ```fsharp
 type EmailInfo = {
-  EmailAddress: Email
+  EmailAddress: EmailAddr
   IsEmailVerified: bool
 }
 ```
 
-- Here we want `IsEmailVerified` to change to false, whenever a new email is used
-- Not all should be able to set `IsEmailVerified`
+- Here we want `IsEmailVerified` to change to false, whenever a new email is registered
+- Constraint on who can set `IsEmailVerified`
 
 ----
 
 ### Constraint cont.
 
 ```fsharp
-type VerifiedEmail = VerifiedEmail of Email
+type VerifiedEmail = VerifiedEmail of EmailAddr
 
 type VerifyEmailSerice =
-  (Email * Hash) -> VerifiedEmail option
+  (EmailAddr * Hash) -> VerifiedEmail option
 
 type EmailInfo =
   private
   | Verified of VerifiedEmail
-  | UnVerifiedEmail of Email
+  | UnVerifiedEmail of EmailAddr
 ```
+
+Could of course also be moved into `fsi` file
 
 ----
 
@@ -315,6 +321,8 @@ type EmailInfo =
 * Can argue that most can be read by non-F# programmers
 * Document constraints and logic
 * Develops a language we can use to talk about the code
+
+<!-- .slide: style="font-size: 38px" -->
 
 ----
 
@@ -407,7 +415,7 @@ note:
 
 * The more general type actually given by F#
 
----
+----
 
 ## Examples Map Coloring
 
@@ -443,8 +451,12 @@ type colorContries = Map -> Country list -> Coloring
 
 Note: 
 
-* Break down of the functions from colorMap
-TODO: Add notes for students - how to breakdown
+Methods above comes from the realization:
+
+It should be possible to:
+* test wether a color can be extended by a country
+* test wether two countries are neighbours
+* Extend a color with country.
 
 ---
 
@@ -456,7 +468,7 @@ TODO: Add notes for students - how to breakdown
 
 ### Domain
 
-```fsharp
+```fsharp [8]
 // Auxiliary types
 type MessageHandler = unit -> Timed<unit>
 
@@ -499,13 +511,15 @@ type PollingConsumer =
   | EndState
 ```
 
+![State machine](./img/state.png "State machine") <!-- .element: style="height: 150px; float: right" -->
+
 ----
 
 ### Transitions
 
 Aiming for a transition function from each state
 
-```fsharp
+```fsharp [3-4]
 type transitionFromEnd =
           unit -> PollingConsumer
 type transitionFromNoMessage =
@@ -516,11 +530,11 @@ type transitionFromReady =
           ReadyData -> PollingConsumer
 ```
 
+![State machine](./img/state.png "State machine") <!-- .element: style="height: 150px; float: right" -->
+
 ----
 
 ### Implementation
-
-Starting with transitionFromNoMessage
 
 ```fsharp
 let transitionFromNoMessage (nm : NoMessageData) =
@@ -531,21 +545,13 @@ let transitionFromNoMessage (nm : NoMessageData) =
 // error FS0039: The value of constructor 'idle' is not defined.
 ```
 
-----
+![State machine](./img/state.png "State machine") <!-- .element: style="height: 150px; float: right" -->
 
-### STM
-
-![State machine](./img/state.png "State machine")
 
 ----
 
-```fsharp
-let transitionFromNoMessage (nm : NoMessageData) =
-    if shouldIdle nm
-    then idle () |> ReadyState
-    else EndState
-```
-
+### Using types as TODO
+ 
 Since this does not compiles - refactoring into
 
 ```fsharp
@@ -573,12 +579,10 @@ let transitionFromNoMessage shouldIdle idle
 
 # References
 
-Inspirations from: 
+* Inspirations from: 
+ * https://fsharpforfunandprofit.com/ddd/
+ * https://blog.ploeh.dk/2015/08/10/type-driven-development/
+* Images from:
+  * http://geek-and-poke.com/geekandpoke/2013/2/14/self-documenting-code.html
 
-https://fsharpforfunandprofit.com/ddd/
-
-https://blog.ploeh.dk/2015/08/10/type-driven-development/
-
-Images from:
-
-http://geek-and-poke.com/geekandpoke/2013/2/14/self-documenting-code.html
+<!-- .slide: style="font-size: 38px" -->
