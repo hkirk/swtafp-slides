@@ -423,6 +423,10 @@ let rec sum = function
 let sum l = List.fold (fun acc elem -> acc+elem) 0 l
 ```
 
+note:
+
+LINQ: Aggregate
+
 ----
 
 ### map
@@ -437,6 +441,11 @@ Transforms a list of `'a`'s to a list of `'b`'s
 
 Note:
 Equavilant to Select in LINQ
+
+note:
+
+LINQ: Select
+
 
 ----
 
