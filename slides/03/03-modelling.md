@@ -39,6 +39,44 @@ let greater x y = if (x > y) then "greater" else "smaller"
 
 ----
 
+### Custom Equality
+
+```fsharp
+[<CustomEquality; NoComparison>]
+type Customer =
+    { CustomerId : int; Name : string; Age : int; Town : string }
+
+    interface IEquatable<Customer> with
+        member this.Equals other = other.CustomerId.Equals this.CustomerId
+
+    override this.Equals other =
+        match other with
+        | :? Customer as p -> (this :> IEquatable<_>).Equals p
+        | _ -> false
+    override this.GetHashCode () = this.CustomerId.GetHashCode()
+```
+
+----
+
+### Custom Comparison
+
+
+```fsharp
+[<CustomComparison; CustomEquality>]
+type Customer =
+    { CustomerId : int; Name : string; Age : int; Town : string }
+    interface IComparable with
+        member this.CompareTo other =
+            match other with
+            | :? Customer as p -> (this :> IComparable<_>).CompareTo p
+            | _ -> -1
+
+    interface IComparable<Customer> with
+        member this.CompareTo other = other.CustomerId.CompareTo this.CustomerId
+```
+
+----
+
 ## Types
 
 > Data dominates. If you've chosen the right data structures and organized things well, the algorithms will almost always be self-evident. Data structures, not algorithms, are central to programming.
@@ -49,12 +87,10 @@ let greater x y = if (x > y) then "greater" else "smaller"
 ### Abbrev 
 
 * Type alias
-
 ```fsharp
 type ProductName = string
 type ParseProductName = ProductName -> Option<ProductName>
 ```
-
 * Types are not preserved in .NET Framework MSIL code
 
 ----
@@ -69,21 +105,10 @@ type Birthday = Person * Date
 
 ----
 
-### Records
-
-```fsharp
-type StructPoint = 
-    { X: float
-      Y: float
-      Z: float }
-```
-
-----
-
 ### Sum
 
 * Discriminated Unions
-* uses of '`of`'
+* uses '`of`'
 
 ```fsharp
 type Meassurement = Cm | Meter | Kilometer
@@ -101,7 +126,7 @@ Note:
 
 ----
 
-### Options
+### Example Sum type 
 
 ```fsharp
 type Option<'a> =
@@ -126,6 +151,20 @@ type Meassurement = CM = 0 | Meter = 1 | Kilometer = 2
 //  | Meter = 1
 //  | Kilometer = 2
 let cm = Meassurement.CM
+```
+
+----
+
+### Records
+
+```fsharp
+type StructPoint = 
+    { X: float
+      Y: float
+      Z: float }
+
+let p = { X = 1.0; Y = 2.3; Z = 4.5 }
+let p2 = { p with X = 4.0 }
 ```
 
 ----
@@ -159,7 +198,6 @@ let v1 = 3.4<ml/cm>
 * Keep and explicit TODO list
 * F# makes this **easy**
 
-
 ----
 
 ### Understand the Domain 
@@ -181,7 +219,7 @@ Solution:
 
 ### Solution
 
-```fsharp [7-8]
+```fsharp [1,7-8]
 let solve (a, b, c) = // Equation in
   let d = b*b - 4.0*a*c
   if d < 0.0 || a = 0.0
@@ -381,7 +419,7 @@ What about if there should be a secondary contact address?
 
 * Design from bottom and up
 
-```fsharp [1-6|9-12 ]
+```fsharp [1-7|9-12 ]
 // Register
 type Code = string
 type Name = string
