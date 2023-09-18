@@ -18,30 +18,28 @@
 * Maps
     * foldBack
 * Sequence in F#
-    * Queue
-    * Deque
 
 ---
 
 ## What
 
 * Mutating operations
-    * Should not change structure
-    * Copy
-* Shares data between versions
+    * should not change structure
+    * instead opy
+* Can share data between 'versions'
 
 ----
 
 ## Why
 
 * Pros:
-    * Immutable is easier to reason about
-    * Automatically thread safe
-    * Easier to implement :)
+    * immutable is easier to reason about
+    * automatically thread safe
+    * easier to implement :)
 * Cons:
-    * Slower?
-    * Uses more memory
-    * Harder to implement :)
+    * slower?
+    * uses more memory
+    * harder to implement :)
 
 ---
 
@@ -58,13 +56,13 @@ type BST<'a> =
   | Empty
   | Node of BST<'a> * 'a * BST<'a>
 module BST =
-    // Code for creating/addting etc.
+    // Code for creating/adding etc.
 ```
 
 ##### Invariants
-* An element `n` in a Node 
-    * is always greater than all elements in left sub-tree
-    * is always less than all elements in right sub-tree
+* An element `'a` in a Node 
+    * is **greater** than all elements in left sub-tree
+    * is **less** than all elements in right sub-tree
 
 Note:
 We could also use .fsi files to declare functions
@@ -86,21 +84,30 @@ Could be extended with
 * `fold`
 * etc.
 
+note:
+
+Insert is also call 'cons' in list-like structures
+
 ----
 
-### Implementing `contains`
+### Implementing `contains x`
 
-* **if** `Empty` return false
-* **else**
-    * **if** x < n **then** `contains left_subtree`
-    * **else if** x > n **then** `contains right_subtree`
-    * **else** return true
+```fsharp
+let rec contains (x: 'a) (n: BST<'a>) =
+    if (n == Empty) then false
+    else 
+        if (x < n.elem) then contains x n.left
+        else if (x > n.elem) then contains x n.right
+        else true
+
+```
 
 ----
 
 ### Implementing `insert`
 
-* Algorithm: 
+
+* Algorithm:  ![BST](./img/bst.png "Binary search tree") <!-- .element: style="width: 250px; float: right" -->
     1. Use a variation of `contains` to find correct place to insert
     2. Copy nodes as we move down through the tree
 * Example
@@ -124,8 +131,7 @@ Could be extended with
 
 ![BST](./img/insert3.png "Binary search tree") <!-- .element style="height: 500px; float: right" -->
 
-Notice:
-
+* **Notice:**
 * Only copy a small part</br>of the tree
     * How much?
 * Does it effect run-time</br> for `insert`
@@ -138,9 +144,9 @@ Notice:
 ## `Set<'a>`
 
 * From .NET F# lib
+* **Invariant:** Elements are unique
 * Finite
 * Only elements where `ordering` is defined
-* Elements are unique
 * Internally represented as a `BBT<'a>`
 * Immutable
     * All operations returns a new `set`
@@ -208,9 +214,9 @@ Set.difference first third
 ## `Map<'a>`
 
 * From .NET F# lib
-* Key / value pair
-* Key is unique
-* Look per key
+* **Invariant:** Keys are unique
+    * Key / value pair
+    * Lookup per key
 * Immutable
 * Implemented using `BBT<'a>`
 * As Set, Map requires ordering is defined for key type
@@ -248,8 +254,6 @@ containsKey: 'Key -> Map<'Key, 'T> -> bool
 exists:      ('Key - 'T -> bool) -> Map<'Key, 'T> -> bool
 ```
 
-should we try?
-
 ----
 
 ### fold and foldBack on Maps
@@ -257,10 +261,10 @@ should we try?
 Definition for fold, foldBack on map takes key/value pair into account
 
 ```fsharp
-fold:     ('State -> 'Key -> 'T -> 'State) -> 'State
-                                 -> Map<'Key, 'T> -> 'State
+fold:     ('State -> 'Key -> 'T -> 'State)
+                     -> 'State -> Map<'Key, 'T> -> 'State
 foldBack: ('Key -> 'T -> 'State -> 'State)
-                         -> Map<'Key, 'T> -> 'State -> 'State
+                     -> Map<'Key, 'T> -> 'State -> 'State
 ```
 
 ```fsharp
@@ -323,7 +327,7 @@ Seq.item 5 nat
 // val it: int 5
 ```
 
-* `Seq.item 5 nat` evaluates the 5th element, but not elements `0-4` and `6->`
+* `Seq.item 5 nat` evaluates the 5th element, but not elements `0-4` and `6->...`
 * Calling `Seq.item 5 nat` will evaluate the 5th element again
 
 ----
@@ -347,7 +351,7 @@ let cachedNat = Seq.cache nat
     * Usually used when some operations are fast and other are slow
 
 * C# List is an example, its worst case bounds
-    * insert: `$ O(n) $`
+    * insert: `$ O(n) $` -- **why?**
     * lookup: `$ O(1) $`
     * delete: `$ O(1) $`
 
@@ -360,142 +364,6 @@ let cachedNat = Seq.cache nat
     * `n` insertions are `$ O(2n) $` <!-- .element: class="fragment"  data-fragment-index="1" -->
     * So amortized bounds are `$ O(1) $` for all operations <!-- .element: class="fragment"  data-fragment-index="1" -->
 * See references for detailed analysis<!-- .element: class="fragment"  data-fragment-index="1" -->
-
----
-
-## Queue
-
-![Queue](./img/queue.jpg "Queue") <!-- .element style="width:800px;" -->
-
-----
-
-### Definition and operation
-
-```fsharp [5-10]
-module Queue
-
-type Queue<'a> = 'a list * 'a list
-
-val empty:   Queue<'a>
-val isEmpty: Queue<'a> -> bool
-
-val cons:    'a -> Queue<'a> -> Queue<'a>
-val head:    Queue<'a> -> 'a
-val tail:    Queue<'a> -> Queue<'a>
-```
-
-* Could be done with a single list <!-- .element: class="fragment" -->
-
-----
-
-### Operation implementations
-
-```fsharp [2,7|3,8|4,9]
-let rec head = function
-    | ([], []) -> raise (ArgumentException "Empty")
-    | ([], r)  -> head (List.rev r, [])
-    | (l, _)   -> List.head l 
-    
-let rec tail = function
-    | ([], []) -> raise (ArgumentException "Empty")
-    | ([], r)  -> tail (List.rev r, [])
-    | (l, r)   -> (List.tail l, r)
-```
-
-----
-
-
-### Using lazy evaluation
-
-* To optimize our queue C. Okasaki proposes to use lazy lists.
-    * Almost seq in F#
-
-```fsharp
-module LazyQueue
-
-type LazyQueue<'a> = seq<'a> * seq<'a>
-
-val empty:   LazyQueue<'a>
-val isEmpty: LazyQueue<'a> -> bool
-
-val cons:    'a -> LazyQueue<'a> -> LazyQueue<'a>
-val head:    LazyQueue<'a> -> 'a
-val tail:    LazyQueue<'a> -> LazyQueue<'a>
-```
-<!-- .element: class="fragment" -->
-
-----
-
-### Lazy queue impl (1/2)
-
-So here we utilises that `Seq` is lazy
-
-```fsharp
-let l' = Seq.append l r
-```
-
-This do not evalute `r` before its needed
-
-----
-
-### Lazy queue impl (2/2)
-
-```fsharp
-let l` = Seq.append l (Seq.rev r)
-```
-
-1. since append is lazy, we need to do `Seq.rev` incrementally. 
-2. so do one step of `Seq.rev` for each step of append   
-3. we then need the invariant `Seq.length r <= Seq.length l`
-
-Note:
-Seq.rev - will reverse the list in one go
-
-```fsharp
-// https://github.com/fsharp/fsharp/blob/577d06b9ec7192a6adafefd09ade0ed10b13897d/src/fsharp/FSharp.Core/seq.fs#L1424
-let rev source =
-    checkNonNull "source" source
-    mkDelayedSeq (fun () ->
-        let array = source |> toArray
-        Array.Reverse array
-        array :> seq<_>)
-```
-
-----
-
-### Incremental rotation
-
-```fsharp
-let rot (l, r, a) = match Seq.length l
-    | 0 -> (Seq.head r) :: a    
-    | 1 -> (Seq.head l) :: (rot
-                (Seq.tail l, Seq.tail r, Seq.head r :: a))
-```
-
-\* Not battle tested code
-
-\*\* Not optimized code
-
-----
-
-### Bounds
-
-* Amortized bounds for all operations are still `$ O(1) $`
-* Worst case `$ O(log n) $`
-
-----
-
-### Amortization
-
-* Not useful in `realtime` systems
-    * why?
-
-----
-
-### Deque idea
-
-![Deque](./img/deque.png "Deque")
-
 
 ---
 
