@@ -344,29 +344,6 @@ let cachedNat = Seq.cache nat
 
 ---
 
-### Amortized bounds
-
-* An extension to the Big-O notation from DOA
-* Used to analysis average run time
-    * Usually used when some operations are fast and other are slow
-
-* C# List is an example, its worst case bounds
-    * insert: `$ O(n) $` -- **why?**
-    * lookup: `$ O(1) $`
-    * delete: `$ O(1) $`
-
-----
-
-### C# List analysis over time
-
-* `$ \rightarrow $` `n` insertions are `$ O(n^2) $` worst case
-* You can make the amortized analysis that shows <!-- .element: class="fragment"  data-fragment-index="1" -->
-    * `n` insertions are `$ O(2n) $` <!-- .element: class="fragment"  data-fragment-index="1" -->
-    * So amortized bounds are `$ O(1) $` for all operations <!-- .element: class="fragment"  data-fragment-index="1" -->
-* See references for detailed analysis<!-- .element: class="fragment"  data-fragment-index="1" -->
-
----
-
 ## References
 
 * Complexity for F# datastructures: https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-collection-types
