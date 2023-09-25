@@ -91,21 +91,56 @@ After the recusive call there are still work todo in this function - add '`s`' t
 
 ### Tail Recursion
 
-From book:
-
 ```fsharp
-let rec fact = function
-    | (0, m) -> m
-    | (n, m) -> fact (n-1, n*m)
+let pow' (input: string * int) =
+    let rec powInner acc = function
+        | (s: string, 1) -> acc+s
+        | (s: string, n) -> powInner (acc + s) (s, n-1)
+    powInner "" input
 ```
 
 This is tail recursive - last call is the recursive call
 
 ----
 
+#### Accumulative value
+
+```fsharp
+let rec fact n =
+    match n with
+    | 0L | 1L -> 1L
+    | _ -> n * fact(n-1L)
+    
+// Same as
+let rec fact' = function
+    | 0L | 1L -> 1L
+    | n -> n * fact' (n-1L)
+```
+
+```fsharp
+let fact'' n =
+    let rec factInner = function
+        | (0L, m) -> m
+        | (n, m) -> factInner (n-1L, n*m)
+    factInner (n, 1)
+```
+<!-- .element: class="fragment" -->
+
+
+----
+
 ### Generalization of 
 
-Looping on a special form:
+```fsharp
+let fact'' n =
+    let rec factInner = function
+        | (0L, m) (* base condition *) -> m // last operation
+        | (n, m) -> factInner (n-1L, n*m)   // continue operation
+    factInner (n, 1)
+```
+
+
+Looping on a special form:<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ```fsharp
 let rec tr checker cont last value =
@@ -117,15 +152,16 @@ let rec tr checker cont last value =
 //          last:('input -> 'output) ->
 //          value:'input -> 'output
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ----
 
 ### Implementing factorial by `tr`
 
 ```fsharp
-let fact' = tr (fun (n,_) -> n<>0L)
-               (fun (n,m) -> (n-1L, m*n))
-               (fun (_,m) -> m)
+let fact' = tr (fun (n,_) -> n<>0L)       // checker
+               (fun (n,m) -> (n-1L, m*n)) // cont
+               (fun (_,m) -> m)           // last
 
 // For reference
 let rec fact = function
@@ -156,7 +192,7 @@ val it : int = 1409286144
 * Evaluation<br/> `tr checker cont last (cont value)`<br/> will not build large expressions
     * `cont value`<br/> will be evaluated at each step
 * This are $O(n)$ - in the fact example
-* The same evironment/stack frame can be reused - So $ O(1)$ space consumption
+* The same evironment/stack frame can be reused - So $ O(1)$ stack space consumption
 
 ----
 
@@ -180,10 +216,10 @@ f: 'input -> ('input -> 'output) -> 'output
 ```fsharp
 let rec bigListC n c =                          
     if n=0 then c []                            
-    else bigListC (n-1) (fun res ->
-        printfn "execute %d" (n-1)
-        c((n-1)::res)
-    )
+    else bigListC (n-1) 
+                  (fun res -> printfn "execute %d" (n-1)
+                              c((n-1)::res)
+                  )
 
 bigListC 3 (fun a -> a)
 // val it : int list = [2; 1; 0]
@@ -281,16 +317,19 @@ let foldArraySubRight (f:OptimizedClosures.FSharpFunc<'T,_,_>) (arr: 'T[]) start
 #### Map example
 
 ```fsharp
-let rec foldBackOpt (f:OptimizedClosures.FSharpFunc<_,_,_,_>) m x = 
-        match m with 
-        | MapEmpty -> x
-        | MapOne(k,v) -> f.Invoke(k,v,x)
-        | MapNode(k,v,l,r,_) -> 
-            let x = foldBackOpt f r x
-            let x = f.Invoke(k,v,x)
-            foldBackOpt f l x
+let rec foldBackOpt (f: OptimizedClosures.FSharpFunc<_, _, _, _>) (m: MapTree<'Key, 'Value>) x =
+        if isEmpty m then
+            x
+        else if m.Height = 1 then
+            f.Invoke(m.Key, m.Value, x)
+        else
+            let mn = asNode m
+            let x = foldBackOpt f mn.Right x
+            let x = f.Invoke(mn.Key, mn.Value, x)
+            foldBackOpt f mn.Left x
 
-    let foldBack f m x = foldBackOpt (OptimizedClosures.FSharpFunc<_,_,_,_>.Adapt(f)) m x
+let foldBack f m x =
+    foldBackOpt (OptimizedClosures.FSharpFunc<_, _, _, _>.Adapt f) m x
 ```
 
 
