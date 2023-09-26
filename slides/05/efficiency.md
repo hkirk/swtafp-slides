@@ -1,5 +1,5 @@
 <!-- .slide: data-background="#003d73" -->
-## Stack, Heap & Optimization
+## Memory, Optimization and Queus
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
@@ -55,6 +55,41 @@ val it : string =
   "1233456123345612334561233456123345612334561233456123345612334561233456123345612334561233456123345612334561233456123345612334
 ```
 
+----
+
+### Benchmarking
+
+There is a nice NuGET package [https://github.com/dotnet/BenchmarkDotNet](BenchmarkDotNet)
+
+
+```csharp
+[SimpleJob(RuntimeMoniker.Net472, baseline: true)]
+[SimpleJob(RuntimeMoniker.NetCoreApp30)]
+[SimpleJob(RuntimeMoniker.NativeAot70)]
+[SimpleJob(RuntimeMoniker.Mono)]
+[RPlotExporter]
+public class Md5VsSha256
+{
+    ...
+    [Params(1000, 10000)]
+    public int N;
+
+    [GlobalSetup]
+    public void Setup() {
+        data = new byte[N];
+        new Random(42).NextBytes(data);
+    }
+
+    [Benchmark]
+    public byte[] Sha256() => sha256.ComputeHash(data);
+
+    [Benchmark]
+    public byte[] Md5() => md5.ComputeHash(data);
+}
+```
+
+
+
 ---
 
 <!-- .slide: data-visibility="hidden" -->
@@ -68,7 +103,9 @@ TODO: Should this be included and what?
 ## Recursion
 
 * We use recursion to do loops
-* This can blow the stack
+    * simplicity
+    * where no HoF works
+* This can blow the stack, because:
     * recursive call creates a new stack frame
 
 !["Recursion"](./img/recursion.jpg "Recusion") <!-- .element style="height: 200px;" -->
@@ -85,7 +122,7 @@ let rec pow = function
     | (s: string, n) -> s + pow (s, n-1)
 ```
 
-After the recusive call there are still work todo in this function - add '`s`' to result
+After the recusive call there are still computations in this function - add '`s`' to result - so new stackframe will be created
 
 ----
 
@@ -99,7 +136,7 @@ let pow' (input: string * int) =
     powInner "" input
 ```
 
-This is tail recursive - last call is the recursive call
+This is tail recursive - last expression is recursive call
 
 ----
 
@@ -129,7 +166,7 @@ let fact'' n =
 
 ----
 
-### Generalization of 
+### Generalization
 
 ```fsharp
 let fact'' n =
@@ -198,7 +235,7 @@ val it : int = 1409286144
 
 ### Using continuations to optimize
 
-* Accumulative parameter (as above) is not always possible
+* Accumulative parameter (above) is not always possible
 * Continuations is a genenral pattern for making tail-recursion
 
 In general we will transform:
@@ -213,17 +250,24 @@ f: 'input -> ('input -> 'output) -> 'output
 
 ### Example
 
+Populate list in opposite direction
 ```fsharp
-let rec bigListC n c =                          
-    if n=0 then c []                            
-    else bigListC (n-1) 
-                  (fun res -> printfn "execute %d" (n-1)
-                              c((n-1)::res)
-                  )
+let rec bigList = function
+    | 0 -> []
+    | _ -> bigList (n-1) @ (n-1)
+```
 
-bigListC 3 (fun a -> a)
+```fsharp
+let rec bigListC c = function
+    | 0 -> c []
+    | n -> bigListC (fun res -> printfn "execute %d" (n-1)
+                                c ((n-1)::res)
+                    ) (n-1)
+
+bigListC (fun a -> a) 3
 // val it : int list = [2; 1; 0]
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -245,8 +289,9 @@ type BinTree<'a> = | Leaf
 let rec count = function
     | Leaf          -> 0
     | Node(l, n, r) -> count l + 1 + count r
-// This is not tail recursive
 ```
+
+Is this tail recursive?
 
 ----
 
@@ -458,8 +503,8 @@ let rec tail = function
 
 ### Using lazy evaluation
 
-* To optimize our queue C. Okasaki proposes to use lazy lists.
-    * Almost seq in F#
+* To optimize our queue [https://en.wikipedia.org/wiki/Chris_Okasaki](C. Okasaki) proposes to use lazy lists.
+    * Almost like `seq`` in F#
 
 ```fsharp
 module LazyQueue
