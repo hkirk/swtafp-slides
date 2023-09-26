@@ -1,5 +1,5 @@
 <!-- .slide: data-background="#003d73" -->
-## Memory, Optimization and Queus
+## Memory, Optimization and Queues
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
@@ -138,6 +138,17 @@ let pow' (input: string * int) =
 
 This is tail recursive - last expression is recursive call
 
+note: 
+
+```fsharp
+let pow' (input: string * int) =
+    let rec powInner acc (x: string * int) =
+        match x with
+        | (s: string, 1) -> acc+s
+        | (s: string, n) -> powInner (acc + s) (s, n-1)
+    powInner "" input
+```
+
 ----
 
 #### Accumulative value
@@ -254,7 +265,7 @@ Populate list in opposite direction
 ```fsharp
 let rec bigList = function
     | 0 -> []
-    | _ -> bigList (n-1) @ (n-1)
+    | n -> (n-1) :: (bigList (n-1))
 ```
 
 ```fsharp
@@ -562,7 +573,7 @@ let rev source =
 ### Incremental rotation
 
 ```fsharp
-let rot (l, r, a) = match Seq.length l
+let rec rot (l, r, a) = match Seq.length l
     | 0 -> (Seq.head r) :: a    
     | 1 -> (Seq.head l) :: (rot
                 (Seq.tail l, Seq.tail r, Seq.head r :: a))
