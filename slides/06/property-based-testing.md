@@ -217,35 +217,50 @@ Generic types not implemented due to the many constraints that can exists for th
 
 ----
 
-### Ways to use Properties
+### Conditional Properties
 
-* Conditional Properties
-    * form: `<condition> ==> <property>`
-* Lazy properties
-    * `lazy` keyword - otherwise F# is eager evaluated
-* Exceptions
-    * use: `throws<'e :> exn,'a> Lazy<'a>`
-* More to be found here: [Properties](https://fscheck.github.io/FsCheck//Properties.html)  \*Quantified, Timed
+form: `<condition> ==> <property>`
+
+```fsharp
+let insertKeepsOrder (x:int) xs = 
+    ordered xs ==> ordered (insert x xs)
+```
+
+Can give fewer tests - if many inputs are moved. Custom generators could be an altertive
 
 ----
 
-# Examples
+### Lazy properties
+
+`lazy` keyword - otherwise F# is eager evaluated
+
+```fsharp [2]
+let tooEager a = a <> 0 ==> (1/a = 1/a) // throws exception
+let moreLazy a = a <> 0 ==> (lazy (1/a = 1/a))
+```
+
+----
+
+### Properties with Exceptions
+
+use: `throws<'e :> exn,'a> Lazy<'a>`
 
 ```fsharp
-// conditional
-let insertKeepsOrder (x:int) xs = 
-    ordered xs ==> ordered (insert x xs)
-
-// Lazy
-let tooEager a = a <> 0 ==> (1/a = 1/a) // throws ex
-let moreLazy a = a <> 0 ==> (lazy (1/a = 1/a))
-
-// Exception
 let expectDivideByZero() = 
     Prop.throws<DivideByZeroException,_>
         (lazy (raise <| DivideByZeroException()))
-
 ```
+
+----
+
+### More
+
+More to be found here: [Properties](https://fscheck.github.io/FsCheck//Properties.html) 
+
+* Quantified
+* Timed
+* Distribution
+
 
 ----
 
@@ -256,12 +271,6 @@ let expectDivideByZero() =
 * Data shrinkers is defined
     * `'a -> seq<'a>`
     * also customizable
-
-note:
-
-From FsCheck:
-
-Generators are built from the function choose, which makes a random choice of a value from an interval, with a uniform distribution.
 
 ----
 
@@ -275,12 +284,18 @@ let chooseFromList xs =
       }
 ```
 
-* Build from the `choose` function.
-* Syntax `let!`, `get { .. }` - we will get back to this
+* Build from the `Gen.choose` function
+* Syntax `let!`, `gen { .. }, return` - we will get back to this
+
+note:
+
+From FsCheck:
+
+Generators are built from the function `Gen.choose``, which makes a random choice of a value from an interval, with a uniform distribution.
 
 ----
 
-### Control data
+### Control generated data
 
 * Control data with
     * Distribution
@@ -316,7 +331,7 @@ Check.One(
     fun x -> abs x >= 0
 )
 ```
-* Avoid changing state of generated objects (if mutable) 
+\* Avoid changing state of generated objects (if mutable) 
 
 
 
@@ -428,7 +443,7 @@ This means
 * You write fewer test cases
     * but get better security
 * PBT forces you to consider what to implement
-* PBT forces clean design
+* PBT forces clean design (as to TDD)
 
 note:
 
