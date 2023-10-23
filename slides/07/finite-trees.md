@@ -99,7 +99,7 @@ CBox2 is more specific, but inserting into CBox2 is more cumbersome
 
 ## Traversing a tree
 
-![Depth vs breadth first traverse](./img/depth-breadth-first.gif)
+![Depth vs breath first traverse](./img/depth-breadth-first.gif)
 
 
 ----
@@ -137,17 +137,17 @@ depthFirst tree
 ----
 
 
-### Breadth first traversel
+### Breath first traversel
 
 ```fsharp
-let breadthFirst tree =
-    let rec breadthFirstList = function
+let breathFirst tree =
+    let rec breathFirstList = function
         | []                    -> []
         | (Node(x, ts)) :: rest -> 
-            x :: breadthFirstList (rest @ ts)
-    breadthFirstList [tree]
+            x :: breathFirstList (rest @ ts)
+    breathFirstList [tree]
 
-breadthFirst tree
+breathFirst tree
 // val it : int list = [1; 2; 3; 4; 5; 6; 7]
 ```
 
@@ -321,9 +321,10 @@ Seperations of concern
 
 ### Encapsulation
 
-* if Clients uses circuit and do not pattern match we can
+* if a clients uses circuit and do not pattern match, we can
     * rename cases
-    * add cases e.g.
+    * add cases
+    * e.g.
 
 ```fsharp
 type Circuit<'a> =
