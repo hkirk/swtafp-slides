@@ -69,7 +69,7 @@ createNestedBoxes 1000000 |> price
 
 ### Tail recursion
 
-Remeber how we solve this?
+Remember how we solve this?
 
 ```fsharp [1-3|5-7]
 let rec priceAcc costSoFar = function
@@ -296,7 +296,7 @@ let rec foldBackBoxes fItem fBox gen boxes =
 
 ### Like `List.fold` and `List.foldBack`
 
-* Like in the list the signatures for both fWrapped is the same
+* Unlike in `list` the signatures for both `fold` and `foldBack` are the same
     * `('a -> 'a)`
 * they behave completely different, so we should properly change signatures for easier usage.
 * Also note - this is slower because of the chain of nested functions
@@ -408,24 +408,10 @@ let foldArraySubRight (f:OptimizedClosures.FSharpFunc<'T,_,_>) (arr: 'T[]) start
 
 ----
 
-### Product types size
-
-```fsharp
-type RGB = | Red | Green | Blue
-type Alpha = | Transp | NonTrans
-type Colour { rbg: RGB; alpha: Alpha }
-```
-
-Product of sizes of components: 
-
-`size(record) = size(a)*size(b)`
-
-
-----
-
 ### Sum / union type size
 
 ```fsharp
+type RGB = | Red | Green | Blue
 type Colour = 
     | rgb of RBB
     | Transparant
@@ -434,6 +420,20 @@ type Colour =
 Sum of sizes of components:
 
 `size(sum) = size(a)+size(b)`
+
+----
+
+### Product types size
+
+```fsharp
+type Alpha = | Transp | NonTrans
+type Colour { rbg: RGB; alpha: Alpha }
+```
+
+Product of sizes of components: 
+
+`size(record) = size(a)*size(b)`
+
 
 ----
 
@@ -542,8 +542,42 @@ Both can be equally good - the represent the same data
 * using SessionId often -> choose second
 * or choose both and create a method than translate
 
+---
+
+### Monoids
+
+* Also something we have from Category Theory
+* Stricter than Semi Groups
 
 ----
+
+#### Monoid laws
+
+* Associative
+* Binary operations
+* Identity
+
+----
+
+#### Add and Multiply
+
+* `+`
+    * `(2 + 3) + 4 = 2 + (3 + 4)`?
+    * Identity element?
+* `*`
+    * `(2 * 3) * 4 = 2 * (3 * 4)`?
+    * Identity element?
+
+----
+
+#### Other examples
+
+* More obvious:
+    * string, lists, money
+* Less so
+    * lazy, functions (some), ...
+
+---
 
 ### Category theory
 
@@ -552,7 +586,7 @@ This just touched on the subject Category Theory.
 [Category Theory for Programmers: The Preface ](https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/)
 
 
----
+----
 
 ## References
 
