@@ -1,7 +1,3 @@
-<!-- .slide: data-background-image="./img/i8kiw31h.jpeg" -->
-
----
-
 
 <!-- .slide: data-background="#003d73" -->
 ## Functional Architecture
@@ -41,7 +37,7 @@ So to adhere to DIP
 
 #### Why keep BLL pure
 
-* Creating a PDF invoice, requires
+* Creating a **PDF** invoice, requires
     * Products
     * Prices before and after taxes
     * Custumer information
@@ -50,7 +46,7 @@ So to adhere to DIP
 
 ----
 
-#### OOP way of doing this
+#### OO way of implementing the above
 
 ```csharp
 public void GenerateInvoice(Order order, Customer customer)
@@ -74,7 +70,8 @@ Note:
 
 ```csharp
 public void GenerateInvoice(Order order,
-             Customer customer, Language lang) {}
+                            Customer customer,
+                            Language lang) {}
 ```
 
 Call `GenerateInvoice` twice on for each language - what problems does this introduce?
@@ -108,11 +105,11 @@ So each call to `GeneateInvoice` increments invoice number :(
 
 So IO would be all the places we have side-effects aka. Infrastructure
 
-* IO is a monad.
+* IO is a monad\*.
 * Another example of monads is F#'s `Option`
 * Monads can be combined with '`bind`'
 
-**Note**: We will come back to monads.
+\* We will come back to monads. <!-- .element: style="font-size: 20px; position: relative; bottom:0;" -->
 
 ----
 
@@ -135,8 +132,8 @@ Monads also have some rules
 #### Example with F#'s Option
 
 ```fsharp
-let o = Some 3 // creation
-let n = None   // creation 
+let o = Some 3 // creation or return
+let n = None   // creation or return
 let f = fun a -> Some (a+3)
 
 o |> Option.bind f // ...
@@ -171,23 +168,9 @@ Note: Not only for FP - but very used especially in FP so e.g. F# and Haskell
 
 ### A Resturant example
 
-* Resturant check if reservation can be accepted
-
-
 ```fsharp
-let connStr = "..."
-let reserveTable = 
-    Validate.reservation
-    >> bind (Capacity.check 10 (getReservedSeatsFromDb connStr))
-    >> map (saveReservation connStr) // same as below
-  //>> map (fun res -> (saveReservation connStr) res)
-```
+module Capacity
 
-----
-
-### Closer look at `Capacity.check`
-
-```fsharp
 type Error = CapacityExceeded
 type Reservation = {Quantity: int}
 
@@ -200,6 +183,22 @@ let check capacity getReservedSeats reservation =
 //  capacity:int ->
 //  getReservedSeats:(Reservation -> int) ->
 //  reservation:Reservation -> Result<Reservation,Error>
+```
+
+----
+
+### Controller / Use case
+
+* Resturant check if reservation can be accepted
+
+
+```fsharp
+let connStr = "..."
+let reserveTable = 
+    Validate.reservation
+    >> bind (Capacity.check 10 (getReservedSeatsFromDb connStr))
+    >> map (saveReservation connStr) // same as below
+  //>> map (fun res -> (saveReservation connStr) res)
 ```
 
 ----
@@ -310,11 +309,12 @@ The function `reserveTable`
 
 ### ??
 
-Is my function `a` pure or not?
+Is my function `a()` pure or not?
 
 ----
 
-### Hexagonal architecture
+### Ports and Adapters
+##### hexagonal architecture
 
 * To avoid DAL to contaminate e.g. BLL
 * Alternative to layered architecture
