@@ -119,7 +119,7 @@ Two important methods for Monads are '`return`' and '`bind`'
 
 ```fsharp
 val return: 'a -> M<'a>
-val bind:   M<'a> -> (a -> M<'b>) -> M<'b>
+val bind:   M<'a> -> ('a -> M<'b>) -> M<'b>
 ```
 
 
@@ -303,7 +303,7 @@ The function `reserveTable`
 1. Pure functions **may** call other pure functions
 2. Impure functions **may** call other impure functions
 3. Impure functions **may** call other pure functions
-4. ~~Pure functions **may not** call other impure functions~~
+4. ___Pure functions **may not** call other impure functions___
 
 ----
 
