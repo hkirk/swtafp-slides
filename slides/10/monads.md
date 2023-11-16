@@ -8,14 +8,29 @@
 ### Agenda
 
 * Monads
+    * alternatives
 * Computation Expressions
+    * task / async
 * Functors
 * Applicatives
 * CE continued
 
 ---
 
-## Todays problem
+
+### True use of monads
+
+![True use](./img/monads.png "")
+
+note:
+
+From: https://medium.com/descript-software/monads-are-useful-part-1-c407e342e117
+
+Function composition
+
+----
+
+## Todays 1st problem
 
 ```fsharp
 let add (a: int option) (b: int option) (c: int option) =
@@ -66,19 +81,8 @@ val bind: ('T -> 'U option) -> 'T option -> 'U option
 val return': a -> m a
 // Operator (>>=) also called 'liftM'
 val bind: (a -> m b) -> m a -> m b
+// Note: 'm' is here the monad type
 ```
-
-----
-
-### True use of monads
-
-![True use](./img/monads.png "")
-
-note:
-
-From: https://medium.com/descript-software/monads-are-useful-part-1-c407e342e117
-
-Function composition
 
 ----
 
@@ -127,7 +131,7 @@ bind f (bind g (Some 2))
 
 #### When to look for monads
 
-* You have a function that performs some side-effect
+* You have a function that performs some side-effect or fails
     * a function taking 'plain' input like `int`, `string` or `Person` and
     * returning `option`, `Promise`, `Result` etc.
 
@@ -136,6 +140,10 @@ bind f (bind g (Some 2))
 ### Variations
 
 ![Free monads](./img/free-monads.png) <!-- .element: style="height: 500px" -->
+
+note:
+
+satisfy Monads laws, but don't collapse/compute, instead build a monadic datastructure
 
 ----
 
@@ -190,20 +198,6 @@ let monadicAdd (a: int option)
 
 ----
 
-#### Keywords in CE
-
-```fsharp
-expr { let! ... }
-expr { do! ... }
-expr { yield ... }
-expr { yield! ... }
-expr { return ... }
-expr { return! ... }
-expr { match! ... }
-````
-
-----
-
 #### CE is a class type
 
 ```fsharp
@@ -213,7 +207,7 @@ type OptionBuilder() =
 // Staticly somewhere
 let option = OptionBuilder()
 
-let x () =
+let create () =
     option {
         return 2
     }
@@ -232,11 +226,13 @@ type OptionBuilder() =
 // Staticly somewhere
 let option = OptionBuilder()
 
-let x (intOption: int option)=
+let useBind (intOption: int option): int option =
     option {
         let! x = intOption
         return x+1
     }
+let useBind' (intOption: int option): int option = 
+    Option.bind (fun x -> Some(x+1)) intOption
 ```
 
 Note: 
@@ -261,6 +257,11 @@ let add (a: int option) =
     option {
         return! a
     }
+let addWithoutReturnFrom (a: int option) = 
+    option {
+        let! a' = a
+        return a'
+    }
 ```
 
 Note:
@@ -278,7 +279,7 @@ let option = OptionBuilder()
 
 ----
 
-### Why creating a option CE 2
+### Why creating a option CE
 
 ```fsharp
 let addThreeOptions (a: int option)
@@ -292,12 +293,26 @@ let addThreeOptions (a: int option)
     }
 ```
 
+----
+
+
+#### Keywords in CE
+
+```fsharp
+expr { let! ... }
+expr { do! ... }
+expr { yield ... }
+expr { yield! ... }
+expr { return ... }
+expr { return! ... }
+expr { match! ... }
+````
 
 ---
 
 ### Async programming in F#
 
-* `task {}` is used to consume `Task<T>` otherwise 
+* `task {}` is used to consume `Task<T>` from C# otherwise 
 * use `async {}` 
 
 `async` are specifications of work, `task` are representation of work
@@ -313,12 +328,14 @@ let printTotalFileBytesUsingAsync (path: string) =
                      |> Async.AwaitTask
         let fileName = Path.GetFileName(path)
         printfn $"File {fileName} has %d{bytes.Length} bytes"
+        filename
     }
 
 [<EntryPoint>]
 let main argv =
-    printTotalFileBytesUsingAsync "path-to-file.txt"
-    |> Async.RunSynchronously
+    let result = printTotalFileBytesUsingAsync "path-to-file.txt"
+                 |> Async.RunSynchronously
+    printfn $"{result}"
     0
 ```
 
@@ -385,9 +402,10 @@ let compTrue value =
 
 ```fsharp
 let times2 b = 2 * b
+[1;2;3;4] |> List.map times2 |> List.map string
+// val it : string list = ["2"; "4"; "6"; "8"]
 [1;2;3;4] |> List.map (times2 >> string)
 // val it : string list = ["2"; "4"; "6"; "8"]
-[1;2;3;4] |> List.map times2 |> List.map string
 ```
 
 ----
@@ -395,6 +413,8 @@ let times2 b = 2 * b
 ### Using functors
 
 * Look for a functor whenever you have a type with a generic type argument
+* Existing examples:
+    * Option, List, Set, Map, Result, ...
 
 ---
 
@@ -409,6 +429,7 @@ And two functions
 val pure: 'a -> F 'a
 val apply: F ('a -> 'b) -> F 'a -> F 'b 
 // Operator: (<*>), also called lift
+// Note here 'F' is the applicative type
 ```
 
 ```fsharp
@@ -477,7 +498,7 @@ Note:
 List.map string [1;2;3;4] = apply [string] [1;2;3;4]
 
 // Interchange in F#
-apply [add1] [1] = apply [fun a -> a 1] [add1]
+`[add1] <*> [1] = [fun a -> a 1] <*> [add1]`
 // We can change the parameters and apply - this forces us to create a function (lambda) expression which takes a functions and apply - for the types to be correct.
 ```
 
@@ -497,7 +518,7 @@ Every `applicative` is a `functor`, since `map` can be defined by using `pure` a
 
 ```fsharp
 //map f x = pure f <*> x
-map f x = apply (pure f)
+map f x = apply (pure f) x
 ```
 
 ![Applicative and functors visualized](https://blog.ploeh.dk/content/binary/functors-applicatives-bifunctors.png "") <!-- .element: style="height:300px" -->
@@ -518,8 +539,8 @@ let applicativeAdd (a: int option)
                    (b: int option)
                    (c: int option) =
     let add3 x y z = x + y + z
-    (Some add3)
-        <*> a <*> b <*> c
+    (Some add3) <*> a <*> b <*> c
+    //Option.app (Option.apply ((Option.apply (Some add3) a) b) c)
 ````
 
 ----
@@ -575,3 +596,41 @@ type OptionBuilder() =
 * [Computation expressions](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/computation-expressions)
 * [Computation expression explained](https://www.youtube.com/watch?v=pC4ZIeOmgB0)
 * [Mark Seeman about category theory](https://blog.ploeh.dk/2018/03/19/functors-applicatives-and-friends/)
+
+---
+
+```fsharp
+
+let divide a b: Result<int, string> =
+    match b with
+    | 0 -> Error "Divide by zero is stupid"
+    | _ -> Success (a / b)
+
+
+let plusOne result = 
+    match result with
+    | Error why -> Error why
+    | Success result -> Success (result + 1)
+
+let plusOne' result =
+    Result.bind (fun s -> s+1) result
+
+let addToResultsTogether result1 result2 =
+    result1 |> Result.bind (fun res1 ->
+        result2 |> Result.bind (fun res2 -> 
+            Success (res1+res2)
+        )
+    )
+// if Result.ce existed
+let addToResultsTogether result1 result2 =
+    result {
+        let! res1 = result1
+        let! res2 = result2
+        return res1+res2
+    }
+
+match divide 1 0 |> plusOne' with
+| Success result -> printfn $"{result}"
+| Error why -> printfn $"This failed: {why}"
+
+```
