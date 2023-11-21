@@ -21,6 +21,7 @@
 
 * An actor framework - (ported from Scala Akka)
     * Actor model is from SmallTalk - OO done right :)
+    * inspiration from Erlang
 * Consists of
     * actors
     * messages
@@ -34,7 +35,7 @@
 * Can send and receive messages
     * process one message at a time
     * synchronized
-* Exists in an actor system
+* Exists within an actor system
 
 ----
 
@@ -49,7 +50,7 @@ let myActorSystem = System.create "MyActorSystem"
          (Configuration.load ())
 ```
 
-All actors live inside an actor system.
+All actors live within an actor system.
 
 Note: This is a heavy object, so only create one per application
 
@@ -82,7 +83,11 @@ Note: `spawn` `actofOf` and `actorOf2` is functions from `Akka.FSharp`
 
 * Actors can send messages to each other
 * Messages are immutable and strongly typed
-* Tell command: `<!` - sends an async message to the `actor` referenced - under the hood
+* Operators
+    * Tell (`<!`)
+        * sends an async message to the `actor` referenced - under the hood
+    * Ask (`<?`)
+        * sends an async message and wait for response
 
 ```fsharp
 actor <! "This is a message"
@@ -148,7 +153,7 @@ This is of the type `'M -> unit`
 
 #### Cont.
 
-6. Below the actor system, create an instance of your actor
+6. Below the creation of the actor system, create an actor instance
 
 ```fsharp
     let actor = spawn actorSystem "HelloActor"
@@ -202,13 +207,32 @@ let myFirstActor = spawn myActorSystem "myFirstActor"
                                              firstActor
 ```
 
+----
+
+### Creation of actors summary
+
+1. `actorOf`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+```fsharp
+'M -> unit
+```
+2. `actorOf2`
+```fsharp
+Actor<'M> -> 'M -> unit
+```
+3. manually
+```fsharp
+actor {
+    ...
+}
+```
+
 ---
 
 ### Messages
 
 * F# types: `tuples`, `records` and `discriminated unions` can be used as messages.
 * Messages are send with the `tell` command we saw above `<!`
-* How to andle messages is optional
+* How to handle messages is optional
     * normally pattern matching is used
 
 ```fsharp
@@ -267,7 +291,7 @@ type Hello =
 and change helloActor in `Actors.fs`
 
 ```fsharp
-let helloActor msg =
+let helloActor (msg: Hello) =
     match msg with
     | Hello _ -> printfn "Hello back at you"
 ```
@@ -285,7 +309,7 @@ In `main.fs`
     actor <! Hello "hello"
 ```
 
-And run the program - notice than first messages is swallowed
+And run the program - notice than first messages is handled by the actor system
 
 ---
 
@@ -294,6 +318,9 @@ And run the program - notice than first messages is swallowed
 * Reference/handle to another actor
 * Used to send message through the `ActorSystem`
     * we never talk directly to an actor
+    ```fsharp
+    let actor = actorOf2 helloActor
+    ```
 * `ActorSystem` helps communications between actors
     * wraps messages in an envelope with metadata
     * allow location transparency
@@ -308,7 +335,8 @@ And run the program - notice than first messages is swallowed
 let myFirstActor = spawn myActorSystem "myFirstActor"
                              (actorOf firstActor)
 ```
-2. Look up the actor via the `ActorPath` - we will see this later
+2. Get `parent`, `siblings` or `children`, etc. from context 
+3. Look up the actor via the `ActorPath` - we will see this later
 
 ----
 
@@ -409,15 +437,17 @@ actorSystem.WhenTerminated.Wait ()
 
 #### Atomize work
 
-* Breaks data down into smaller and smaller pieces, and let actors lower in the hierarchy work on these
+* Breaks data down into smaller and smaller pieces
+    * let actors lower in the hierarchy work on these
 * 'Leaf' actors can then be very specialized
-* Break data down recursively until it is easy to handle
+* E.g. break data down recursively until it is easy to handle
 
 ----
 
 #### Real world example
 
-* Twitter (uses JVM Akka) breaks down the stream of all tweets down into smaller streams - for each user.
+* Twitter (now X) (uses/used JVM Akka)
+    * breaks down the stream of all tweets down into smaller streams - for each user.
 
 ----
 
@@ -425,9 +455,10 @@ actorSystem.WhenTerminated.Wait ()
 
 * Different levels og risk and specialization
 * Like an army
-    * actors close to the root is doing strategy / supervision
+    * actors close to the root is doing strategy or
+        * supervision
     * actors closer to the leafs is handling riskier tasks
-* If error occur in a leaf actor, it can be e.g restarted without effecting the rest of the sytem.
+* If error occur in a child actor, it can be e.g restarted without effecting the rest of the sytem.
 
 ----
 
@@ -435,8 +466,8 @@ actorSystem.WhenTerminated.Wait ()
 
 * Every actor we create has a supervisor
 * Allows for an actor system to isolate and recover from failures
-* Ensures errors are contained in only parts of the hierarchy
-    * while other actors is not effected
+* Errors are contained in parts of the hierarchy
+    * other actors is not effected
 
 
 ----
@@ -444,7 +475,7 @@ actorSystem.WhenTerminated.Wait ()
 #### In practics
 
 * Every actor has a parent
-    * some has child(ren)
+    * some has a child(ren)
 * Parents supervise the child(ren)
 
 ----
@@ -461,9 +492,9 @@ actorSystem.WhenTerminated.Wait ()
     * Supervises `/user/` and `/system`
 * `/system` - system guardian
     * Responsible for closing down system
-    * Utility functions like logging 
+    * Utility functions like logging etc.
 * `/user` - Guardian actor / root actor
-    * This is where our actors live
+    * Parent to our actors
 
 Note:
 
@@ -505,7 +536,7 @@ let b1 = spawn mailbox.context "b1" basicActor
 
 * Actor only supervise children
 * Supervision 'starts' when something goes wrong e.g. an exception in a child actor
-    * Wrapped in a `Failure` mesages
+    * Errors is wrapped in a `Failure` message and send to parent.
 * Parent actor handle message based on
     * 1. how the child failed
     * 2. what directive is executed - based on `SupervisionStrategy`
@@ -516,7 +547,7 @@ let b1 = spawn mailbox.context "b1" basicActor
 
 1. `c1` experience an error and throws an exception
 2. `c1` suspends operations
-3. The system sends a `Failure` message from `c1` to parent `b1`
+3. The system sends a `Failure` message to `c1`'s parent `b1`
 4. `b1` issues a directive to `c1` telling it what should happen
 5. System continue to work
 
@@ -525,20 +556,22 @@ let b1 = spawn mailbox.context "b1" basicActor
 #### Supervision directives
 
 
-*  Restart the child (default): this is the common case, and the default.
-* Stop the child: this permanently terminates the child actor.
-* Escalate the error (and stop itself): this is the parent saying "I don't know what to do! I'm gonna stop everything and ask MY parent!"
-* Resume processing (ignores the error): you generally won't use this. Ignore it for now.
+* **Restart** the child (default): this is the common case
+* **Stop** the child: this permanently terminates the child actor
+* **Escalate** the error (and stop itself)
+    * this is the parent saying "I don't know what to do! I'm gonna stop everything and ask MY parent!"
+* **Resume** processing (ignores the error)
+    * you generally won't use this. Ignore it for now
 
 
 ----
 
 #### Supervision strategies
 
-* One-For-One strategy (default)
-    * Only failing actor is affected - not siblings
-* All-For-One
-    * Failing actor and all siblings are effected.
+* **One-For-One** strategy (default)
+    * only failing actor is affected - not siblings
+* **All-For-One**
+    * failing actor and all siblings are effected.
 
 ----
 
@@ -546,7 +579,7 @@ let b1 = spawn mailbox.context "b1" basicActor
 
 ```fsharp
 let aref =
-    spawnOpt system "my-actor" (actorOf myActor)
+    spawnOpt system "my-actor" (actorOf2 myActor)
        [ SpawnOption.SupervisorStrategy (Strategy.OneForOne (
                 (fun error ->
             match error with
