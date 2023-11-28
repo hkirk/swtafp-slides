@@ -185,6 +185,34 @@ let selection' = select "akka://user/barActor"
 selection' <! someMessage
 ```
 
+---
+
+### Good design
+
+* Never rely on one hierachy design from another
+* Always communicate via top-level actors
+* Delete risky operations to leafs
+
+----
+
+### Knowledge
+
+* Make it possible to change implementation details (DIP, LSP)
+* Top-level actors are interfaces
+
+![Limit knowledge](./img/limit-knowledge-about-cousins.png "Limit knowledge")
+
+
+----
+
+### Contact
+
+![Contact](./img/communicate-through-top.png "Contact")
+
+* Always send messages through top-level actors
+  * by `IActorRef` or `ActorSelection`
+* Make extension possible (OCP)
+* Return is possible with `IActorRef.Forward`
 
 ---
 
@@ -199,8 +227,10 @@ selection' <! someMessage
 
 * We all know FSM from SW4SWD and GoF State Pattern
 * Many state machines have some sort of time perspective
-    * We change state after some time
-    * We should stay in a state for some time
+    * change state after some time
+    * stay in a state for some time
+
+\* called `become` in C# and Scala<!-- .element: style="font-size: 20px" -->
 
 ----
 
@@ -284,8 +314,8 @@ let rec authenticating () =
 #### Unhandled messages
 
 * Actors has a `Stash` which acts like stack structure
-    * Calling `mailbox.Stash ()` put current message into stack
-* `mailbox.Unstash ()` puts the top message in front of the inbox
+    * Calling `mailbox.Stash ()` puts current message onto stack
+* `mailbox.Unstash ()` puts the top message at the front of the inbox
 * `mailbox.UnstashAll ()` unstashed all messages.
     * Preserves FIFO order
 
@@ -341,7 +371,7 @@ let mySampleActor = spawnOvrd system "actor"
 
 #### Pool Router
 
-* This owns (supervise) their routee children
+* Owns (supervise) their routee children
 * Makes it possible to control pool size
 
 ----
@@ -357,7 +387,7 @@ let mySampleActor = spawnOvrd system "actor"
 #### Supervision
 
 * Router are actors so we can used `SupervisorStrategy`
-* Default is 'alwasy escalate'
+* Default is 'always escalate'
 
 ----
 
