@@ -529,6 +529,7 @@ let b1 = spawn mailbox.context "b1" basicActor
 
 ![Actor path](./img/actor_path.png)
 
+// TODO: Move down after supervision
 
 ----
 
