@@ -294,7 +294,7 @@ let rec authenticating () =
                   -> ()
       | OutgoingMessage (roomId, msg) when roomId = chatroomId
                   -> ()
-      return! authenticating ()
+      return! unauthenticated ()
     }
   and authenticated () =
     actor {
@@ -307,6 +307,22 @@ let rec authenticating () =
                     -> ()
       return! authenticated ()
     }
+```
+
+note:
+
+```fsharp
+let actor (mailbox: Actor<_>) =
+  // let mutable previousMsg = []
+  let state previousMsg =
+    actor {
+      let! msg = mailbox.Receive ()
+      // handle msg
+      
+      state (msg :: previousMsg)
+    }
+
+  state []
 ```
 
 ----
@@ -362,7 +378,7 @@ let mySampleActor = spawnOvrd system "actor"
 
 ### Router
 
-* Special actor types
+* Special actor types (Pool or Group)
 * Can handle multiple messages at a time (Whuut!)
 * Router actors can only forward messages (puh)
 * Routers can be configured programaticly or using conf files
