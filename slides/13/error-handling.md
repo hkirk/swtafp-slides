@@ -38,6 +38,12 @@ let useCase (json:string) =
   db.updateMunicipality newData
 ```
 
+All functions are on the form
+
+```fsharp
+'input -> 'output
+```
+
 Note:
 
 ```fsharp
@@ -70,6 +76,8 @@ let useCase =
   >> db.updateMunicipality
 ```
 
+
+
 ----
 
 <!-- .slide: data-background-image="./img/error.jpg" -->
@@ -88,10 +96,18 @@ let useCase =
 * Some of these functions can fail in different ways
   * IOError
   * DBError
+  * ValidationError
   * Verification error
   * Authentication error
 
 How do we compose code that can result in errors with our FP functions?
+
+```fsharp
+type ReturnType = Person | ValidationError 
+// E.g
+let validatePerson (json: string): ReturnType =
+
+```
 
 ----
 
@@ -125,7 +141,7 @@ let useCase (json:string) =
 
 ----
 
-#### Less OOP like
+#### Fake F# 
 
 ```fsharp
 let useCase json: Return =
@@ -152,6 +168,8 @@ Note: Could have choosen to return `Result` from our functions instead of Option
 
 #### Return Types
 
+Introduciong types for all errors cases
+
 ```fsharp
 type Return =
   | Success
@@ -168,7 +186,7 @@ type Return =
 Drawbacks:
 * Hard to match on
 * Will consist of all error types in our application
-* or many `Return` types, we need to navigate in. 
+* or many **return** types, we need to navigate in. 
 
 
 ---
@@ -178,9 +196,9 @@ Drawbacks:
 ```fsharp
 type NoValueResult = Success | Error
 // or
-type Result<'TError, 'TSuccess> =
+type Result<'TSuccess, 'TError> =
   | Success of 'TSuccess
-  | Error of 'TError
+  | Error of 'TError 
 ```
 
 ----
@@ -205,8 +223,10 @@ type Errors =
   | VerificationError
   /// ...
 
+// single error
 let ourUseCase (): Result<Success, Errors> =
     failwith ""
+// multiple errors
 let ourUseCase2 (): Result<Success, Errors list> =
     failwith ""
 ```
@@ -237,7 +257,7 @@ let result: Result<int, string> =
 
 ----
 
-* return - wraps a data type in monad type
+* return - wraps a data type in monadic type
 * bind - transform the encapsulated value by a function `'A -> M<'B>` 
 
 ```fsharp
@@ -275,15 +295,6 @@ let validName (str: string) =
   not (str.Contains(" "))
 ```
 
-----
-
-#### Other tools 
-
-* `map` for non-monadic types
-* parallel monadic functions
-* domain events / logging etc.
-
-
 ---
 
 ### Composition <!-- .element style="color:white" -->
@@ -314,10 +325,10 @@ So how to compose these functions?
 
 #### Input -> Output
 
-* We have a buch a functions on the form
-  * `'Input -> Result<'Error, 'Output>`
-* all taking a single input and returning Result/Either consisting of:
-  * an result or
+* We have a bunch a functions on the form
+  * `'Input -> Result<'Output, 'Error>`
+* all taking a single input and returning Result/Option consisting of:
+  * a result or
   * an error
 
 ----
@@ -377,14 +388,6 @@ let bind3 func = function
 
 **Note**: Both functions doing excatly the same as the above one. 
 
-Note:
-
-Due to currying
-
-```fsharp
-let (>>=) twoTrackInput switchFunction = 
-    bind switchFunction twoTrackInput
-```
 
 ----
 
@@ -432,6 +435,9 @@ Note:
 #### The same with `>>=` operator
 
 ```fsharp
+let (>>=) twoTrackInput switchFunction = 
+    bind switchFunction twoTrackInput
+
 let validate x =
   x
   |>  validated1
@@ -448,7 +454,7 @@ let (>>=) twoTrackInput switchFunction =
     bind switchFunction twoTrackInput
 ```
 
----
+----
 
 ### Convertion
 
@@ -465,7 +471,7 @@ val aAndB: 'A -> Result<'C, 'D>
 
 ----
 
-### SwitchComposition
+### `SwitchComposition`
 
 ```fsharp
 let (>=>) aFun bFun x =
@@ -493,19 +499,27 @@ let (>=>) aFun bFun =
 
 #### Comparision
 
-* **`Bind`** - Converts a 'switch function' into what blog calls a 'two-track function'
+* **`Bind`** - Converts a 'switch function' into what [the blog](http://www.fsharpforfunandprofit.com) calls a 'two-track function'
   * Used when combining single function
 * **`SwitchComposition`** - Converts two 'switch functions' into a single new 'switch function'
   * Chaining a number of functions together
 
 ----
 
+#### Other tools 
+
+* `map` for non-monadic types
+* parallel monadic functions
+* domain events / logging etc.
+
+---
+
 #### Composing with simple functions 
 
 ```fsharp
 let cannotFail input = input
 
-// Convert to 'A -> Result<'A, 'TError>
+// Convert 'A -> 'A into 'A -> Result<'A, 'TError>
 
 let switch f input =
   f input |> Ok
@@ -533,7 +547,7 @@ let combinedValidation =
   >=> switch (tee log)
 ```
 
----
+----
 
 ### Exceptions
 
