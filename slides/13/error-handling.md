@@ -144,23 +144,28 @@ let useCase (json:string) =
 #### Fake F# 
 
 ```fsharp
+let dostuffwithPerson person =
+  let ssnOpt = db.readSSN person
+  match ssnOpt with
+  | Some ssn ->
+    let bornIn = api.findMunicipality ssn
+    match bordnInOpt with
+    | Some bornIn ->
+      let newData = createNewPerson person bornIn
+      let result = db.updateMunicipality newData
+      "Sucess"
+    | None -> "Municipality not found"
+  | None -> "Person not found"
+
 let useCase json: Return =
   let person = validatePerson json
   match person with
-  | Some p -> 
-    let ssnOpt = db.readSSN person
-    match ssnOpt with
-    | Some ssn ->
-      let bornIn = api.findMunicipality ssn
-      match bordnInOpt with
-      | Some bornIn ->
-        let newData = createNewPerson person bornIn
-        let result = db.updateMunicipality newData
-        "Sucess"
-      | None -> "Municipality not found"
-    | None -> "Person not found"
+  | Some p -> doStuffWithPerson person
   | None -> "Validation error"
+
+
 ```
+
 
 Note: Could have choosen to return `Result` from our functions instead of Options - same problem
 
@@ -231,6 +236,8 @@ let ourUseCase2 (): Result<Success, Errors list> =
     failwith ""
 ```
 
+
+
 ----
 
 #### Return and Bind
@@ -247,6 +254,20 @@ let result: Result<int, string> =
 // Result.bind ('T -> Result<'U, 'TError>) 
 //        -> Result<'T, 'TError>
 //        -> Result<'U, 'TError>
+```
+
+note:
+
+```fsharp
+let a: Result<string, 'a> = Ok "asdf"
+match a with
+| Ok value -> value + "ASdf"
+| Error error -> throw error
+
+if Result.IsOk a then
+  Result.getOk a
+else 
+  Result.getError a
 ```
 
 ----
@@ -307,7 +328,7 @@ let validName (str: string) =
 
 ```fsharp
 type person = {email: string; name: string}
-let validatePerson input =
+let validatePerson input: Result<Person, string> =
   if validEmail (fst input) then
     Error "Email not valid"
   elif validName (snd input) then
@@ -315,7 +336,7 @@ let validatePerson input =
   else
     Ok {email = fst input; name = snd input }
 
-let readSSN (person: Person): Result<string, SSN> = 
+let readSSN (person: Person): Result<Person, string> = 
   failwith ""
 ```
 
@@ -537,7 +558,7 @@ let switch f input =
 let log msg: unit = printfn "-- %O" msg
 
 let tee f x =
-  f x |> ignore
+  f x
   x
 
 let combinedValidation =
