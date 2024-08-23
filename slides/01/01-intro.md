@@ -40,7 +40,7 @@
   * 4 hours per week
   * ~`$\frac{1}{2}$` lecturing
   * ~`$\frac{1}{2}$` exercises
-* Homework before, exercises after
+* Read before, exercises after
 
 ----
 
@@ -55,35 +55,35 @@
 - &#128187; Prepare **and** do exercises
 - &#128587; **Ask** questions and make comments
 - &#9200; Handin assignment on time
-  - Check they have the correct content
 
 ----
 
 ### Your expectations
 
-* Discord?
-* ?
+&#10067; <!-- .element: style="font-size: 160px" -->
 
-Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [Precourse form](https://forms.gle/TztvK1RxnVSrY18a8) <!-- .element:  class="fragment" data-fragment-index="1" -->
+Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [Precourse form](https://forms.gle/xyU9uMwqXCf48Cap6) <!-- .element:  class="fragment" data-fragment-index="1" -->
+
+![QR](./img/precourse_qe.png "") <!-- .element: style="width: 200px" class="fragment" data-fragment-index="1" -->
 
 ----
 
 ### Assignments
 
-5 smaller assignment (you **must** handin 3)
+Fitness app (but you can choose your own domain)
 
-| Name           | Release | Handin |
-|----------------|:-------:|-------:|
-| Nokia          | 3       | 5      |
-| Immutability   | 5       | 7      |
-| Tetris 1       | 7       | 9      |
-| Tetris 2       | 9       | 12     |
-| Akka           | 12      | 15     | 
+| Name                 | "Handin" |
+|----------------------|-------:|
+| Domain model         | 5      |
+| Business logic + test| 7      |
+| Error handling       | 9      |
+| Frontend             | 12     |
+| Notification         | 15     | 
 <!-- .element: style="font-size: 26px" -->
 
-Approved if
+Feedback given if
 * Deadline respected
-* Honest try at solving the problem
+* Material is a honest try at solve the problem
 
 
 
@@ -91,10 +91,10 @@ Approved if
 
 ### Exam
 
-- Take home preperation
-  - 16 hours - tests most topics in the course
 - 30 minutes oral exam
+  - Draw a subject (*5-10 haven't been choosen yet*)
   - Explain theory **and** show how this is applied
+  - Include exercises/assignments when you see fit
 
 ---
 
@@ -109,9 +109,9 @@ Applying and composing of functions
 - Imperative
   - Procedural (C)
   - OOP (C++, C#)
-- Declarative
-  - Functional (F\#)
-  - Logic (Prolog)
+- Declarative <!-- .element: class="fragment" data-fragment-index="1" -->  
+  - Functional (F\#) <!-- .element: class="fragment" data-fragment-index="1" -->  
+  - Logic (Prolog) <!-- .element: class="fragment" data-fragment-index="1" -->  
 
 
 ----
@@ -121,49 +121,46 @@ Applying and composing of functions
 * imperative programing one would
   * use statements to modify state
   * focus on how the program should achieve its goal
-* declarative the focus is on
-  * expressing commands
-  * focus on what should be accomplished
+* declarative the focus is on <!-- .element: class="fragment" data-fragment-index="1" -->  
+  * expressing commands <!-- .element: class="fragment" data-fragment-index="1" -->  
+  * focus on what should be accomplished <!-- .element: class="fragment" data-fragment-index="1" -->  
 
 ----
 
 
 ### Side effects
 
-- Changing value of variable
-- IO from external source
-- Throwing exception
-- &#9758; We are going to try minimize and control side-effects
-  - **not** removing them altogheter
-  - the same with controlflow
+Which we want to avoid
+- Changing value of variable<!-- .element: class="fragment" data-fragment-index="1" -->
+- I/O<!-- .element: class="fragment" data-fragment-index="2" -->
+- Throwing an exception<!-- .element: class="fragment" data-fragment-index="3" -->
+- &#9758; We are going to try minimize and control side-effects<!-- .element: class="fragment" data-fragment-index="4" -->  
+  - **not** removing them altogheter<!-- .element: class="fragment" data-fragment-index="4" -->  
+  - the same with controlflow<!-- .element: class="fragment" data-fragment-index="4" -->  
 
 ----
 
 ### Other concepts
 
-- Functions as first class citizen
-- Higher order functions
-- Pure functions
-- Recursion
-- Referential transparency
-- Immutability
+- Functions as first class citizen<!-- .element: class="fragment" --> 
+- Higher order functions<!-- .element: class="fragment" --> 
+- Pure functions<!-- .element: class="fragment" --> 
+- Recursion<!-- .element: class="fragment" --> 
+- Referential transparency<!-- .element: class="fragment" --> 
+- Immutability<!-- .element: class="fragment" --> 
 
 
 ----
 
 ### Why FP
 
-- Makes us better OOP developers
-- Help us develop more modular code
-- Makes writing testable code easy
-- Can help us write 'efficient' code
-- Less code -> fewer bugs
-- Fairly simple and clean syntax
+- Makes us better OOP developers<!-- .element: class="fragment" -->
+- Help us develop more modular code<!-- .element: class="fragment" -->
+- Makes writing testable code easy<!-- .element: class="fragment" -->
+- Can help us write 'efficient' code<!-- .element: class="fragment" -->
+- Less code -> fewer bugs<!-- .element: class="fragment" -->
+- Fairly simple and clean syntax<!-- .element: class="fragment" -->
 
-Note:
-
-- No higher kinded types
-- Fewer OOP features
 
 ----
 
@@ -179,9 +176,8 @@ Note:
 ### Personal experience with FP
 
 * Been using FP with OOP since 2012
-* Fluent in Scala
+* Fluent in Scala and F#
 * Know some SML and Haskell
-* Been using F# since summer 2020
 
 
 ---
@@ -196,17 +192,22 @@ Note:
 - builds to .NET IL
 - OOP possible in F#
 
+Note:
+
+- No higher kinded types
+- Fewer OOP features
+
 ----
 
 ## Usages of F#
 
-* 'Normal programs'
-* GUI
-* Scripting
-* Web 
-  * backend
-  * can even be compiled to JS
-* Deployment to Azure
+* 'Normal programs'<!-- .element: class="fragment" data-fragment-index="1" -->
+* GUI<!-- .element: class="fragment" data-fragment-index="2" -->
+* Scripting (.fsx files)<!-- .element: class="fragment" data-fragment-index="3" -->
+* Web <!-- .element: class="fragment" data-fragment-index="4" -->
+  * backend<!-- .element: class="fragment" data-fragment-index="4" -->
+  * can even be compiled to JS<!-- .element: class="fragment" data-fragment-index="4" -->
+* Deployment scripts to Azure<!-- .element: class="fragment" data-fragment-index="5" -->
 
 ----
 
@@ -252,6 +253,8 @@ let main argv =
     0 // return an integer exit code
 ```
 
+In newer .NET projects, this is more like C#
+
 ----
 
 ### Interactive shell
@@ -269,13 +272,13 @@ let main argv =
 
 ### Modules
 
-- Modules are used to group code, 
+- Modules are used to group code
   - types, functions, and values
   - keeps related code together
-  - if no module is declared a module with the same name as the file exists
-  - two types:
-    - top level
-    - local level (can be nested)
+  - if no module is declared a module with the same name as the file exists<!-- .element: class="fragment" data-fragment-index="1" -->
+  - two types:<!-- .element: class="fragment" data-fragment-index="2" -->
+    - top level<!-- .element: class="fragment" data-fragment-index="2" -->
+    - local level (can be nested)<!-- .element: class="fragment" data-fragment-index="2" -->
 
 
 ----
@@ -283,19 +286,19 @@ let main argv =
 ### Namespaces
 
 - Namespace lets you organize F\# programming related elements.
-  - Must be top level in a file
-  - All code in that file becomes part of that namespace
-  - Cannot contain functions or values directly
-  - Only contain types and modules
-  - Can be declared implicitly
-* Styleguide prefer Namespaces in all files
-  - because of interopbillity
+  - Must be top level in a file<!-- .element: class="fragment" data-fragment-index="1" -->
+  - All code in that file becomes part of that namespace<!-- .element: class="fragment" data-fragment-index="2" -->
+  - Cannot contain functions or values directly<!-- .element: class="fragment" data-fragment-index="3" -->
+  - Only contain types and modules<!-- .element: class="fragment" data-fragment-index="4" -->
+  - Can be declared implicitly<!-- .element: class="fragment" data-fragment-index="5" -->
+- Styleguide prefer namespaces in all files<!-- .element: class="fragment" data-fragment-index="6" -->
+  - because of interopbillity with C#<!-- .element: class="fragment" data-fragment-index="6" -->
 
 ----
 
 ### Signature files (.fsi)
 
-- `FileName.fsi` is signature file for `FileName.fs`
+- `FileName.fsi`&nbsp;is&nbsp;signature&nbsp;file&nbsp;for&nbsp;`FileName.fs`
 - Signature file describes
   - Types
   - Namespaces
@@ -341,7 +344,11 @@ module Module1 =
 
 * As other scripting langauge (bash, powershell)
 * Is not compiled
-* Run: `dotnet fsi filename.fsx`
+* Execute in terminal: 
+
+```bash
+$ dotnet fsi filename.fsx
+```
 
 ---
 
@@ -365,7 +372,7 @@ Language intro
 
 ### Operators
 - `+`, `-`, `*`, `/`, `%` on all numeric types
-  - Operands must have same type
+  - Both operands must have same type
   ```fsharp
   // Not
   2 + 3.0
@@ -544,7 +551,7 @@ let rec factororial = function
 ### Pattern matching
 
 ```fsharp
-type Option<'a> = | Some of 'a | None 
+type OptionalInt = | Some of int | None 
 
 let optionalInt = Some 1
 
@@ -558,9 +565,9 @@ match optionalInt with
 ### Pattern matching
 
 ```fsharp
-type Result<'T,'TError> =
-    | Ok of ResultValue:'T
-    | Error of ErrorValue:'TError
+type Result =
+    | Ok of string
+    | Error of string
 
 let result = Error "File not found"
 
@@ -571,7 +578,7 @@ match result with
 
 ----
 
-### Simpel types 
+### Simpel type - tuples 
 
 - Tuples
 ```fsharp
@@ -580,9 +587,10 @@ match result with
 (1, "a")
 // val it : int * string = (1, "a")
 ```
-    - Access with:
-      - functions '`fst`' or '`snd`'
-      - **or** pattern mathing
+
+- Access with:
+  - functions '`fst`' or '`snd`'
+  - **or** pattern mathing - with deconstruction
 
 ---
 
@@ -603,7 +611,7 @@ Building list can be done staticly with the `[]` list constructor
 let l1 = [1; 2; 3; 4; 5]
 ```
 
-or dynamicly with the `::` (prononced cons) operator
+or dynamicly with the `::` *cons* operator
 
 ```fsharp
 let l2 = 1::2::3::4::5::[]
@@ -623,7 +631,7 @@ let l3 = 1::(2::(3::(4::(5::[]))))
 
 ### Working with lists
 
-There are a number of functions for list, all found in the [List module](https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html).
+There are a number of functions for `list`s, all found in the [List module](https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html).
 
 ```fsharp
 let l1 = ["abc", "def", "ghi"]
@@ -631,8 +639,6 @@ List.head l1 // => "abc"
 List.isEmpty l1 // => false
 List.length l1 // => 3
 ```
-
-We will get back to the List module in next week
 
 ----
 
@@ -648,7 +654,7 @@ let l1Plus2 = List.append l1 l2
 let l1Plus2' = l1 @ l2
 ```
 
-[List module](https://fsharp.github.io/fsharp-core-docs/reference/fsharp-collections-listmodule.html)
+We will get back to the List module in next week<!-- .element: class="fragment" -->
 
 ----
 
@@ -679,14 +685,15 @@ let rec sum l =
 
 ### Two things about last example
 
-* Pattern matching can decompose 'any' data structures directly in the pattern
-* `function` vs `match x with`
+* Pattern matching can decompose any data structures directly in the match expression
+*<!-- .element: class="fragment" data-fragment-index="1" -->  `function`<!-- .element: class="fragment" data-fragment-index="1" --> vs `match x with`<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ```fsharp
 let rec sum = function
   | [] -> 0
   | (x::xs) -> x + sum xs
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ---
 
