@@ -14,7 +14,7 @@
 * List
   * Polymorphism
   * Higher order Functions
-* Code rules
+* Monoids
 
 ---
 
@@ -27,6 +27,7 @@
 ## Type inference
 
 * F# compiler will try to determine type
+  * `let addOne a = a+1`
   * If compiler cannot find type it will return error
 
 ```
@@ -46,18 +47,18 @@ Known type of argument: 'a
 
 ### Reading function types
 
-```fsharp [1-2|3-4|5-6|7-8]
+```fsharp [1-2|3-6|7-8]
 let addOne a = a+1
 // val addOne: a: int -> int
-let multiply a b = a*b
-// val multiply: a: int -> b: int -> int
 let apply f a = f a
 // val apply: f: ('a -> 'b) -> a: 'a -> 'b
 let applyTwo g a b = g a b
 // val applyTwo: g: ('a -> 'b -> 'c) -> a: 'a -> b: 'b -> 'c
+let multiply a b = a * b
+// val multiply: a: int -> b: int -> int
 ```
 
-* `->` reads return
+* '`->`' reads return
 * All functions are curried
 * Partial application
 
@@ -68,7 +69,7 @@ let applyTwo g a b = g a b
 ```fsharp
 let multiply a b = a * b
 // val multiply: a: int -> b: int -> int
-let multiplyFloat (a: float) (b:float) : float = a*b
+let multiplyFloat (a: float) (b:float) : float = a * b
 // val multiplyFloat: a: float -> b: float -> float
 ```
 
@@ -89,12 +90,12 @@ let generateList max =
 
 ## First-class citizens
 
-* Functions in F# are first class citizen
-  * functions can be input and output from functions
-* First-order functions
-  * *values* as paramters and/or returns values
-* Higher order functions
-  * *functions* as parameters and/or return functions
+* Functions in F# are first class citizen<!-- .element: class="fragment" data-fragment-index="0" -->
+  * functions can be input and output from functions<!-- .element: class="fragment" data-fragment-index="0" -->
+* First-order functions<!-- .element: class="fragment" data-fragment-index="1" -->
+  * *values* as paramters and/or returns values<!-- .element: class="fragment" data-fragment-index="1" -->
+* Higher order functions<!-- .element: class="fragment" data-fragment-index="2" -->
+  * *functions* as parameters and/or return functions<!-- .element: class="fragment" data-fragment-index="2" -->
 
 Note:
 C#, Java, etc also have functions as first class citizen
@@ -155,13 +156,15 @@ Some(3) |+| None // None
 Prefix:
 
 ```fsharp
-let (~+) a = a+42
-+ 3 // 45
+let (~+) a = a+42 // properly a stupid idea :)
++ 3 // 45 
 ```
 
 ----
 
 ## Pipe
+
+#### Or 'function appliation operators'
 
 ```fsharp
 [2;3;4;5;6;6] |> List.filter (fun y -> y < 4)
@@ -170,9 +173,9 @@ List.filter (fun y -> y < 4) <| [2;3;4;5;6;6]
 // val it: int list = [2; 3]
 ```
 
-* Or 'function appliation operators'
 * Operators `|>`, `||>` and `|||>`
-* Works as '`|`' in bash, Powershell and maybe in [js](https://github.com/tc39/proposal-pipeline-operator)
+* Works as '`|`' in bash and Powershell
+  * and someday maybe in [proposal-pipeline-operator in js](https://github.com/tc39/proposal-pipeline-operator)
 
 ![Pipe](./img/pipe.jpg "Pipe") <!-- .element style="height: 250px;" -->
 
@@ -195,6 +198,8 @@ note:
 let inline (>>) f g x = g(f x)
 ```
 
+* [pipe vs composition](https://stackoverflow.com/a/51640831/802881)
+
 ---
 
 # Tuples
@@ -209,18 +214,19 @@ let t2 = ([12;32], 3, "bar", 'a', t)
 
 ## Functions on tuples
 
-* Predefined functions
+* Predefined functions<!-- .element: class="fragment" data-fragment-index="0" -->
 ```fsharp
 fst ("foo", 42) // returns "foo"
 snd ("foo", 42) // return 42
 ```
-* Define functions with input 
+<!-- .element: class="fragment" data-fragment-index="0" -->
+* Deconstructing&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- .element: class="fragment" data-fragment-index="1" -->
 ```fsharp
-// Deconstructing
 let (str, num) = t
 // or
 let (l, num, bar, a, (str', num')) = t2
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -244,7 +250,7 @@ let (l, num, bar, a, (str', num')) = t2
 ## Ordering
 
 * Requires ordering to defined for components
-* Requires that components to be pair wise equal in type
+* Requires components to be pairwise equal in type
 * Is compared from left to right
 
 !["Ordering](./img/sorting.jpg "Ordering") <!-- .element style="height: 300px; " -->
@@ -253,14 +259,15 @@ let (l, num, bar, a, (str', num')) = t2
 
 # Records
 
-Defined as
+Defined as<!-- .element: class="fragment" data-fragment-index="0" -->
 
 ```fsharp
 type Course = { name: string; semester: string;
                 students: int list; teacher: int}
 
 ```
-with record labels `name`, `semester`, `students` and `teacher`
+<!-- .element: class="fragment" data-fragment-index="0" -->
+with record labels 'name', 'semester', 'students' and 'teacher'<!-- .element: class="fragment" data-fragment-index="0" -->
 
 ```fsharp
 [ attributes ]
@@ -270,6 +277,7 @@ type [accessibility-modifier] typename =
       ... }
     [ member-list ]
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -292,8 +300,8 @@ let swafp = {name = "SWAF"; semester = "F23";
 
 ## Equality
 
-* Requires equality to be defined for components
-* Requires that components to be pairwise equal in type
+* Requires equality to be defined for all components
+* Requires components to be pairwise equal in type
 
 ```fsharp
 type RecordTest = { X: int; Y: int }
@@ -310,11 +318,11 @@ record1 = record 2
 
 * Requires ordering to be defined for components
 * Requires that components to be pairwise equal in type
-* Is compared from left to right
+* Is compared from left to right of def.
 
 ----
 
-## Patterns
+## Deconstruction
 
 Can use pattern to decompose records
 
@@ -331,14 +339,16 @@ let {name = n; semester = s; students = l; teacher = t }
 
 # List
 
-* From last time
+* From last time<!-- .element: class="fragment" data-fragment-index="0" -->
 ```fsharp
 let alphabet = ['a'; 'b'; 'c'; 'd']
 ```
-* Can contain values, records, tuples, functions and lists
-* Lists are finite
-* Single chained linked list
-    * `head` + `tail`
+<!-- .element: class="fragment" data-fragment-index="0" -->
+* Can contain values, records, tuples, functions and lists<!-- .element: class="fragment" data-fragment-index="1" -->
+
+* Lists are finite<!-- .element: class="fragment" data-fragment-index="2" -->
+* Single chained linked list<!-- .element: class="fragment" data-fragment-index="3" -->
+    * head :: tail<!-- .element: class="fragment" data-fragment-index="3" -->
 
 
 ----
@@ -349,7 +359,7 @@ let alphabet = ['a'; 'b'; 'c'; 'd']
 let x::xs = alphabet // matches a list
 ```
 
-*Note*: fails on empty list
+**Note**: fails on empty list
 
 ```fsharp
 > match alphabet with                        
@@ -363,11 +373,11 @@ let x::xs = alphabet // matches a list
 
 ### Operators
 
-* `@` and `::` is an infix operators on lists. 
+* `@` and `::` is infix operators on lists. 
 
 ```fsharp
-let l = 'a'::[]
-// val l: char list = ['a']
+let l = 'a'::['b']
+// val l: char list = ['a'; 'b']
 let merged = ['a';'b'] @ ['c';'d']
 // val merged : char list = ['a'; 'b'; 'c'; 'd']
 ```
@@ -376,23 +386,9 @@ let merged = ['a';'b'] @ ['c';'d']
 
 ----
 
-### Append and Reverse
+### Reversing
 
-* `List.append` same thing
-* `List.rev` is from standard library
-
-```fsharp
-List.append ['a'; 'b'] ['c']
-// val it: char list = ['a'; 'b'; 'c']
-List.rev merged
-// val it : char list = ['d'; 'c'; 'b'; 'a']
-```
-
-----
-
-## Reverse (continued)
-
-`List.rev` is an efficient way of reversing a list - oppose to the naive implemetation
+* `List.append` same thing as `@`
 
 ```fsharp
 let rec reverse = function
@@ -400,12 +396,20 @@ let rec reverse = function
   | x::xs -> reverse xs @ [x]
 ```
 
-This is not efficient because of the way `@` is works
+----
 
+## `List.rev`
+
+* <!-- .element: class="fragment" data-fragment-index="0" -->`List.rev` is from List module <!-- .element: class="fragment" data-fragment-index="0" --><br/>
+* <!-- .element: class="fragment" data-fragment-index="1" -->`List.rev` is an efficient way of reversing a list <!-- .element: class="fragment" data-fragment-index="1" -->
+  * oppose to the naive implemetation (red above)<!-- .element: class="fragment" data-fragment-index="1" --><br/>
+
+* <!-- .element: class="fragment" data-fragment-index="2" -->This is not efficient because of the way `@` is works<!-- .element: class="fragment" data-fragment-index="2" -->
 ```fsharp
 [] @ ys = ys
 [x0;x1;x2;x3] @ ys = x0 :: ([x1;x2;x3] @ ys)
 ```
+<!-- .element: class="fragment" data-fragment-index="2" -->
 
 Note:
 
@@ -413,7 +417,9 @@ Point - use std - since this is optimized
 
 ----
 
-## Alternativ to recursive functions
+## HoF on Lists
+
+#### as alternative to recursive functions
 
 ```fsharp [1-3|5]
 let rec sum = function
@@ -431,21 +437,14 @@ LINQ: Aggregate
 
 ### map
 
-Definition
-
+* Definition: 
 ```fsharp
 List.map: ('a -> 'b) -> 'a list -> 'b list
 ```
-
-Transforms a list of `'a`'s to a list of `'b`'s
-
-Note:
-Equavilant to Select in LINQ
+* Transforms a list of `'a`'s to a list of `'b`'s
 
 note:
-
-LINQ: Select
-
+Equavilant to Select in LINQ
 
 ----
 
@@ -480,36 +479,36 @@ let tempSFCelciusRounded =
 
 ### map works on many types
 
-* Generally speaking maps applies a function `f` to wrapped element(s)
-* Given a function `f: 'a -> 'b`
+* <!-- .element: class="fragment" data-fragment-index="0" -->Generally speaking maps applies a function `f` to wrapped element(s)<!-- .element: class="fragment" data-fragment-index="0" --><br/>
+* <!-- .element: class="fragment" data-fragment-index="1" -->Given a function `f: 'a -> 'b`<!-- .element: class="fragment" data-fragment-index="1" -->
     * map applies this to all wrapped elements e.g.
       * `'a list`, `Set<'a>`, `Map<'a>`
       * `'a option`
       * etc.
-* Map is always 
-`$ O(n) $`
+* <!-- .element: class="fragment" data-fragment-index="2" --> Map is always `$ O(n) $`<!-- .element: class="fragment" data-fragment-index="2" -->
 
 ----
 
 ### fold
 
-Definition:
-
+* Definition:<!-- .element: class="fragment" data-fragment-index="0" -->
 ```
 List.fold: ('State -> 'T -> 'State) -> 
                   'State -> 'T list -> 'State
 ```
+<!-- .element: class="fragment" data-fragment-index="0" -->
+* Accumulates a list<!-- .element: class="fragment" data-fragment-index="1" -->
+  * given an initial value and <!-- .element: class="fragment" data-fragment-index="1" --><br/>
+  * a function that takes a list element and an accumulative value.<!-- .element: class="fragment" data-fragment-index="1" --><br/>
 
-*Accumulates a list*, given an initial value **and** a function that takes a list element **and** an accumulative value.
-
-* `('State -> 'T -> 'State)` function that accumulate a list element and a partial result
-* `'State` an initial value
+* ('State -> 'T -> 'State) - accumulator function<!-- .element: class="fragment" data-fragment-index="2" -->
+* 'State an initial value<!-- .element: class="fragment" data-fragment-index="3" -->
 
 ----
 
 ### fold example
 
-Counting number of element in list
+* Counting number of element in list<!-- .element: class="fragment"  data-fragment-index="0" -->
 
 * Initial value? <!-- .element: class="fragment"  data-fragment-index="1" -->
 
@@ -522,7 +521,7 @@ List.fold (fun acc elem -> acc+1) 0 list
 //val it : int = 6
 ```
 <!-- .element: class="fragment"  data-fragment-index="3" -->
-
+* 
 Translate to <!-- .element: class="fragment"  data-fragment-index="4" -->
 
 f (f (f (f (f (f (f 0 1) 2) 3) 4) 4) 5)  <!-- .element: class="fragment"  data-fragment-index="4" -->
@@ -530,7 +529,7 @@ f (f (f (f (f (f (f 0 1) 2) 3) 4) 4) 5)  <!-- .element: class="fragment"  data-f
 
 ----
 
-### A better fold example
+### Another fold example
 
 Insertion sort defined by List.fold
 
@@ -558,11 +557,11 @@ let span p list =
 
 ### fold in general
 
-* Fold like map is defined on many types
+* Fold like map is defined on many types<!-- .element: class="fragment"  data-fragment-index="1" -->
      * `list`, `Set`, `Map`, `option` etc.
-* Fold is tail recursive - stack secure
-* Fold is specific in the direction it calculates
-* Fold is always `$ O(n) $`
+* Fold is tail recursive - stack secure<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* Fold is specific in the direction it calculates<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
+* <!-- .element: class="fragment"  data-fragment-index="4" -->Fold is always $ O(n) $<!-- .element: class="fragment"  data-fragment-index="4" -->
 
 ----
 
@@ -591,7 +590,7 @@ List.foldBack (fun a i -> a - i) [1; 3; 8] 100
 // val it : int = -94
 ```
 
-* fold: (((100 - 1) - 3) - 8) <!-- .element: class="fragment"  data-fragment-index="1" -->
+* fold: (((100 - 1) - 3) - 8) <!-- .element: class="fragment"  data-fragment-index="1" --><br/>
 * foldBack: (1 - (3 - (8 - 100))) <!-- .element: class="fragment"  data-fragment-index="1" -->
 
 ----
@@ -619,69 +618,62 @@ Stopped due to error
 
 ---
 
-# Code rules
+## Monoids
 
-* Set of dogma rules to guide our code
-* Can be used to challange ourself
-* **Note**: Slides will not adhere to these rules
+![Category theory](./img/monoids.jpg "with pigs")
 
 ----
 
-## Rules
+### Monoid rules
 
-1. Name everything
-2. No mutable state
-3. Exhaustive conditionals
-4. No intermediate variables
-5. Only expressions
-6. No explicit recursion
-7. Generic building blocks
-8. Side effects at boundaries
-9. ~~Only infinite sequences~~
-10. ~~One argument functions~~
+* Associative<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* Binary operations<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* Identity element<!-- .element: class="fragment"  data-fragment-index="3" -->
 
 ----
 
-## Explanation (1/3)
+### Why Monoids
 
-* __Name everything__[1] all functions must have a name -> no lambda
-  * Become better at recognizing patterns
-* __No mutable state__ don't use mutable data types
-  * Write referential transparent functions
-* __Exhaustive conditionals__ use patterns matching
-  * Write complete functions
+* Rather simple constructs we see a lot<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+  * We 'add' data together all the time
+* Make for simpler programs<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+  * if your types acts like other types
 
 ----
 
-## Explanation (2/3)
+### Strings concatenation
 
-* __No intermediate variables__ Do not use any variables in functions
-  * Better understading of pipelines and composition
-* __Only expressions__ 
-  * Avoid side effects - we will learn to control them later
-* __No explicit recursion__ No `let rec`
-  * Learning HoF like map, fold, etc
-* __Generic building blocks__ e.g. use collections instead of list
-  * easier to write resuable code
+* `("a"+"b")+"c" = "a"+("b"+"c")`<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* `""+"a" = "a"+""`<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
 
 ----
 
-## Explanation (3/3)
+### List
 
-* __Side effects at boundaries__ core business logic should have no side effects
-  * Control where side effects happens
-* __Only infinite sequences__ only depend on infinite sequnces ('seq'), no lists
-  * Could increase performance because of the lazy properties
-* __One argument functions__[1] Every function should have a single argument - not depending on currying
+* binary operation?<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* associative?<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* identity?<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
 
 
 ----
 
-### Notes
+<!-- .slide: data-visibility="hidden" -->
+### Free monoid
 
-[1] Hard
-
+* We wan't to combine two numbers<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+  * 3 & 4
+  * but have not determined how
+* Save these numbers in singleton arrays<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+  * `let three = [3]`
+  * `let four = [4]`
+* Then we can combine these<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
+  * `let combination = [3] @ [4]
+  * Haven't lost any information
+* later we can 'fold' to combine<!-- .element: class="fragment"  data-fragment-index="4" --><br/>
+  * this is a free monoid
 
 ---
 
 ## References
+
+* [Category therory](https://medium.com/statebox/fun-with-categories-70c64649b8e0 "flying pigs")
