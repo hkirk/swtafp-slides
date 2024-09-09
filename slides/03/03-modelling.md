@@ -208,6 +208,7 @@ let someValue = Some 3
 
 * Simular to sum type
   * Uses `Equal` and `int` value
+  * Not type safe
 
 ```fsharp
 type Meassurement = CM = 0 | Meter = 1 | Kilometer = 2
@@ -230,7 +231,7 @@ type StructPoint =
       Z: float }
 
 let p = { X = 1.0; Y = 2.3; Z = 4.5 }
-let p2 = { p with X = 4.0 }
+let p2 = { p with X = 4.0 } // copy
 ```
 
 ----
@@ -261,8 +262,7 @@ let v1 = 3.4<ml/cm>
 * Enforce domain rules
   * make states unrepresentable
 * Help us refactor
-* Keep and explicit TODO list
-* F# makes this **easy**
+* Keep an explicit TODO list
 
 ----
 
@@ -384,9 +384,7 @@ type Contact = {
 
 ----
 
-### Constraint
-
-- Business logic in types
+### Business logic in types
 
 ```fsharp
 type EmailInfo = {
@@ -395,8 +393,9 @@ type EmailInfo = {
 }
 ```
 
-- Here we want `IsEmailVerified` to change to false, whenever a new email is registered
-- Constraint on who can set `IsEmailVerified`
+- `IsEmailVerified`
+  - `false` -> email haven't be verified
+  - `true`  ->  otherwise
 
 ----
 
@@ -404,9 +403,10 @@ type EmailInfo = {
 
 ```fsharp
 type VerifiedEmail = VerifiedEmail of EmailAddr
+type UnVerifiedEmail = UnVerifiedEmail of EmailAddr * Hash
 
 type VerifyEmailSerice =
-  (EmailAddr * Hash) -> VerifiedEmail option
+  UnVerifiedEmail -> VerifiedEmail option
 
 type EmailInfo =
   private
@@ -421,10 +421,10 @@ Could of course also be moved into `fsi` file
 ### Documentation
 
 * ![""](./img/self_documenting.jpeg "") <!-- .element style="height:50vh; background-color:white; float:right;" -->
-* All code on the previeus slides are compilable code
-* Can argue that most can be read by non-F# programmers
-* Document constraints and logic
-* Develops a language we can use to talk about the code
+* All code shown code compiles<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* Most-likely readable to non-programmers<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* Document constraints and logic<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
+* Develops a language we can use to talk about the code<!-- .element: class="fragment"  data-fragment-index="4" --><br/>
 
 <!-- .slide: style="font-size: 38px" -->
 
@@ -432,7 +432,7 @@ Could of course also be moved into `fsi` file
 
 ### Avoid errors
 
-* New requirements: Email or Postal address
+New requirements: Email or Postal address
 
 ```fsharp [3-4]
 type Contact = {
@@ -442,7 +442,7 @@ type Contact = {
 }
 ```
 
-- Lets make sure we cannot represent and error state
+Lets make sure we cannot represent and error state<!-- .element: class="fragment"  data-fragment-index="2" -->
 
 ----
 
@@ -677,7 +677,7 @@ let transitionFromNoMessage shouldIdle idle
 * Model the domain directly in code
 * Type system is 'easy' to work with
 * Type system helps with refactoring
-* Keeps a todo list
+* Keeps a TODO list
 
 ---
 
