@@ -23,20 +23,20 @@
 
 ## What
 
-* Mutating operations
+* Mutating operations<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
     * should not change structure
-    * instead opy
-* Can share data between 'versions'
+    * instead copy
+* Can share data between 'versions'<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
 
 ----
 
 ## Why
 
-* Pros:
-    * immutable is easier to reason about
+* Pros:<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
+    * immutablility makes reasoning easier
     * automatically thread safe
     * easier to implement :)
-* Cons:
+* Cons:<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
     * slower?
     * uses more memory
     * harder to implement :)
@@ -59,6 +59,8 @@ module BST =
     // Code for creating/adding etc.
 ```
 
+----
+
 ##### Invariants
 * An element `'a` in a Node 
     * is **greater** than all elements in left sub-tree
@@ -72,17 +74,16 @@ We could also use .fsi files to declare functions
 ### Operations
 
 ```fsharp
-type empty<'a>    = unit -> BST<'a>
-type insert<'a>   = 'a   -> BST<'a> -> BST<'a>
-type remove<'a>   = 'a   -> BST<'a> -> BST<'a>
-type contains<'a> = 'a   -> BST<'a> -> bool
+module BST =
+  val empty<'a>    : unit -> BST<'a>
+  val insert<'a>   : 'a   -> BST<'a> -> BST<'a>
+  val remove<'a>   : 'a   -> BST<'a> -> BST<'a>
+  val contains<'a> : 'a   -> BST<'a> -> bool
 ```
 
 Could be extended with
-* `map`
-* `filter`
-* `fold`
-* etc.
+
+`map`, `filter`, `fold`, etc.
 
 note:
 
@@ -108,9 +109,9 @@ let rec contains (x: 'a) (n: BST<'a>) =
 
 
 * Algorithm:  ![BST](./img/bst.png "Binary search tree") <!-- .element: style="width: 250px; float: right" -->
-    1. Use a variation of `contains` to find correct place to insert
-    2. Copy nodes as we move down through the tree
-* Example
+    1. Use a variation of 'contains' to locate correct place to insert<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
+    2. Copy nodes as we move down through the tree<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* Example<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
     * Inserting 9
 
 ----
@@ -131,10 +132,10 @@ let rec contains (x: 'a) (n: BST<'a>) =
 
 ![BST](./img/insert3.png "Binary search tree") <!-- .element style="height: 500px; float: right" -->
 
-* **Notice:**
-* Only copy a small part</br>of the tree
-    * How much?
-* Does it effect run-time</br> for `insert`
+* **Notice:**<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
+* Only copy a small part</br>of the tree<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
+* How much?<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* Does it effect run-time</br> for 'insert'?<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
 
 
 
@@ -143,14 +144,14 @@ let rec contains (x: 'a) (n: BST<'a>) =
 
 ## `Set<'a>`
 
-* From .NET F# lib
-* **Invariant:** Elements are unique
-* Finite
-* Only elements where `ordering` is defined
-* Internally represented as a `BBT<'a>`
-* Immutable
+* From .NET F# library
+* Invariant: Elements are unique<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
+* Finite<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* Immutable<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
     * All operations returns a new `set`
-* Mathmatical set operations available
+* Mathmatical set operations available<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* Only elements where 'ordering' is defined<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
+* Internally represented as a 'BBT<'a>'<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
 
 Note:
 BBT: balanced binary three
@@ -205,21 +206,21 @@ Set.difference first third
 
 ## Sets in general
 
-* `map`, `filter`, `fold`, `foldBack` are all `$ O(n) $`
-* complexity of recusion is in worst case `$ O(n*log(n)) $`
-* Enumarations can be used to simplify and optimize this
+* <!-- .element: class="fragment"  data-fragment-index="0" --> map, filter, `fold`, foldBack are all $ O(n) $<br/>
+* <!-- .element: class="fragment"  data-fragment-index="1" --> complexity of recusion is in worst case $ O(n*log(n)) $<br/>
+* <!-- .element: class="fragment"  data-fragment-index="2" --> Enumarations can be used to simplify and optimize this
 
 ---
 
 ## `Map<'a>`
 
 * From .NET F# lib
-* **Invariant:** Keys are unique
+* Invariant: Keys are unique<!-- .element: class="fragment"  data-fragment-index="0" -->
     * Key / value pair
     * Lookup per key
-* Immutable
-* Implemented using `BBT<'a>`
-* As Set, Map requires ordering is defined for key type
+* Immutable<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* Implemented using 'BBT<'a>'<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* As Set, Map requires ordering is defined for key type<!-- .element: class="fragment"  data-fragment-index="2" -->
 
 Note:
 BBT: balanced binary three
@@ -256,9 +257,9 @@ exists:      ('Key - 'T -> bool) -> Map<'Key, 'T> -> bool
 
 ----
 
-### fold and foldBack on Maps
+### `fold` and `foldBack` on Maps
 
-Definition for fold, foldBack on map takes key/value pair into account
+Uses key/value pair in functions
 
 ```fsharp
 fold:     ('State -> 'Key -> 'T -> 'State)
@@ -279,8 +280,8 @@ Map.fold (fun s k v -> s + v) 0 m
 
 ## Equality
 
-* `=` operator is defined for both `list`, `set` and `map`
-* Equal is consists of same elements (structural)
+* = operator is defined for both 'list', 'set' and 'map'<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
+* Equal means same elements (structural)<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
     * For `list` order of elements matters
 
 ```fsharp
@@ -296,6 +297,7 @@ set [1;2] = set [2;1]
 set [1;2] = set [3;2]
 // val it : bool = false
 ```
+<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
 
 ---
 
@@ -305,10 +307,10 @@ set [1;2] = set [3;2]
 
 ----
 
-### Lazy
+### Sequences
 
-* Sequences in F# are lazy
-* Possibly infinite
+* Sequences in F# are lazy<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
+* Possibly infinite<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
 
 ```fsharp
 // Create finite
@@ -317,6 +319,7 @@ seq [1;2;3;4;5]
 let nat = Seq.initInfinite (fun i -> i)
 // [f 0; f 1; f 2; ...]
 ```
+<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
 
 ----
 
@@ -327,20 +330,20 @@ Seq.item 5 nat
 // val it: int 5
 ```
 
-* `Seq.item 5 nat` evaluates the 5th element, but not elements `0-4` and `6->...`
-* Calling `Seq.item 5 nat` will evaluate the 5th element again
+* <!-- .element: class="fragment"  data-fragment-index="0" --> 'Seq.item 5 nat' evaluates the 5th element, but not elements '0-4' and '6-...'
+* <!-- .element: class="fragment"  data-fragment-index="1" --><br/> Calling 'Seq.item 5 nat' will evaluate the 5th element again
 
 ----
 
-### Cache
+### Caching sequences
 
 ```fsharp
 // Seq.cache: seq<'a> -> seq<'a>
 let cachedNat = Seq.cache nat
 ```
 
-* Calling `Seq.item 5 cachedNat` will evaluate all elements from 0-5
-* Calling again will not evalute elements 0-5 again
+* <!-- .element: class="fragment"  data-fragment-index="0" --> Calling 'Seq.item 5 cachedNat' will evaluate all elements from '0-5'
+* <!-- .element: class="fragment"  data-fragment-index="0" --> Calling again will not evalute elements '0-5' again
 
 ---
 
