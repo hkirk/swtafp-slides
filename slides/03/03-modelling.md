@@ -248,21 +248,22 @@ let v1 = 3.4<ml/cm>
 //val v1: float<ml/cm> = 3.4
 ```
 
+----
+
+### Types as tools
+
+* Types can help us understand a domain<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
+* Enforce domain rules<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+  * make states unrepresentable<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* Help us refactor<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
+* Keep an explicit TODO list<!-- .element: class="fragment"  data-fragment-index="4" --><br/>
+
+
 ---
 
 ## Examples Quadratic equations
 
  ![Quardraitic equations](./img/quadratic_formula.gif "Quadratic equations")
-
-----
-
-### Types as tools
-
-* Types can help us understand a domain
-* Enforce domain rules
-  * make states unrepresentable
-* Help us refactor
-* Keep an explicit TODO list
 
 ----
 
