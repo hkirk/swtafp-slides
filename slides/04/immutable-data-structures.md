@@ -212,7 +212,7 @@ Set.difference first third
 
 ---
 
-## `Map<'a>`
+## `Map<'a, 'b>`
 
 * From .NET F# lib
 * Invariant: Keys are unique<!-- .element: class="fragment"  data-fragment-index="0" -->
