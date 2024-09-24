@@ -33,7 +33,51 @@
 
 ---
 
-## Property based testing
+## Function properties
+
+
+----
+
+### Referential transperency 
+
+* You can replace a function call with the result
+    * Caching<br/><!-- .element: class="fragment"  data-fragment-index="0" -->
+    * Parallelization<br/><!-- .element: class="fragment"-->
+    * Pipelining<!-- .element: class="fragment"  -->
+
+----
+
+### Pure functions
+
+* Functions *rely only on the input* and
+    * Deterministic<br/><!-- .element: class="fragment"-->
+    * Has no side-effect<br/><!-- .element: class="fragment"-->
+    * Works with immutable data structures<br/><!-- .element: class="fragment"-->
+    * Simplify reasoning<br/><!-- .element: class="fragment"-->
+    * Encourage modularity and compositional<br/><!-- .element: class="fragment"-->
+
+----
+
+### Total Functions
+
+* Defined for all possible inputs<br/><!-- .element: class="fragment"-->
+* Should terminate and return a value<!-- .element: class="fragment"-->
+
+```fsharp
+let div a b = a / b // total?
+```
+<!-- .element: class="fragment"-->
+```fsharp
+let head list = List.head list // total?
+```
+<!-- .element: class="fragment"-->
+
+
+---
+
+<!-- .slide: data-background-image="./img/property-based-testing-vs-unit-testing.png" -->
+
+----
 
 * Example [FizzBuzz kata](https://codingdojo.org/kata/FizzBuzz/)
 * Problem statement
@@ -48,9 +92,10 @@ print 'FizzBuzz'.
 
 ----
 
-### Covering with test cases
+### Example based testing
 
 ```fsharp
+[<Fact>]
 let ``Three should be a Fizz`` () =
     test <@ FizzBuzz.fizzBuzz 3 = "Fizz" @>
  
@@ -97,8 +142,8 @@ let expectedList =
       | _ -> string i)
 ```
 
-* implementing the algorithm in the test code
-    * so no worky :(
+* implementing the algorithm in the test code<!-- .element: class="fragment"-->
+    * so not really an option:(
 
 ----
 
@@ -106,24 +151,28 @@ let expectedList =
 
 So the properties of FizzBuzz is:
 
-1. multiples of both three and five print 'FizzBuzz'
-2. multiples of three print 'Fizz'
-3. multiples of five print 'Buzz'
-4. otherwise prints the numbers
+1. 1. multiples of both three and five print 'FizzBuzz'<br/><!-- .element: class="fragment"-->
+2. 2. multiples of three print 'Fizz'<br/><!-- .element: class="fragment"-->
+3. 3. multiples of five print 'Buzz'<br/><!-- .element: class="fragment"-->
+4. 4. otherwise prints the numbers<br/><!-- .element: class="fragment"-->
 
 ----
 
 ### Testing properties
 
-We then need
+* So we need a way to genrate
+    * numbers that are multiply of 3 and 5<br/><!-- .element: class="fragment"-->
+    * numbers that are multiply of 3 but not 5<br/><!-- .element: class="fragment"-->
+    * numbers that are multiply of 5 but not 3<br/><!-- .element: class="fragment"-->
+    * Numbers that are not a multiply of 3 or 5<br/><!-- .element: class="fragment"-->
 
-* A way to genrate
-    * numbers that are multiply of 3 and 5
-    * numbers that are multiply of 3 but not 5
-    * numbers that are multiply of 5 but not 3
-    * Numbers that are not a multiply of 3 or 5
+----
+
+### Custom types
 
 ```fsharp
+type MultipleOfOnly3 =
+[<Property>]
 let ```test multiply of three``` (x: MultiplyOfOnly3) =
     test <@ FizzBuzz.fizzBuzz x = "Fizz" @>
 ```
@@ -191,7 +240,7 @@ let ``Reverse of reverse of a list is the
   List.rev(List.rev xs) = xs
 ```
 
-Would you? <!-- .element: class="fragment"   data-fragment-index="1" -->
+Would you?<br/> <!-- .element: class="fragment"   data-fragment-index="1" -->
 
 Output: <!-- .element: class="fragment"   data-fragment-index="2" -->
 ```nohighlight
@@ -443,7 +492,7 @@ This means
 * You write fewer test cases
     * but get better security
 * PBT forces you to consider what to implement
-* PBT forces clean design (as to TDD)
+* PBT forces clean design (as do TDD)
 
 note:
 
@@ -455,5 +504,6 @@ Design:
 
 ## References
 
+* https://www.the-koi.com/projects/introduction-to-property-based-testing/
 * https://fscheck.github.io/FsCheck/
 * https://fsharpforfunandprofit.com/posts/property-based-testing-2/
