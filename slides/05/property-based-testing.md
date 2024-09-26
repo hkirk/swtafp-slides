@@ -171,8 +171,17 @@ So the properties of FizzBuzz is:
 ### Custom types
 
 ```fsharp
-type MultipleOfOnly3 =
-[<Property>]
+type MultiplyOfOnly3 = MultiplyOfOnly3 of int with
+  static member op_Explicit(MultiplyOfOnly3 i) = i
+
+type MultiplyOfOnly3Modifier =
+    static member MultiplyOfOnly3() =
+        ArbMap.defaults
+        |> ArbMap.generate<int32>
+        |> Gen.filter (fun i -> i > 0 && i % 3 = 0 && not (i % 5 = 0))
+        |> Arb.fromGen
+
+[<Property(Arbitrary = [| typeof<MultiplyOfOnly3Modifier> |])>]
 let ```test multiply of three``` (x: MultiplyOfOnly3) =
     test <@ FizzBuzz.fizzBuzz x = "Fizz" @>
 ```
@@ -184,12 +193,14 @@ let ```test multiply of three``` (x: MultiplyOfOnly3) =
 
 ```fsharp
 [<Property>]
-let ``Only divisible by three`` () =
-    Arb.generate<int32>
-    |> Gen.filter (fun i -> i % 3 = 0 && not (i % 5 = 0))
-    |> Arb.fromGen
-    |> Prop.forAll <| fun i ->
-        FizzBuzz.fizzBuzz i = "Fizz"
+    let ``test multiply of three`` () =
+        let gen = ArbMap.defaults
+                    |> ArbMap.generate<int32>
+                    |> Gen.filter (fun i -> i % 3 = 0 && not (i % 5 = 0))
+                    |> Arb.fromGen
+        Prop.forAll gen (fun x ->
+            test <@ FizzBuzz.fizzBuzz x = "Fizz" @>
+            )
 ```
 
 ---
