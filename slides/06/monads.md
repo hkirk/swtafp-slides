@@ -19,10 +19,13 @@
 
 ### Functors
 
+* Design pattern that alters nested values<br/><!-- .element: class="fragment" -->
 * A mapping in an elevated worlds between 'types'<!-- .element: class="fragment" -->
     * using 'normal' functions
 * They are structure preseving<!-- .element: class="fragment" -->
     * e.g. `List<string> -> List<int>`
+* <!-- .element: class="fragment" -->Typically called `map`
+    * `List.map: (mapper: 'a -> 'b) 'a list`
 
 note: 
 
@@ -92,7 +95,7 @@ Function composition
 
 ----
 
-## Todays 1st problem
+## Example problem
 
 ```fsharp [1-10|10]
 let add (a: int option) (b: int option) (c: int option) =
@@ -138,23 +141,26 @@ val bind: ('T -> 'U option) -> 'T option -> 'U option
 * Design pattern which can combine code fragments<br/><!-- .element: class="fragment" data-fragment-index="0" -->
 * Apply a function that returns a wrapped value<br/><!-- .element: class="fragment" data-fragment-index="1" -->
     * to a wrapped value
-* Monad functions<br/><!-- .element: class="fragment" data-fragment-index="5" -->
+* Functions needed<br/><!-- .element: class="fragment" data-fragment-index="5" -->
 
 ```fsharp
-val return': a -> m a
+val return': 'a -> m<'a>
 // Operator (>>=) also called 'liftM'
-val bind: (a -> m b) -> m a -> m b
-// Note: 'm' is here the monad type
+val bind: ('a -> m<'b>) -> m<'a> -> m<'b>
 ```
 <!-- .element: class="fragment" data-fragment-index="5" -->
 
 ----
 
-#### `return'` in detail
+#### `return'`
+
+* Typically just a type constructor
 
 ```fsharp
+let maybeA = Some 1
+let maybeB = None
+let result = Ok (myAPIData)
 ```
-TODO: 
 
 ----
 
@@ -163,9 +169,11 @@ TODO:
 ```fsharp
 // Option.bind
 let bind f = function
-    | Some v -> f v
+          // to a wrappe value
+    | Some v -> f v // returns a wrapped value
     | None   -> None
-
+                            //  |- wrapped value
+                            // v 
 bind (fun v -> Some (v+1)) (Some 4)
 // val it: int option = Some 5
 ```
@@ -207,8 +215,8 @@ bind f (bind g (Some 2))
 #### When to look for monads
 
 * You have a function that performs some side-effect or fails
-    * a function taking 'plain' input like `int`, `string` or `Person` and<!-- .element: class="fragment" -->
-    * returning `option`, `Promise`, `Result` etc.<!-- .element: class="fragment" -->
+    * <!-- .element: class="fragment" -->a function taking 'plain' input like int, string or Person and<br/>
+    * <!-- .element: class="fragment" -->returns Option, Promise, Result, Async, etc.
 
 ---
 
@@ -256,10 +264,11 @@ builder-expr { cexper }
 
 ----
 
-### Why creating a option CE
+### Why creating a `Option` CE
 
+This could be a bit more readable
 
-```fsharp
+```fsharp [4-6|7]
 let monadicAdd (a: int option)
                (b: int option)
                (c: int option) =
@@ -274,15 +283,15 @@ let monadicAdd (a: int option)
 
 #### CE is a class type
 
-```fsharp
+```fsharp [1-3|4-5|7-10]
 type OptionBuilder() =
-    member _.Return(x) =
+    member _.Return(x) = // Monad return'
         Some x
 // Staticly somewhere
 let option = OptionBuilder()
 
 let create () =
-    option {
+    option { // Using the Option CE
         return 2
     }
 ```
@@ -291,7 +300,7 @@ let create () =
 
 #### Class types
 
-```fsharp
+```fsharp [3-4|11|14-15]
 type OptionBuilder() =
     ...
     member _.Bind(x, f) =
@@ -322,7 +331,12 @@ type OptionBuilder() =
 
 #### Returning directly from CE
 
-```fsharp
+```fsharp [1-5|12, 8]
+let addWithoutReturnFrom (a: int option) = 
+    option {
+        let! a' = a
+        return a'
+    }
 type OptionBuilder() =
     ...
     member _.ReturnFrom(x) = x
@@ -330,11 +344,6 @@ type OptionBuilder() =
 let add (a: int option) =
     option {
         return! a
-    }
-let addWithoutReturnFrom (a: int option) = 
-    option {
-        let! a' = a
-        return a'
     }
 ```
 
@@ -353,7 +362,7 @@ let option = OptionBuilder()
 
 ----
 
-### Why creating a option CE
+### Our problem solved using CE
 
 ```fsharp
 let addThreeOptions (a: int option)
@@ -367,34 +376,13 @@ let addThreeOptions (a: int option)
     }
 ```
 
-----
-
-TODO: Move?? to after applicatatives?
-
-#### Keywords in CE
-
-```fsharp
-expr { let! ... }    // bind
-expr { and! ... }    // applicatives
-expr { do! ... }     // call CE without return
-expr { yield ... }   // return value from CE
-expr { yield! ... }  // flatening
-expr { return ... }  // return'
-expr { return! ... } // wraps value in CE type
-expr { match! ... }  // inline CE
-````
-
-note: 
-
-Details can be found on: https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/computation-expressions
-
 ---
 
 ### Async programming in F#
 
-* <!-- .element: class="fragment" -->`task {}` is used to consume `Task<T>` from C# otherwise<br/>
-* <!-- .element: class="fragment" -->use `async {}`
-    * `async` are specifications of work, `task` are representation of work
+* <!-- .element: class="fragment" -->'task {}' is used to consume Task<T> from C# otherwise use<br/>
+* <!-- .element: class="fragment" -->'async {}'<br/>
+* <!-- .element: class="fragment" -->Diference are 'async' are specifications of work, 'task' are representation of work
 
 ----
 
@@ -442,8 +430,8 @@ Async computation is first started when `Async.RunSynchronously` is executed
 
 ```fsharp
 // Defined by these to functions
-val pure: 'a -> F 'a
-val apply: F ('a -> 'b) -> F 'a -> F 'b 
+val pure: 'a -> F<'a>
+val apply: F<('a -> 'b)> -> F<'a> -> F<'b>
 // Operator: (<*>), also called lift
 // Note here 'F' is the applicative type
 ```
@@ -459,6 +447,27 @@ val applyToList: (a -> b) list -> a list -> b list
 
 Note:
 `<*>` is also called `liftA2` and sometimes `apply` :)
+
+----
+
+### `flatMap` or `List.collect` 
+
+```fsharp
+// E.g.
+[1..4] |> List.map (fun x -> [1..x])
+// [[1]; [1; 2]; [1; 2; 3]; [1; 2; 3; 4]]
+```
+<!-- .element: class="fragment" -->
+
+<br/>
+
+```fsharp
+val collect: (mapping: 'T -> 'U list) -> (list: 'T list)
+                                      -> 'U list
+[1..4] |> List.map (fun x -> [1..x])
+// [1; 1; 2; 1; 2; 3; 1; 2; 3; 4]
+```
+<!-- .element: class="fragment" -->
 
 ----
 
@@ -545,7 +554,7 @@ map f x = apply (pure f) x
 
 ### Using Applicatives in our example
 
-```fsharp [1-6|8-16]
+```fsharp [1-6|11-12]
 module Option =
     let apply fOpt xOpt = 
         match (fOpt, xOpt) with
@@ -567,7 +576,7 @@ let applicativeAdd (a: int option)
 
 #### Parallel computations
 
-```fsharp
+```fsharp [4-6|10-13]
 type OptionBuilder() =
     ...
     member _.MergeSources (x,y) =
@@ -607,6 +616,26 @@ type OptionBuilder() =
     member _.BindReturn(x,f) =
         Option.map f x
 ```
+
+----
+
+
+#### Keywords in CE
+
+```fsharp
+expr { let! ... }    // bind
+expr { and! ... }    // applicatives
+expr { do! ... }     // call CE without return
+expr { yield ... }   // return value from CE
+expr { yield! ... }  // flatening
+expr { return ... }  // return'
+expr { return! ... } // wraps value in CE type
+expr { match! ... }  // inline CE
+````
+
+note: 
+
+Details can be found on: https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/computation-expressions
 
 
 ---
