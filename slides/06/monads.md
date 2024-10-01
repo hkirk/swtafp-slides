@@ -1,5 +1,5 @@
 <!-- .slide: data-background="#003d73" -->
-## Functors, Applicatives, Monads
+## Functors, Monads, and Applicatives
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
@@ -7,16 +7,78 @@
 
 ### Agenda
 
+* Functors (easy peasy)
 * Monads
-    * alternatives
+    * variations
 * Computation Expressions
     * task / async
-* Functors
 * Applicatives
 * CE continued
 
 ---
 
+### Functors
+
+* A mapping in an elevated worlds between 'types'<!-- .element: class="fragment" -->
+    * using 'normal' functions
+* They are structure preseving<!-- .element: class="fragment" -->
+    * e.g. `List<string> -> List<int>`
+
+note: 
+
+From category theory
+    * mapping between categories
+
+
+----
+
+#### Functor laws - Identity
+
+* applying identity function (`id`) should leave functor unchanged
+
+```fsharp
+List.map id [1;2;3;4;5]
+// val it : int list = [1; 2; 3; 4; 5]
+```
+<!-- .element: class="fragment" -->
+
+----
+
+#### Functor laws - composition
+
+* given two functions `f` and `g` you get the same result by
+    * mapping over `f` and then `g` as
+    * mapping over `f >> g`
+
+```fsharp
+let compTrue value =
+     let a = value |> map f |> map g
+     let b = value |> map (f >> g)
+     a = b
+```
+<!-- .element: class="fragment" -->
+
+----
+
+#### Functor laws - composition
+
+```fsharp [1-3|1,4-5]
+let times2 b = 2 * b
+[1;2;3;4] |> List.map times2 |> List.map string
+// val it : string list = ["2"; "4"; "6"; "8"]
+[1;2;3;4] |> List.map (times2 >> string)
+// val it : string list = ["2"; "4"; "6"; "8"]
+```
+
+----
+
+### Using functors
+
+* Look for a functor whenever you have a type with a generic type argument<br/><!-- .element: class="fragment" -->
+* Existing examples:<!-- .element: class="fragment" -->
+    * Option<'a>, List<'a>, Set<'a>, Map<'a>, Result<'a>, ...
+
+---
 
 ### True use of monads
 
@@ -32,7 +94,7 @@ Function composition
 
 ## Todays 1st problem
 
-```fsharp
+```fsharp [1-10|10]
 let add (a: int option) (b: int option) (c: int option) =
     match a with
     | None -> None
@@ -45,7 +107,9 @@ let add (a: int option) (b: int option) (c: int option) =
             | Some cc -> Some(aa + bb + cc)
 ```
 
-<!-- ----
+----
+
+<!-- .slide: data-visibility="hidden" -->
 
 ### Or like this
 
@@ -66,16 +130,15 @@ let monadicAdd (a: int option)
 val bind: ('T -> 'U option) -> 'T option -> 'U option
 ```
 <!-- .element: class="fragment" -->
- 
 
 ----
 
 ### Monads
 
-* Design pattern which can combine code fragments
-* Apply a function that returns a wrapped value
+* Design pattern which can combine code fragments<br/><!-- .element: class="fragment" data-fragment-index="0" -->
+* Apply a function that returns a wrapped value<br/><!-- .element: class="fragment" data-fragment-index="1" -->
     * to a wrapped value
-* Monad functions
+* Monad functions<br/><!-- .element: class="fragment" data-fragment-index="5" -->
 
 ```fsharp
 val return': a -> m a
@@ -83,6 +146,15 @@ val return': a -> m a
 val bind: (a -> m b) -> m a -> m b
 // Note: 'm' is here the monad type
 ```
+<!-- .element: class="fragment" data-fragment-index="5" -->
+
+----
+
+#### `return'` in detail
+
+```fsharp
+```
+TODO: 
 
 ----
 
@@ -98,6 +170,10 @@ bind (fun v -> Some (v+1)) (Some 4)
 // val it: int option = Some 5
 ```
 
+----
+
+### Back to our example
+
 ```fsharp
 let monadicAdd (a: int option)
                (b: int option)
@@ -108,7 +184,6 @@ let monadicAdd (a: int option)
                 Some (a' + b' + c') 
     )))
 ```
-<!-- .element: class="fragment" -->
 
 ----
 
@@ -132,8 +207,8 @@ bind f (bind g (Some 2))
 #### When to look for monads
 
 * You have a function that performs some side-effect or fails
-    * a function taking 'plain' input like `int`, `string` or `Person` and
-    * returning `option`, `Promise`, `Result` etc.
+    * a function taking 'plain' input like `int`, `string` or `Person` and<!-- .element: class="fragment" -->
+    * returning `option`, `Promise`, `Result` etc.<!-- .element: class="fragment" -->
 
 ---
 
@@ -158,9 +233,9 @@ Free monads uses an AST to represent a computation and at the same time keep the
 
 ### Also
 
-* Comonads
+* Comonads<!-- .element: class="fragment" -->
     * Can be seens as a reduction from a computation back down to values
-* Additive monads
+* Additive monads<!-- .element: class="fragment" -->
     * Monad with binary operators 'mplus' and 'mzero'
     * E.g. List with '[]' and '::'
 
@@ -183,7 +258,6 @@ builder-expr { cexper }
 
 ### Why creating a option CE
 
-Remember?
 
 ```fsharp
 let monadicAdd (a: int option)
@@ -295,27 +369,32 @@ let addThreeOptions (a: int option)
 
 ----
 
+TODO: Move?? to after applicatatives?
 
 #### Keywords in CE
 
 ```fsharp
-expr { let! ... }
-expr { do! ... }
-expr { yield ... }
-expr { yield! ... }
-expr { return ... }
-expr { return! ... }
-expr { match! ... }
+expr { let! ... }    // bind
+expr { and! ... }    // applicatives
+expr { do! ... }     // call CE without return
+expr { yield ... }   // return value from CE
+expr { yield! ... }  // flatening
+expr { return ... }  // return'
+expr { return! ... } // wraps value in CE type
+expr { match! ... }  // inline CE
 ````
+
+note: 
+
+Details can be found on: https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/computation-expressions
 
 ---
 
 ### Async programming in F#
 
-* `task {}` is used to consume `Task<T>` from C# otherwise 
-* use `async {}` 
-
-`async` are specifications of work, `task` are representation of work
+* <!-- .element: class="fragment" -->`task {}` is used to consume `Task<T>` from C# otherwise<br/>
+* <!-- .element: class="fragment" -->use `async {}`
+    * `async` are specifications of work, `task` are representation of work
 
 ----
 
@@ -353,84 +432,22 @@ Async computation is first started when `Async.RunSynchronously` is executed
 * `Async.Sequential`
 * ...
 
-
----
-
-### Functors
-
-* A mapping in an elevated worlds between 'types'
-    * using 'normal' functions
-* They are structure preseving
-    * e.g. `List<string> -> List<int>`
-
-note: 
-
-From category theory
-    * mapping between categories
-
-
-----
-
-#### Functor laws - Identity
-
-* applying `identity` function should leave functor unchanged
-
-```fsharp
-List.map id [1;2;3;4;5]
-// val it : int list = [1; 2; 3; 4; 5]
-```
-
-----
-
-#### Functor laws - composition
-
-* given two functions `f` and `g` you get the same result by
-    * mapping over `f` and then `g` as
-    * mapping over `f >> g`
-
-```fsharp
-let compTrue value =
-     let a = value |> map f |> map g
-     let b = value |> map (f >> g)
-     a = b
-```
-
-
-----
-
-#### Functor laws - composition
-
-```fsharp
-let times2 b = 2 * b
-[1;2;3;4] |> List.map times2 |> List.map string
-// val it : string list = ["2"; "4"; "6"; "8"]
-[1;2;3;4] |> List.map (times2 >> string)
-// val it : string list = ["2"; "4"; "6"; "8"]
-```
-
-----
-
-### Using functors
-
-* Look for a functor whenever you have a type with a generic type argument
-* Existing examples:
-    * Option, List, Set, Map, Result, ...
-
 ---
 
 ### Applicatives
 
-* Mapping of objects in an elevated world
+* Mapping of objects in an elevated world<br/><!-- .element: class="fragment" -->
     * using elevated functions with same type
 
-And two functions
 
 ```fsharp
+// Defined by these to functions
 val pure: 'a -> F 'a
 val apply: F ('a -> 'b) -> F 'a -> F 'b 
 // Operator: (<*>), also called lift
 // Note here 'F' is the applicative type
 ```
+<!-- .element: class="fragment" -->
 
 ```fsharp
 // E.g
@@ -447,24 +464,24 @@ Note:
 
 #### Examples
 
-```fsharp
-type allFaces = []
-type allSuits = []
-let fullDeck = [fun f s -> { Face = f; Suit = s }] <*> allFaces <*> allSuits
-```
-
-
-```fsharp
+```fsharp [1-5|6-12|14-17]
 module List =
+    // val apply : fs:('a -> 'b) list -> l:'a list -> 'b list
     let apply fs l = 
         fs |> List.collect (fun f ->
                 l |> List.map f)
-// val apply : fs:('a -> 'b) list -> l:'a list -> 'b list
 let odds = [1;3;5;7;9]
 let evens = [2;4;6;8;0]
 let all = 
     (List.apply
-        (List.apply [fun odd even -> (odd, even)] odds) evens)
+        (List.apply [fun odd even -> (odd, even)]
+                     odds)
+            evens)
+
+type allFaces = []
+type allSuits = []
+let fullDeck = [fun f s -> { Face = f; Suit = s }]
+                    <*> allFaces <*> allSuits
 ```
 
 Note:
@@ -506,9 +523,9 @@ List.map string [1;2;3;4] = apply [string] [1;2;3;4]
 
 #### Using applicatives
 
-* Apply a list of functions to some argument(s)
-* When having a function taking multiple arguments
-    * but having the arguments wrapped in something like `Result`
+* Apply a list of functions to some argument(s)<br/><!-- .element: class="fragment" -->
+* When having a function taking multiple arguments<!-- .element: class="fragment" -->
+    * but having the arguments wrapped in something like `Result`, `Option`, ...
 
 ----
 
@@ -520,14 +537,15 @@ Every `applicative` is a `functor`, since `map` can be defined by using `pure` a
 //map f x = pure f <*> x
 map f x = apply (pure f) x
 ```
+<!-- .element: class="fragment" data-fragment-index="2" -->
 
-![Applicative and functors visualized](https://blog.ploeh.dk/content/binary/functors-applicatives-bifunctors.png "") <!-- .element: style="height:300px" -->
+![Applicative and functors visualized](https://blog.ploeh.dk/content/binary/functors-applicatives-bifunctors.png "") <!-- .element: style="height:300px" class="fragment" data-fragment-index="1" -->
 
 ---
 
 ### Using Applicatives in our example
 
-```fsharp
+```fsharp [1-6|8-16]
 module Option =
     let apply fOpt xOpt = 
         match (fOpt, xOpt) with
@@ -540,7 +558,9 @@ let applicativeAdd (a: int option)
                    (c: int option) =
     let add3 x y z = x + y + z
     (Some add3) <*> a <*> b <*> c
-    //Option.app (Option.apply ((Option.apply (Some add3) a) b) c)
+    //Option.apply 
+    //   (Option.apply 
+    //        ((Option.apply (Some add3) a) b) c)
 ````
 
 ----
