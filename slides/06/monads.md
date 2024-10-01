@@ -464,7 +464,7 @@ Note:
 ```fsharp
 val collect: (mapping: 'T -> 'U list) -> (list: 'T list)
                                       -> 'U list
-[1..4] |> List.map (fun x -> [1..x])
+[1..4] |> List.collect (fun x -> [1..x])
 // [1; 1; 2; 1; 2; 3; 1; 2; 3; 4]
 ```
 <!-- .element: class="fragment" -->
@@ -481,11 +481,12 @@ module List =
                 l |> List.map f)
 let odds = [1;3;5;7;9]
 let evens = [2;4;6;8;0]
+let partialApplied numbers =
+    (List.apply 
+        (List.apply [fun odd even -> (odd, even)] odds)
+            numbers)
 let all = 
-    (List.apply
-        (List.apply [fun odd even -> (odd, even)]
-                     odds)
-            evens)
+    (partialApplied evens)
 
 type allFaces = []
 type allSuits = []
