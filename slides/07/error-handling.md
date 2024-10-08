@@ -308,9 +308,9 @@ val bind: ('A -> M<'B>) -> M<'A> -> M<'B>
 ```fsharp
 type person = {email: string; name: string}
 let validatePerson input =
-  if validEmail (fst input) then
+  if invalidEmail (fst input) then
     Error "Email not valid"
-  elif validName (snd input) then
+  elif invalidName (snd input) then
     Error "Name not valid"
   else
     Ok {email = fst input; name = snd input }
@@ -319,9 +319,9 @@ let validatePerson input =
 note:
 
 ```fsharp
-let validEmail (str: string) =
+let invalidEmail (str: string) =
   not (str.Contains("@"))
-let validName (str: string) =
+let invalidName (str: string) =
   not (str.Contains(" "))
 ```
 
