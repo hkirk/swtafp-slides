@@ -229,7 +229,7 @@ type Result<'T,'TError> =
 
 #### Extending this to our general case
 
-```fsharp[1-6|8-10|11-13]
+```fsharp [1-6|8-10|11-13]
 type Success = Sucesss
 type Errors =
   | DBError
@@ -257,7 +257,7 @@ let ourUseCase2 input: Result<Success, Errors list> =
 
 #### Return and Bind
 
-```fsharp[1-4|6-12]
+```fsharp [1-4|6-12]
 // Return
 type Bricks = {desc: string; numBricks: int}
 let ok = Ok {desc = "A Castle"; numBricks = 2133}
@@ -335,7 +335,7 @@ let validName (str: string) =
 
 #### 
 
-```fsharp
+```fsharp [2|4,6,8|2,10]
 type person = {email: string; name: string}
 let validatePerson input: Result<Person, string> =
   if validEmail (fst input) then
