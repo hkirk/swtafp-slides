@@ -7,6 +7,10 @@
 
 ## Agenda
 
+* Web Framework
+  * ASP.NET
+  * Giraffe
+* HttpHandlers
 * 
 
 ---
