@@ -9,7 +9,6 @@
 ### Agenda
 
 * Problem
-* IO
 * Ports & Adapters
 * Abstraction
 * Other
@@ -90,56 +89,6 @@ So each call to `GeneateInvoice` increments invoice number :(
 
 ![Invoice-lang-fp](./img/invoice-lang-fp.png)
 
-
----
-
-## IO
-
-* IO is from Haskell
-* Used to force inpure code away from pure code
-* Baked in to Haskell type system
-
-----
-
-### Monad
-
-So IO would be all the places we have side-effects aka. Infrastructure
-
-* IO is a monad\*.
-* Another example of monads is F#'s `Option`
-* Monads can be combined with '`bind`'
-
-\* We will come back to monads. <!-- .element: style="font-size: 20px; position: relative; bottom:0;" -->
-
-----
-
-#### Return and Bind
-
-Two important methods for Monads are '`return`' and '`bind`'
-
-```fsharp
-val return: 'a -> M<'a>
-val bind:   M<'a> -> ('a -> M<'b>) -> M<'b>
-```
-
-
-note: 
-
-Monads also have some rules
-
-----
-
-#### Example with F#'s Option
-
-```fsharp
-let o = Some 3 // creation or return
-let n = None   // creation or return
-let f = fun a -> Some (a+3)
-
-o |> Option.bind f // ...
-n |> Option.bind f // ...
-```
-
 ---
 
 #### Hexagonal architecture
@@ -154,17 +103,19 @@ By Alistair Cockburn
 
 ## Ports & Adapters
 
-* Components
+* Components<!-- .element: class="fragment" -->
     * loosely coupled and interchangeable
     * e.g. database, ui, business logic, etc. etc.
-* Ports
-    * 'holes' that components can access other components through
-* Adapters
+* Ports<!-- .element: class="fragment" -->
+    * 'interface' that components can access other components through
+* Adapters<!-- .element: class="fragment" -->
     * glue between components and ports
 
 Note: Not only for FP - but very used especially in FP so e.g. F# and Haskell
 
 ----
+
+<!-- TODO: New example -->
 
 ### A Resturant example
 
@@ -214,15 +165,15 @@ let getReservedSeats = getReservedSeatsFromDb connStr
 // val getReservedSeats : (Reservation -> int)
 ```
 
-So '`getReservedSeats`' are inpure - but that do not show in the signature.
+* <!-- .element: class="fragment" --> So 'getReservedSeats' are inpure - but that do not show in the signature.
 
 ----
 
-### 'Problem'
+### Partial application
 
-* Our pure function '`check`', will be inpure in production
+* <!-- .element: class="fragment" --> Our pure function 'check', will be inpure in production
 
-* But why do checkCapacity need getReservedSeats at all?  <!-- .element: class="fragment" -->
+* But why do 'check' need getReservedSeats at all?  <!-- .element: class="fragment" -->
 
 ----
 
@@ -268,26 +219,28 @@ let add1Times2' = add1 >> times2
 
 ### Reuse logic
 
-* What is business logic?
-* What is application logic?
-* Should `reserveTable` belong in the business logic layer? 
+* What is business logic?<br/><!-- .element: class="fragment" -->
+* What is application logic?<br/><!-- .element: class="fragment" -->
+* Does 'reserveTable' belong in the BLL?<br/><!-- .element: class="fragment" --> 
 
 ----
 
-The function `reserveTable`
-1. could also argue that this function is part of the controller
-2. thereby not something you would reuse in another application
-3. because:
-    * would you always need to handle resevation validation?
+### The function `reserveTable`
+
+1. could application logic<br/><!-- .element: class="fragment" --> 
+1. thereby not something you would nessesary reuse<br/><!-- .element: class="fragment" --> 
+1. because:<br/><!-- .element: class="fragment" --> 
+    * handle resevation validation in the same manner?
     * handle input/output different
 
 ----
 
-### Generalization
+### Take-aways
 
-1. Read data from impure sources
-2. Hand data to BLL
-3. Use returned data to perform side-effects
+1. Read data (impure)<br/><!-- .element: class="fragment" -->
+1. Hand data to BLL (pure)<br/><!-- .element: class="fragment" -->
+1. Save data (impure)<br/><!-- .element: class="fragment" -->
+1. Return/show data (impure)<br/><!-- .element: class="fragment" -->
 
 ---
 
@@ -314,14 +267,12 @@ Is my function `a()` pure or not?
 ----
 
 ### Ports and Adapters
-##### hexagonal architecture
+##### or hexagonal architecture
 
-* To avoid DAL to contaminate e.g. BLL
-* Alternative to layered architecture
-* Each component is connected through a number of ports
-
-
-**Note**: Not always the correct solution
+* One way of avoiding DAL contaminating BLL<br/><!-- .element: class="fragment" --> 
+* Alternative to layered architecture<br/><!-- .element: class="fragment" --> 
+* Each component is connected through a number of ports<br/><!-- .element: class="fragment" --> 
+* <!-- .element: class="fragment" --> Not always the correct solution
 
 ----
 
@@ -329,18 +280,18 @@ Is my function `a()` pure or not?
 
 ![Onion architecture](./img/onion-architecture.png) <!-- .element style="height: 260px" -->
 
-* Onion architecture was inspired by Hexogonal architecture
-* Layered architecture
+* Onion architecture was inspired by Hexogonal architecture<br/><!-- .element: class="fragment" -->
+* Layered architecture<!-- .element: class="fragment" --> 
     * where inner circles have no knowledge of outer circle
 
 
 ----
 
-### Onion pro/cons
+### Onion Arch. pro/cons
 
-* \- e.g. database is accessible from UI
+* \- e.g. database is accessible from UI<br/><!-- .element: class="fragment" -->
     * they are in same layer - not a good idea though.
-* \+ fewer artifacts then ports and adapters
+* \+ fewer artifacts then ports and adapters<br/><!-- .element: class="fragment" -->
 
 ---
 
@@ -353,6 +304,7 @@ Looks like microservices, right?
 ----
 
 ### Pipe and filter
+##### or reactive programming
 
 ![Pipe and Filter](./img/pipe-and-filter.jpg "https://csblogpro.wordpress.com/2017/11/05/pipe-and-filter-architecture/")
 
