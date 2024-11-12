@@ -639,7 +639,7 @@ This can now handle 3 types of messages and write these to the console
 
 3. The responsibility of our sender actor is now to send text from console to the correct actor
 
-```fsharp[6, 11, 12]
+```fsharp [6, 11, 12]
 // In Actors.fs
 let senderActor writer coordinator 
                     (mailbox: Actor<SenderMessages>) msg =
