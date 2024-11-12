@@ -15,6 +15,20 @@
 
 ---
 
+TODO: insert 
+
+#### Actor path
+
+* Every actor has an actor path
+* Actor path can be used to send messages to an actor
+
+![Actor path](./img/actor_path.png)
+
+---
+
+
+---
+
 ### Actor lifecycle
 
 Actor have 5 stage life cycle
