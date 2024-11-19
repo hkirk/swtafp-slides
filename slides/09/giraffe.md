@@ -64,15 +64,13 @@ type HttpHandler = HttpFunc -> HttpContext -> HttpFuncResult
 ```fsharp [7-8]
 [<EntryPoint>]
 let main _ =
-    Host.CreateDefaultBuilder()
-        .ConfigureWebHostDefaults(
-            fun webHostBuilder ->
-                webHostBuilder
-                    .Configure(configureApp)
-                    .ConfigureServices(configureServices)
-                    |> ignore)
-        .Build()
-        .Run()
+    let builder = WebApplication.CreateBuilder(args)
+    configureServices builder.Services
+
+    let app = builder.Build()
+
+    configureApp app
+    app.Run()
     0
 ```
 
@@ -83,13 +81,16 @@ let main _ =
 ```fsharp
 let webApp = ...
 
-let configureApp (app : IApplicationBuilder) =
+let configureServices (services: IServiceCollection) =
     // Add Giraffe to the ASP.NET Core pipeline
-    app.UseGiraffe webApp
-
-let configureServices (services : IServiceCollection) =
-    // Add Giraffe dependencies
     services.AddGiraffe() |> ignore
+    
+let notFoundHandler = "Not Found" |> text |> RequestErrors.notFound
+
+let configureApp (appBuilder: IApplicationBuilder) =
+    appBuilder
+    // Add Giraffe dependencies
+    .UseGiraffe(notFoundHandler)
 ```
 
 ---
