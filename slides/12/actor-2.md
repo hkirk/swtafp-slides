@@ -8,26 +8,14 @@
 ### Agenda
 
 * Actor lifecycle
-* ActorSelection
+* Actor selection
+* Good design practices
 * State machines
-* Router
+* Router actors
 
 
 ---
 
-TODO: insert 
-
-#### Actor path
-
-* Every actor has an actor path
-* Actor path can be used to send messages to an actor
-
-![Actor path](./img/actor_path.png)
-
----
-
-
----
 
 ### Actor lifecycle
 
@@ -42,42 +30,40 @@ Actor have 5 stage life cycle
 
 #### Lifecycle stages
 
-* `Starting`: Actor is waking up
-* `Recieving`: Actor is accepting messages
-* `Stopping`: Actor is cleaning up its state, or saving state if restarting
-* `Terminated`: Actor is dead
-* `Restarting`: Actor is about to restart
+* <!-- .element: class="fragment" --><span style="font-weight: bold">Starting</span>: Actor is waking up<br/>
+* <!-- .element: class="fragment" --><span style="font-weight: bold">Recieving</span>: Actor is accepting messages<br/>
+* <!-- .element: class="fragment" --><span style="font-weight: bold">Stopping</span>: Actor is cleaning up its state, or saving state if restarting<br/>
+* <!-- .element: class="fragment" --><span style="font-weight: bold">Terminated</span>: Actor is dead<br/>
+* <!-- .element: class="fragment" --><span style="font-weight: bold">Restarting</span>: Actor is about to restart<br/>
 
 ----
 
 #### Lifecycle hooks
 
-* `PreStart`: Run before receiving - used to initialize
-* `PreRestart`: used to cleanup before restart
-* `PostStop`: Called when actor has stopped recieving. Cleanup - called as part of `PreRestart`
-* `PostRestart`: Called after `PreRestart` and before `PreStart`. Additional reporting/diagnosis
+* <!-- .element: class="fragment" --><span style="font-weight: bold">PreStart</span>: Run before receiving - used to initialize
+* <!-- .element: class="fragment" --><span style="font-weight: bold">PreRestart</span>: used to cleanup before restart
+* <!-- .element: class="fragment" --><span style="font-weight: bold">PostStop</span>: Called when actor has stopped recieving. Cleanup - called as part of `PreRestart`
+* <!-- .element: class="fragment" --><span style="font-weight: bold">PostRestart</span>: Called after `PreRestart` and before `PreStart`. Additional reporting/diagnosis
 
 
 ----
 
-#### How to do you do this in F#
+### classes in F#
 
-Method 1)
+```fsharp [1-2, 7-8]
+type PlaybackActor() =    
+    inherit UntypedActor()
 
-```fsharp
-let preStart = Some(fun () ->
-        Console.WriteLine "preStart Called"
-        |> ignore)
-let mySampleActor = spawnOvrd system "actor"
-             (actorOf sampleActor) <|
-                {defOvrd with PreStart = preStart}
+    override __.OnReceive message =
+        // TODO
+
+    override __.PreStart() =
+        // do something, like logging for example
 ```
 
 ----
 
 #### Only for `PreStart` and/or `PostStop`
-
-Method 2)
 
 ```fsharp
 let sampleActor (mailbox:Actor<_>) =
@@ -88,7 +74,7 @@ let sampleActor (mailbox:Actor<_>) =
     let rec loop () =
         actor {
             let! msg = mailbox.Receive ()
-            // do some work
+            // TODO handle msg
             return! loop ()
         }
     loop ()
@@ -96,92 +82,29 @@ let sampleActor (mailbox:Actor<_>) =
 let aref = spawn system "actor" (sampleActor)
 ```
 
-Note: 
-
-This syntax is called a computation expresion - we will briefly touch on this in week 13/14 - otherwise the HR chapter 12.
 
 ---
 
 ### ActorSelection
 
-* Used to send messages to actor(s) to which you don't have an `IActorRef`
-* Done by actor path
+* Every actor has an actor path<br/><!-- .element: class="fragment" -->
+* Actor path can be used to send messages to an actor<br/><!-- .element: class="fragment" -->
+* Used to send messages to actor(s) to which you don't have an IActorRef<br/><!-- .element: class="fragment" -->
 
-![Actor Path](./img/actor_path.png)
+
+![Actor Path](./img/actor_path.png)<!-- .element: class="fragment" -->
 
 ----
 
 #### ActorSelection details
 
-* ActorSelection
+* ActorSelection<br/><!-- .element: class="fragment" -->
     * The processs of looking up an actor
     * The object returned from that lookup
-* ActorSelection don't give you a 1:1 relationship
-* ActorSelection give you a handle to all actors behind that path
+* ActorSelection don't give you a 1:1 relationship<br/><!-- .element: class="fragment" -->
+* ActorSelection give you a handle to all actors behind that path<br/><!-- .element: class="fragment" -->
     * e.g. wildcards are supported
 
-----
-
-#### Why 
-
-* Location transparency
-* Loose coupling
-* Dynamic behavior
-* Adaptive system design
-
-----
-
-#### Location transparancy
-
-* Means that we don't care where the actor is running
-    * could be in the same process _or_
-    * on a different computer
-
-----
-
-#### Loose coupling
-
-* Don't need to store and/or pass around `IActorRef`
-* Less coupling between actors/components
-
-----
-
-#### Dynamic behavior
-
-* In a dynamic system where actors are created/removed
-    * you can send messages to known addresses
-* Don't need to be hardcoded adresses, messages can represent actorPath
-
-----
-
-#### Adaptive system design
-
-* Help when buidling actor system
-* You can introduce new actors/sections without going back and changing the existing system
-
-
-----
-
-#### When to use
-
-1. Talking to top level actors
-     * E.g you have an `AuthenticateActor` which name is `/user/AuthenticateActor`
-
-```fsharp
-select "akka://MyActorSystem/user/AuthenticateActor"
-                     mailbox.Context.System <! username
-```
-
-2. Handoff work to a pool of worker actors
-3. When processing a message and `Sender` is not enough
-4. Send to multiple actors
-
-----
-
-#### Don't send `ActorPaths` around
-
-Because:
-* ActorSelection can be relative
 
 ----
 
@@ -199,22 +122,86 @@ let selection' = select "akka://user/barActor"
 selection' <! someMessage
 ```
 
+----
+
+#### Why 
+
+* Location transparency<br/><!-- .element: class="fragment" -->
+* Loose coupling<br/><!-- .element: class="fragment" -->
+* Dynamic behavior<br/><!-- .element: class="fragment" -->
+* Adaptive system design<br/><!-- .element: class="fragment" -->
+
+----
+
+#### Location transparancy
+
+* Means that we don't care where the actor is running
+    * could be in the same process _or_
+    * on a different computer
+
+----
+
+#### Loose coupling
+
+* Don't need to store and/or pass around IActorRef<br/><!-- .element: class="fragment" -->
+* Less coupling between actors/components<br/><!-- .element: class="fragment" -->
+
+----
+
+#### Dynamic behavior
+
+* In a dynamic system where actors are created/removed<br/><!-- .element: class="fragment" -->
+    * you can send messages to known addresses
+* Don't need to be hardcoded adresses, messages can represent actorPath<br/><!-- .element: class="fragment" -->
+
+----
+
+#### Adaptive system design
+
+* Help when buidling actor system<br/><!-- .element: class="fragment" -->
+* You can introduce new actors without going back and changing the existing system<br/><!-- .element: class="fragment" -->
+
+
+----
+
+#### When to use
+
+1. Talking to top level actors<!-- .element: class="fragment" data-fragment-index="1" -->
+     * E.g you have an `AuthenticateActor` which name is `/user/AuthenticateActor`
+
+```fsharp
+select "akka://MyActorSystem/user/AuthenticateActor"
+                     mailbox.Context.System <! username
+```
+<!-- .element: class="fragment" data-fragment-index="1" -->
+
+2. Send to multiple actors<!-- .element: class="fragment" -->
+3. When processing a message and 'Sender' is not enough<br/><!-- .element: class="fragment" -->
+4. Handoff work to a pool of worker actors<br/><!-- .element: class="fragment" -->
+
+----
+
+#### Take care when passing `ActorPaths` around
+
+Because:
+* ActorSelection can be relative
+
 ---
 
 ### Good design
 
-* Never rely on one hierachy design from another
-* Always communicate via top-level actors
-* Delete risky operations to leafs
+* Never rely on one hierachy design from another<br/><!-- .element: class="fragment" -->
+* Always communicate via top-level actors<br/><!-- .element: class="fragment" -->
+* Delegate risky operations to leafs<br/><!-- .element: class="fragment" -->
 
 ----
 
 ### Knowledge
 
-* Make it possible to change implementation details (DIP, LSP)
-* Top-level actors are interfaces
+* Make it possible to change implementation details (DIP, LSP)<br/><!-- .element: class="fragment" -->
+* Use top-level actors as interfaces<br/><!-- .element: class="fragment" -->
 
-![Limit knowledge](./img/limit-knowledge-about-cousins.png "Limit knowledge")
+![Limit knowledge](./img/limit-knowledge-about-cousins.png "Limit knowledge")<br/><!-- .element: class="fragment" -->
 
 
 ----
@@ -223,10 +210,10 @@ selection' <! someMessage
 
 ![Contact](./img/communicate-through-top.png "Contact")
 
-* Always send messages through top-level actors
+* Always send messages through top-level actors<br/><!-- .element: class="fragment" -->
   * by `IActorRef` or `ActorSelection`
-* Make extension possible (OCP)
-* Return is possible with `IActorRef.Forward`
+* Makes extension possible (OCP)<br/><!-- .element: class="fragment" -->
+* Return is possible with IActorRef.Forward<br/><!-- .element: class="fragment" -->
 
 ---
 
@@ -239,12 +226,12 @@ selection' <! someMessage
 
 ### FSM
 
-* We all know FSM from SW4SWD and GoF State Pattern
-* Many state machines have some sort of time perspective
+* FSM from SW4SWD and implemented by GoF State Pattern<br/><!-- .element: class="fragment" data-fragment-index="1" -->
+* Many state machines have some sort of time perspective<br/><!-- .element: class="fragment" data-fragment-index="2" -->
     * change state after some time
     * stay in a state for some time
 
-\* called `become` in C# and Scala<!-- .element: style="font-size: 20px" -->
+\* called become in C# and Scala<!-- .element: style="font-size: 20px" class="fragment" data-fragment-index="2" -->
 
 ----
 
@@ -273,10 +260,10 @@ let actor (mailbox: Actor<_>) =
 
 #### Different states
 
-* In the above example our actor can handle messages base on 3 states
+* In the above example our actor can handle messages base on 3 states<br/><!-- .element: class="fragment" -->
     * `autenticating`, `unauthenticated` and `authenticated`
-* This enables reusablitity, and different work with little code
-* Safe because we only handle one messages at a time.
+* This enables reusablitity, and different work with little code<br/><!-- .element: class="fragment" -->
+* Safe because actors only handle one messages at a time.<br/><!-- .element: class="fragment" -->
 
 ----
 
@@ -284,7 +271,7 @@ let actor (mailbox: Actor<_>) =
 
 Let us imagine a chat example:
 
-```fsharp
+```fsharp [1-13|7|14-25|6|26-36 ]
 let rec authenticating () =
   actor {
     let! message = mailbox.Receive ()
@@ -343,10 +330,10 @@ let actor (mailbox: Actor<_>) =
 
 #### Unhandled messages
 
-* Actors has a `Stash` which acts like stack structure
+* <!-- .element: class="fragment" -->Actors has a <code>Stash</code> which acts like stack structure<br/>
     * Calling `mailbox.Stash ()` puts current message onto stack
-* `mailbox.Unstash ()` puts the top message at the front of the inbox
-* `mailbox.UnstashAll ()` unstashed all messages.
+* <!-- .element: class="fragment" --><code>mailbox.Unstash ()</code> puts the top message at the front of the inbox<br/>
+* <!-- .element: class="fragment" --><code>mailbox.UnstashAll ()</code> unstashes all messages.<br/>
     * Preserves FIFO order
 
 
@@ -354,7 +341,7 @@ let actor (mailbox: Actor<_>) =
 
 #### Unstash in our example
 
-```fsharp
+```fsharp[9-12|5,7]
 let rec authenticating () =
   actor {
     let! message = mailbox.Receive ()
@@ -375,49 +362,53 @@ let rec authenticating () =
 
 #### Stashed messages
 
-* Keep states
-* In case of restart
+* Keep states<br/><!-- .element: class="fragment" -->
+* In case of restart<br/><!-- .element: class="fragment" -->
     * Stash is lost with actor state
-    * Unstash all before restart can save messages in mailbox
+    * Unstash all before restart will save messages in mailbox
 
-```fsharp
-let preRestart = Some(fun (basefn: exn * obj -> unit) 
-                        -> mailbox.UnstashAll () |> ignore)
-let mySampleActor = spawnOvrd system "actor"
-                    (actorOf sampleActor)
-                <| { defOvrd with PreRestart = preRestart }
+```fsharp [2]
+let disposableActor (mailbox:Actor<_>) =
+    mailbox.Defer (fun () -> mailbox.UnstashAll ())
+    let rec loop () =
+        actor {
+            let! msg = mailbox.Receive()
+            return! loop ()
+        }
+    loop()
 ```
+<!-- .element: class="fragment" -->
 
 ---
 
 ### Router
 
-* Special actor types (Pool or Group)
-* Can handle multiple messages at a time (Whuut!)
-* Router actors can only forward messages (puh)
-* Routers can be configured programaticly or using conf files
+* Special actor types (Pool or Group)<br/><!-- .element: class="fragment" -->
+* Can handle multiple messages at a time (Whuut!)<br/><!-- .element: class="fragment" -->
+* Router actors can only forward messages (puh)<br/><!-- .element: class="fragment" -->
+* Routers can be configured programaticly or using conf files<br/><!-- .element: class="fragment" -->
 
 ----
 
 #### Pool Router
 
-* Owns (supervise) their routee children
-* Makes it possible to control pool size
+* Owns (supervise) their routee children<br/><!-- .element: class="fragment" -->
+* Makes it possible to control pool size<br/><!-- .element: class="fragment" -->
 
 ----
 
 #### Routing strategies
 
-* `Broadcast` - Forward to all routees
-* `Random` - Forward to a random routee
-* `ConsistentHash` - Forward to a specific routee based on message
+* <!-- .element: class="fragment" -->Broadcast - Forward to all routees<br/>
+* <!-- .element: class="fragment" -->Random - Forward to a random routee<br/>
+* <!-- .element: class="fragment" -->ConsistentHash - Forward to a specific routee based on message<br/>
 
 ----
 
 #### Supervision
 
-* Router are actors so we can used `SupervisorStrategy`
-* Default is 'always escalate'
+* <!-- .element: class="fragment" -->Router are actors so we can used <code>SupervisorStrategy</code><br/>
+* <!-- .element: class="fragment" -->Default is 'always escalate'
 
 ----
 
@@ -461,20 +452,20 @@ akka.actor.deployment {
 
 Try to evenly distribute work
 
-* `RoundRobin` - just forward each message to a new routee
-* `TailChooping` - forward to one random routee, after some delay send to a new until answer is recieved.
-* `ScatterGatherFirstCompleted` - forward to all routees and return first answer. If no answer within a given timeframe, reply to sender.
+* <!-- .element: class="fragment" --><code>RoundRobin</code> - just forward each message to a new routee<br/>
+* <!-- .element: class="fragment" --><code>TailChooping</code> - forward to one random routee, after some delay send to a new until answer is recieved.<br/>
+* <!-- .element: class="fragment" --><code>ScatterGatherFirstCompleted</code> - forward to all routees and return first answer. If no answer within a given timeframe, reply to sender.<br/>
 
 ----
 
 #### Load balacing 2 (Pool only)
 
-* `Resizable` - Forward to routee with fewest messages in mailbox
+* <!-- .element: class="fragment" --><code>Resizable</code> - Forward to routee with fewest messages in mailbox
     1. Idle routee
     2. Routee with empty mailbox
     3. Routee with fewest messages
     4. Remote routee
-* `ResizableRouter` - 'Auto scaling', tries to detect pressure on routee and expand/contract pool size
+* <!-- .element: class="fragment" --><code>ResizableRouter</code> - 'Auto scaling', tries to detect pressure on routee and expand/contract pool size
 
 ----
 
@@ -495,10 +486,10 @@ router <! PoisonPill.Instance
 
 #### Group Router
 
-* Do not supervise the `routee`
+* <!-- .element: class="fragment" -->Do not supervise the <code>routee</code>
     * ActorRefs are handed to the Group Router
 
-```fsharp
+```fsharp [10-11]
 // Create some routee actors
 let c1 = spawn mailbox.Context "coordinator1" (coordinatorA)
 let c2 = spawn mailbox.Context "coordinator2" (coordinatorA)
@@ -511,6 +502,7 @@ let coordinatorPaths =
 let coordinator = mailbox.Context.ActorOf(
     Props.Empty.WithRouter(BroadcastGroup(coordinatorPaths)))
 ```
+<!-- .element: class="fragment" -->
 
 ----
 
@@ -519,7 +511,7 @@ let coordinator = mailbox.Context.ActorOf(
 * Use Pool actor unless
     1. Router should be able to send via `ActorSelection`
     2. You router cannot (for some reason) be responsible for routees
-    3. You need to be able to send to different actors
+    3. You need to be able to send to different types of actors
 
 ---
 
