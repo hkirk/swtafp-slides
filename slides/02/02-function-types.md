@@ -7,14 +7,14 @@
 
 ## Agenda
 
-* Functions
+* Functions<!-- .element: class="fragment" -->
   * First-class citizen
   * Infix/prefix
-* Tuples and Records
-* List
+* Tuples and Records<br/><!-- .element: class="fragment" -->
+* List<!-- .element: class="fragment" -->
   * Polymorphism
   * Higher order Functions
-* Monoids
+* Monoids<!-- .element: class="fragment" -->
 
 ---
 
@@ -26,9 +26,9 @@
 
 ## Type inference
 
-* F# compiler will try to determine type
+* F# compiler will try to determine type<!-- .element: class="fragment" data-fragment-index="0" -->
   * `let addOne a = a+1`
-  * If compiler cannot find type it will return error
+* If compiler cannot find type it will return error<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ```
 let concat x = System.String.Concat(x);;
@@ -42,25 +42,37 @@ this program point. A type annotation may be needed.
 
 Known type of argument: 'a
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ----
 
 ### Reading function types
 
-```fsharp [1-2|3-6|7-8]
+* '->' reads return<!-- .element: class="fragment" -->
+```fsharp
 let addOne a = a+1
 // val addOne: a: int -> int
+```
+* All functions are curried<!-- .element: class="fragment" -->
+```fsharp
 let apply f a = f a
 // val apply: f: ('a -> 'b) -> a: 'a -> 'b
-let applyTwo g a b = g a b
-// val applyTwo: g: ('a -> 'b -> 'c) -> a: 'a -> b: 'b -> 'c
 let multiply a b = a * b
 // val multiply: a: int -> b: int -> int
 ```
+* Partial application<!-- .element: class="fragment" -->
+```fsharp
+let double = multiply 2
+// val double: int -> int
+```
 
-* '`->`' reads return
-* All functions are curried
-* Partial application
+note:
+```fsharp
+
+let applyTwo g a b = g a b
+// val applyTwo: g: ('a -> 'b -> 'c) -> a: 'a -> b: 'b -> 'c
+
+```
 
 ----
 
@@ -93,7 +105,7 @@ let generateList max =
 * Functions in F# are first class citizen<!-- .element: class="fragment" data-fragment-index="0" -->
   * functions can be input and output from functions<!-- .element: class="fragment" data-fragment-index="0" -->
 * First-order functions<!-- .element: class="fragment" data-fragment-index="1" -->
-  * *values* as paramters and/or returns values<!-- .element: class="fragment" data-fragment-index="1" -->
+  * *values* as paramters and returns values<!-- .element: class="fragment" data-fragment-index="1" -->
 * Higher order functions<!-- .element: class="fragment" data-fragment-index="2" -->
   * *functions* as parameters and/or return functions<!-- .element: class="fragment" data-fragment-index="2" -->
 
@@ -104,7 +116,7 @@ C#, Java, etc also have functions as first class citizen
 
 ## Higher order functions
 
-Functions as arguments
+Functions as arguments<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ```fsharp
 let operate f a = f a
@@ -112,8 +124,9 @@ let operate f a = f a
 
 operate (fun a -> a+2) 3
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
-Returns functions
+Returning function<!-- .element: class="fragment" data-fragment-index="2" -->
 
 ```fsharp
 let plusThree = (+) 3
@@ -121,9 +134,11 @@ let plusThree = (+) 3
 
 plusThree 5
 ```
-
+<!-- .element: class="fragment" data-fragment-index="2" -->
 
 ----
+
+<!-- .slide: data-visibility="hidden" -->
 
 ## Prefix and Infix operators
 
@@ -140,7 +155,7 @@ plusThree 5
 
 ----
 
-## Example
+## Prefix + infix operators
 
 Infix:
 
@@ -172,12 +187,14 @@ let (~+) a = a+42 // properly a stupid idea :)
 List.filter (fun y -> y < 4) <| [2;3;4;5;6;6]
 // val it: int list = [2; 3]
 ```
+<!-- .element: class="fragment" -->
 
-* Operators `|>`, `||>` and `|||>`
-* Works as '`|`' in bash and Powershell
-  * and someday maybe in [proposal-pipeline-operator in js](https://github.com/tc39/proposal-pipeline-operator)
+* <!-- .element: class="fragment" -->Operators <code>|></code>, <code>||></code> and <code>|||></code><br/>
+* <!-- .element: class="fragment" -->Works as '|' in bash and Powershell
+
 
 ![Pipe](./img/pipe.jpg "Pipe") <!-- .element style="height: 250px;" -->
+
 
 ----
 
@@ -384,11 +401,15 @@ let merged = ['a';'b'] @ ['c';'d']
 
 **Note**: they bind differently
 
+note:
+
+* `List.append` same thing as `@`
+
+
 ----
 
 ### Reversing
 
-* `List.append` same thing as `@`
 
 ```fsharp
 let rec reverse = function
@@ -400,16 +421,15 @@ let rec reverse = function
 
 ## `List.rev`
 
-* <!-- .element: class="fragment" data-fragment-index="0" -->`List.rev` is from List module <!-- .element: class="fragment" data-fragment-index="0" --><br/>
-* <!-- .element: class="fragment" data-fragment-index="1" -->`List.rev` is an efficient way of reversing a list <!-- .element: class="fragment" data-fragment-index="1" -->
-  * oppose to the naive implemetation (red above)<!-- .element: class="fragment" data-fragment-index="1" --><br/>
+* <!-- .element: class="fragment" --><code>List.rev</code> is from List module<br/>
+* <!-- .element: class="fragment" --><code>List.rev</code> is an efficient way of reversing a list
+  * oppose to the naive implemetation (above)<br/>
 
-* <!-- .element: class="fragment" data-fragment-index="2" -->This is not efficient because of the way `@` is works<!-- .element: class="fragment" data-fragment-index="2" -->
+* <!-- .element: class="fragment" -->This is not efficient because of the way <code>@<code> is works
 ```fsharp
 [] @ ys = ys
 [x0;x1;x2;x3] @ ys = x0 :: ([x1;x2;x3] @ ys)
 ```
-<!-- .element: class="fragment" data-fragment-index="2" -->
 
 Note:
 
@@ -441,7 +461,7 @@ LINQ: Aggregate
 ```fsharp
 List.map: ('a -> 'b) -> 'a list -> 'b list
 ```
-* Transforms a list of `'a`'s to a list of `'b`'s
+* <!-- .element: class="fragment" --> Transforms a list of <code>'a</code>'s to a list of <code>'b</code>'s
 
 note:
 Equavilant to Select in LINQ
@@ -637,7 +657,7 @@ Stopped due to error
 * Rather simple constructs we see a lot<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
   * We 'add' data together all the time
 * Make for simpler programs<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
-  * if your types acts like other types
+  * if your types behaves like built-in types
 
 ----
 
@@ -660,7 +680,7 @@ Stopped due to error
 <!-- .slide: data-visibility="hidden" -->
 ### Free monoid
 
-* We wan't to combine two numbers<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* We want to combine two numbers<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
   * 3 & 4
   * but have not determined how
 * Save these numbers in singleton arrays<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
