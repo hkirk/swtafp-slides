@@ -1,6 +1,8 @@
 <!-- .slide: data-background="#003d73" -->
 ## Introduction + F# #
 
+![LISP](./img/comic.png "")
+
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
 ----
@@ -105,42 +107,42 @@ Applying and composing of functions
 
 ----
 
-### Imperative vs Declarative
+### The Imperative paradim
 
 - Imperative<!-- .element: class="fragment" data-fragment-index="0" -->  
   - Procedural (C)
   - OOP (C++, C#)
-- Declarative <!-- .element: class="fragment" data-fragment-index="1" -->  
-  - Functional (F\#)
-  - Logic (Prolog)
+* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in imperative programing</b> one would
+  * use statements to modify state
+  * focus on how the program should achieve its goal<br/>
 
 
 ----
 
-### In ...
+### The Declarative paradigm
 
-* <!-- .element: class="fragment" data-fragment-index="0" -->  <b>imperative programing</b> one would
-  * use statements to modify state
-  * focus on how the program should achieve its goal<br/>
-* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>declarative programing</b> the focus is on 
+- Declarative <!-- .element: class="fragment" data-fragment-index="0" -->  
+  - Functional (F\#)
+  - Logic (Prolog)
+* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in declarative programing</b> the focus is on 
   * expressing commands
   * focus on what should be accomplished
 
 ----
 
 
-### Side effects
+### Reasoning about functions
 
-Which we want to avoid
-- Changing value of variable<br/><!-- .element: class="fragment" data-fragment-index="1" -->
+Minimize 'side-effects'
+- Changing values of variable<br/><!-- .element: class="fragment" data-fragment-index="1" -->
 - I/O<br/><!-- .element: class="fragment" data-fragment-index="2" -->
-- Throwing an exception<br/><!-- .element: class="fragment" data-fragment-index="3" -->
+- Throwing exceptions<br/><!-- .element: class="fragment" data-fragment-index="3" -->
 - &#9758; We are going to try minimize and control side-effects<!-- .element: class="fragment" data-fragment-index="4" -->  
   - **not** removing them altogheter<!-- .element: class="fragment" data-fragment-index="4" -->  
 
 ----
 
-### Other concepts
+### Tools
 
 - Functions as first class citizen<br/><!-- .element: class="fragment" --> 
 - Higher order functions<br/><!-- .element: class="fragment" --> 
@@ -153,7 +155,7 @@ Which we want to avoid
 
 ----
 
-### Why FP
+### Advantages
 
 - Makes us better OOP developers<br/><!-- .element: class="fragment" -->
 - Help us develop more modular code<br/><!-- .element: class="fragment" -->
@@ -172,25 +174,17 @@ Which we want to avoid
 
 ![Learning curve FP vs OOP](./img/programming_languages_curve.png "Learning curve") <!-- .element: style="width: 500px" -->
 
-----
-
-### Personal experience with FP
-
-* Been using FP with OOP since 2012
-* Fluent in Scala and F#
-* Know some SML and Haskell
-
 
 ---
 
 ## Why F#
 
-- forces you to think in a different way<br/><!-- .element: class="fragment" -->
+- forces you to think in FP<br/><!-- .element: class="fragment" -->
 - strongly typed language<br/><!-- .element: class="fragment" -->
 - 'easy' to learn syntax<br/><!-- .element: class="fragment" -->
 - has access to .NET standard library<br/><!-- .element: class="fragment" -->
 - interoperability with .NET<br/><!-- .element: class="fragment" -->
-- builds to .NET IL<br/><!-- .element: class="fragment" -->
+  - builds to .NET IL<br/>
 - OOP possible in F#<br/><!-- .element: class="fragment" -->
 
 Note:
