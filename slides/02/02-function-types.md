@@ -256,9 +256,9 @@ let (l, num, bar, a, (str', num')) = t2
 (1, "foo", 'a') = (1, "bar", 'b') // false
 (1, ("foo", 'a')) = (1, "foo", 'a')
 // error FS0001: Type mismatch. Expecting a
-//    'int * (string * char)'    
+//    int * (string * char)'    
 // but given a
-//    'int * (string * char) * 'a'    
+//    int * string * char
 // The tuples have differing lengths of 2 and 3
 ```
 
@@ -284,7 +284,7 @@ type Course = { name: string; semester: string;
 
 ```
 <!-- .element: class="fragment" data-fragment-index="0" -->
-with record labels 'name', 'semester', 'students' and 'teacher'<!-- .element: class="fragment" data-fragment-index="0" -->
+with labels 'name', 'semester', 'students' and 'teacher'<!-- .element: class="fragment" data-fragment-index="0" -->
 
 ```fsharp
 [ attributes ]
@@ -318,7 +318,7 @@ let swafp = {name = "SWAF"; semester = "F23";
 ## Equality
 
 * Requires equality to be defined for all components
-* Requires components to be pairwise equal in type
+* Requires types to be equal
 
 ```fsharp
 type RecordTest = { X: int; Y: int }
@@ -334,8 +334,8 @@ record1 = record 2
 ## Ordering
 
 * Requires ordering to be defined for components
-* Requires that components to be pairwise equal in type
-* Is compared from left to right of def.
+* Requires that types are equal
+* Is compared from left to right of definition
 
 ----
 
@@ -417,6 +417,9 @@ let rec reverse = function
   | x::xs -> reverse xs @ [x]
 ```
 
+* <!-- .element: class="fragment" -->Not efficient because of the way <code>@<code> works
+
+
 ----
 
 ## `List.rev`
@@ -425,11 +428,6 @@ let rec reverse = function
 * <!-- .element: class="fragment" --><code>List.rev</code> is an efficient way of reversing a list
   * oppose to the naive implemetation (above)<br/>
 
-* <!-- .element: class="fragment" -->This is not efficient because of the way <code>@<code> is works
-```fsharp
-[] @ ys = ys
-[x0;x1;x2;x3] @ ys = x0 :: ([x1;x2;x3] @ ys)
-```
 
 Note:
 
