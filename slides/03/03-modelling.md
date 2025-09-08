@@ -369,8 +369,8 @@ let value (EmailAddr str) = str
 ```fsharp [1-5|6-9|11-14]
 type NameInfo = {
   FirstName: String50
-  MiddleName: string50 option
-  LastName: string50
+  MiddleName: String50 option
+  LastName: String50
 }
 type EmailInfo = {
   EmailAddress: EmailAddr
@@ -461,7 +461,7 @@ type Contact = {
 }
 ```
 
-What about if there should be a secondary contact address?
+What about if there should be a secondary contact address?<!-- .element: class="fragment" -->
 
 ----
 
