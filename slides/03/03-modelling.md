@@ -383,6 +383,17 @@ type Contact = {
 }
 ```
 
+note:
+
+```fsharp
+let fullname nameInfo =
+  let middlname = match nameInfo.MiddlName with
+                | None -> ""
+                | Some v -> $" {v}"
+  $"{nameInfo.Firstname}{middlname} {nameInfo.LastName}"
+
+```
+
 ----
 
 ### Business logic in types
@@ -412,7 +423,7 @@ type VerifyEmailSerice =
 type EmailInfo =
   private
   | Verified of VerifiedEmail
-  | UnVerifiedEmail of EmailAddr
+  | UnVerifiedEmail of UnVerifiedEmail
 ```
 
 Could of course also be moved into `fsi` file
