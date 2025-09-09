@@ -476,11 +476,15 @@ What about if there should be a secondary contact address?<!-- .element: class="
 
 ---
 
+<!-- .slide: data-visibility="hidden" -->
+
 ## Examples Cash register
 
 ![Cash register](./img/cash_register.jpg "Cash register")
 
 ----
+
+<!-- .slide: data-visibility="hidden" -->
 
 ### Domain
 
@@ -503,6 +507,8 @@ type Purchase = Item list
 
 ----
 
+<!-- .slide: data-visibility="hidden" -->
+
 ### Domain (cont.)
 
 ```fsharp [1-4|6-8]
@@ -522,11 +528,15 @@ note:
 
 ----
 
+<!-- .slide: data-visibility="hidden" -->
+
 ## Examples Map Coloring
 
 ![Map Coloring](./img/map_coloring.png "Map Coloring")
 
 ----
+
+<!-- .slide: data-visibility="hidden" -->
 
 ### Domain
 
@@ -542,6 +552,8 @@ type colorMap = Map -> Coloring
 ```
 
 ----
+
+<!-- .slide: data-visibility="hidden" -->
 
 ### Functions
 
@@ -569,11 +581,15 @@ It should be possible to:
 
 ![State machine](./img/state.png "State machine")
 
+note:
+
+From: https://blog.ploeh.dk/2015/08/10/type-driven-development/
+
 ----
 
 ### Domain
 
-```fsharp [8]
+```fsharp [2|5-8]
 // Auxiliary types
 type MessageHandler = unit -> Timed<unit>
 
@@ -675,10 +691,10 @@ let transitionFromNoMessage shouldIdle idle
 
 ### Still not done
 
-* Model the domain directly in code
-* Type system is 'easy' to work with
-* Type system helps with refactoring
-* Keeps a TODO list
+* Model the domain directly in codeM<br/><!-- .element: class="fragment" -->
+* Type system is 'easy' to work with<br/><!-- .element: class="fragment" -->
+* Type system helps with refactoring<br/><!-- .element: class="fragment" -->
+* Keeps a TODO list<br/><!-- .element: class="fragment" -->
 
 ---
 
