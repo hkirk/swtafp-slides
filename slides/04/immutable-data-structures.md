@@ -10,14 +10,13 @@
 
 ## Agenda
 
-* What, Why
-* How
-    * Binary Search Tree (Set / map)
-* Sets
-    * union, intersect & difference
-* Maps
-    * foldBack
-* Sequence in F#
+* What, Why<br/><!-- .element: class="fragment" -->
+* How<br/><!-- .element: class="fragment" -->
+    * Ex. Binary Search Tree
+* Sets<br/><!-- .element: class="fragment" -->
+    * set operations
+* Maps and Sets<br/><!-- .element: class="fragment" -->
+* Sequence in F#<br/><!-- .element: class="fragment" -->
 
 ---
 
@@ -144,7 +143,6 @@ let rec contains (x: 'a) (n: BST<'a>) =
 
 ## `Set<'a>`
 
-* From .NET F# library
 * Invariant: Elements are unique<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
 * Finite<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
 * Immutable<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
@@ -155,6 +153,7 @@ let rec contains (x: 'a) (n: BST<'a>) =
 
 Note:
 BBT: balanced binary three
+Impl AVL
 
 Red-Black tree: [OKASAKI, C. (1999). Red-black trees in a functional setting. Journal of Functional Programming, 9(4), 471-477. doi:10.1017/S0956796899003494](https://www.cambridge.org/core/journals/journal-of-functional-programming/article/redblack-trees-in-a-functional-setting/62BC5EA75A2C95E3F6EE95AE3DADF0E5)
 
@@ -206,21 +205,20 @@ Set.difference first third
 
 ## Sets in general
 
-* <!-- .element: class="fragment"  data-fragment-index="0" --> map, filter, `fold`, foldBack are all $ O(n) $<br/>
-* <!-- .element: class="fragment"  data-fragment-index="1" --> complexity of recusion is in worst case $ O(n*log(n)) $<br/>
-* <!-- .element: class="fragment"  data-fragment-index="2" --> Enumarations can be used to simplify and optimize this
+* <!-- .element: class="fragment" --> map, filter, `fold`, foldBack are all $ O(n) $<br/>
+* <!-- .element: class="fragment" --> complexity of recusion is in worst case $ O(n*log(n)) $<br/>
+* <!-- .element: class="fragment" --> Enumarations can be used to simplify and optimize this
 
 ---
 
 ## `Map<'a, 'b>`
 
-* From .NET F# lib
-* Invariant: Keys are unique<!-- .element: class="fragment"  data-fragment-index="0" -->
+* Invariant: Keys are unique<!-- .element: class="fragment" -->
     * Key / value pair
     * Lookup per key
-* Immutable<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
-* Implemented using 'BBT<'a>'<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
-* As Set, Map requires ordering is defined for key type<!-- .element: class="fragment"  data-fragment-index="2" -->
+* Immutable<!-- .element: class="fragment" --><br/>
+* Implemented using 'BBT<'a>'<!-- .element: class="fragment" --><br/>
+* As Set, Map requires ordering is defined for key type<!-- .element: class="fragment" -->
 
 Note:
 BBT: balanced binary three
@@ -330,8 +328,9 @@ Seq.item 5 nat
 // val it: int 5
 ```
 
-* <!-- .element: class="fragment"  data-fragment-index="0" --> 'Seq.item 5 nat' evaluates the 5th element, but not elements '0-4' and '6-...'
-* <!-- .element: class="fragment"  data-fragment-index="1" --><br/> Calling 'Seq.item 5 nat' will evaluate the 5th element again
+* <!-- .element: class="fragment" --> 'Seq.item 5 nat' evaluates the 5th element
+    * not elements '0-4' + '6-...'
+* <!-- .element: class="fragment" --><br/> Calling 'Seq.item 5 nat' will evaluate the 5th element again
 
 ----
 
@@ -342,8 +341,8 @@ Seq.item 5 nat
 let cachedNat = Seq.cache nat
 ```
 
-* <!-- .element: class="fragment"  data-fragment-index="0" --> Calling 'Seq.item 5 cachedNat' will evaluate all elements from '0-5'
-* <!-- .element: class="fragment"  data-fragment-index="0" --> Calling again will not evalute elements '0-5' again
+* <!-- .element: class="fragment"  data-fragment-index="0" --><code>Seq.item 5 cachedNat<code> will evaluate all elements from '0-5'<br/>
+* <!-- .element: class="fragment"  data-fragment-index="0" -->Calling again will not evalute elements '0-5' again
 
 ---
 
