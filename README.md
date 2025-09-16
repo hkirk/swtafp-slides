@@ -5,7 +5,6 @@
   * This index file can e.g. show lecture notes by flipping `"showNotes": false,` to `true`
 
 
-
 Want to create reveal.js presentation in a graphical editor? Try <https://slides.com>. It's made by the same people behind reveal.js.
 
 ---

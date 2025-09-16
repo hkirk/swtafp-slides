@@ -312,7 +312,7 @@ gulp.task('serve', () => {
         `!${slidesRoot}**/node_modules/**`, // ignore node_modules
     ], gulp.series('reload'))
 
-    gulp.watch(['slides/**/*.html', 'slides/**/*.md'], gulp.series('reload'))
+    gulp.watch(['slides/**/*.html', 'slides/**/*.md'], gulp.series('js', 'reload', 'test'))
 
     gulp.watch(['js/**'], gulp.series('js', 'reload', 'eslint'))
 
