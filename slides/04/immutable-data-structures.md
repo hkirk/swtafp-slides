@@ -58,6 +58,8 @@ module BST =
     // Code for creating/adding etc.
 ```
 
+* Declared with tuple for simplification
+
 ----
 
 ##### Invariants
@@ -102,15 +104,29 @@ let rec contains (x: 'a) (n: BST<'a>) =
 
 ```
 
+note:
+
+Types to allow for . (dot) operator
+
+```fsharp
+
+type Node<'a> = { left: BST<'a>; elem: 'a; right: BST<'a> }
+and BST<'a> =
+    // | Leaf of 'a
+    | Empty
+    | Node of Node<'a>
+
+```
+
 ----
 
 ### Implementing `insert`
 
 
 * Algorithm:  ![BST](./img/bst.png "Binary search tree") <!-- .element: style="width: 250px; float: right" -->
-    1. Use a variation of 'contains' to locate correct place to insert<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
-    2. Copy nodes as we move down through the tree<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
-* Example<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+    1. Use a variation of 'contains' to locate correct place to insert<!-- .element: class="fragment" --><br/>
+    2. Copy nodes as we move down through the tree<!-- .element: class="fragment" --><br/>
+* Example<!-- .element: class="fragment" --><br/>
     * Inserting 9
 
 ----
@@ -206,7 +222,7 @@ Set.difference first third
 ## Sets in general
 
 * <!-- .element: class="fragment" --> map, filter, `fold`, foldBack are all $ O(n) $<br/>
-* <!-- .element: class="fragment" --> complexity of recusion is in worst case $ O(n*log(n)) $<br/>
+* <!-- .element: class="fragment" --> complexity of recursion is in worst case $ O(n*log(n)) $<br/>
 * <!-- .element: class="fragment" --> Enumarations can be used to simplify and optimize this
 
 ---
