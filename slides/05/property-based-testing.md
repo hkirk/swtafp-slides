@@ -7,34 +7,16 @@
 
 ### Agenda
 
-* Setting up test project
-* Property based testing
-* FsCheck
-
----
-
-## Setting up
-
-
-----
-
-### Creating a Test project
-
-
-![Create XUnit](./img/create.png "Create Xunit test project") <!-- .element: style="height: 450px" -->
-
-\* Notice `xUnit` project
-
-----
-
-### Install FsCheck
-
-![FsCheck](./img/fscheck.png "Install fsCheck")
+* Function properties <br/><!-- .element: class="fragment"  -->
+* Setting up test project<br/><!-- .element: class="fragment"  -->
+* Property based testing<br/><!-- .element: class="fragment"  -->
+* FsCheck<br/><!-- .element: class="fragment"  -->
 
 ---
 
 ## Function properties
 
+!["Lisp"](./img/lisp_cycles.png "")
 
 ----
 
@@ -72,12 +54,27 @@ let head list = List.head list // total?
 ```
 <!-- .element: class="fragment"-->
 
-
 ---
 
-<!-- .slide: data-background-image="./img/property-based-testing-vs-unit-testing.png" -->
+## Setting up
+
 
 ----
+
+### Creating a Test project
+
+
+![Create XUnit](./img/create.png "Create Xunit test project") <!-- .element: style="height: 450px" -->
+
+\* Notice `xUnit` project
+
+----
+
+### Install FsCheck
+
+![FsCheck](./img/fscheck.png "Install fsCheck")
+
+---
 
 * Example [FizzBuzz kata](https://codingdojo.org/kata/FizzBuzz/)
 * Problem statement
@@ -112,7 +109,7 @@ Is this enough?<!-- .element: class="fragment" -->
 
 ----
 
-### Properly not
+### Lazy programmer
 
 ```fsharp
 let fizzbuzz x =
@@ -147,6 +144,10 @@ let expectedList =
 
 ----
 
+<!-- .slide: data-background-image="./img/property-based-testing-vs-unit-testing.png" -->
+
+----
+
 ### Testing properties instead
 
 So the properties of FizzBuzz is:
@@ -164,44 +165,7 @@ So the properties of FizzBuzz is:
     * numbers that are multiply of 3 and 5<br/><!-- .element: class="fragment"-->
     * numbers that are multiply of 3 but not 5<br/><!-- .element: class="fragment"-->
     * numbers that are multiply of 5 but not 3<br/><!-- .element: class="fragment"-->
-    * Numbers that are not a multiply of 3 or 5<br/><!-- .element: class="fragment"-->
-
-----
-
-### Custom types
-
-```fsharp
-type MultiplyOfOnly3 = MultiplyOfOnly3 of int with
-  static member op_Explicit(MultiplyOfOnly3 i) = i
-
-type MultiplyOfOnly3Modifier =
-    static member MultiplyOfOnly3() =
-        ArbMap.defaults
-        |> ArbMap.generate<int32>
-        |> Gen.filter (fun i -> i > 0 && i % 3 = 0 && not (i % 5 = 0))
-        |> Arb.fromGen
-
-[<Property(Arbitrary = [| typeof<MultiplyOfOnly3Modifier> |])>]
-let ```test multiply of three``` (x: MultiplyOfOnly3) =
-    test <@ FizzBuzz.fizzBuzz x = "Fizz" @>
-```
-<!-- .element: class="fragment" -->
-
-----
-
-### Generator
-
-```fsharp
-[<Property>]
-    let ``test multiply of three`` () =
-        let gen = ArbMap.defaults
-                    |> ArbMap.generate<int32>
-                    |> Gen.filter (fun i -> i % 3 = 0 && not (i % 5 = 0))
-                    |> Arb.fromGen
-        Prop.forAll gen (fun x ->
-            test <@ FizzBuzz.fizzBuzz x = "Fizz" @>
-            )
-```
+    * numbers that are not a multiply of 3 or 5<br/><!-- .element: class="fragment"-->
 
 ---
 
@@ -268,8 +232,8 @@ Shrunk:
 
 ### FsCheck properties 
 
-* Can test universally properties for functions or data structures
-* Can not work directly on generic types like `'a`
+* Can test universally properties for functions or data structures<br/><!-- .element: class="fragment" -->
+* <!-- .element: class="fragment" -->Can not work directly on generic types like <code>'a</code><br/>
 
 note:
 
@@ -286,7 +250,7 @@ let insertKeepsOrder (x:int) xs =
     ordered xs ==> ordered (insert x xs)
 ```
 
-Can give fewer tests - if many inputs are moved. Custom generators could be an altertive
+Can give fewer tests - if many inputs are moved. Custom generators could be an altertive<!-- .element: class="fragment" -->
 
 ----
 
@@ -321,14 +285,79 @@ More to be found here: [Properties](https://fscheck.github.io/FsCheck//Propertie
 * Timed
 * Distribution
 
+----
+
+### Other properties with FsCheck
+
+* Can generate random functions<br/><!-- .element: class="fragment" -->
+* Can replay failed tests<br/><!-- .element: class="fragment" -->
+
+```fsharp
+Check.One(
+    {
+        Config.Quick with Replay =
+            Some <| Random.StdGen (1145655947,296144285)
+    },
+    fun x -> abs x >= 0
+)
+```
+<!-- .element: class="fragment" -->
+
+---
+
+### Generator
+
+```fsharp
+[<Property>]
+    let ``test multiply of three`` () =
+        let gen = ArbMap.defaults
+                    |> ArbMap.generate<int32>
+                    |> Gen.filter (fun i -> i % 3 = 0 && not (i % 5 = 0))
+                    |> Arb.fromGen
+        Prop.forAll gen (fun x ->
+            test <@ FizzBuzz.fizzBuzz x = "Fizz" @>
+            )
+```
+
+----
+
+### Custom types
+
+```fsharp
+type MultiplyOfOnly3 = MultiplyOfOnly3 of int with
+  static member op_Explicit(MultiplyOfOnly3 i) = i
+
+type MultiplyOfOnly3Modifier =
+    static member MultiplyOfOnly3() =
+        ArbMap.defaults
+        |> ArbMap.generate<int32>
+        |> Gen.filter (fun i -> i > 0 && i % 3 = 0 && not (i % 5 = 0))
+        |> Arb.fromGen
+
+[<Property(Arbitrary = [| typeof<MultiplyOfOnly3Modifier> |])>]
+let ```test multiply of three``` (x: MultiplyOfOnly3) =
+    test <@ FizzBuzz.fizzBuzz x = "Fizz" @>
+```
+
+----
+
+### `Gen<'a>`, `Arbitrary<'a>`
+
+* <!-- .element: class="fragment"--><code>Gen<'a></code> - represent a Random 'a Generator<br/>
+    * Gen.choose, Gen.constant, Gen.oneof
+* <!-- .element: class="fragment"--><code>Arbitrary<'a><code> - Wrapper around <code>Gen<'a></code><br/>
+    * provides additional metadata like Shrinking for `'a`'s
+* <!-- .element: class="fragment"--> <code>ArbMap</code>
+    * Helper type that allow generations Map values<br/>
+
 
 ----
 
 ### Generating data
 
-* Generate data with `Gen<'a>`
+* <!-- .element: class="fragment"-->Generate data with <code>Gen<'a></code></br>
     * we can build our own data generators
-* Data shrinkers is defined
+* Data shrinkers is defined<br/><!-- .element: class="fragment"-->
     * `'a -> seq<'a>`
     * also customizable
 
@@ -374,26 +403,6 @@ note:
 * `listOf g`: generates a list of t's 
 
 More at https://fscheck.github.io/FsCheck/TestData.html#Useful-Generator-Combinators
-
-----
-
-### Other properties with FsCheck
-
-* Can generate random functions
-* Can replay failed tests
-
-```fsharp
-Check.One(
-    {
-        Config.Quick with Replay =
-            Some <| Random.StdGen (1145655947,296144285)
-    },
-    fun x -> abs x >= 0
-)
-```
-\* Avoid changing state of generated objects (if mutable) 
-
-
 
 ---
 
@@ -490,7 +499,7 @@ note:
 
 ---
 
-### vs TDD
+### `vs` Test Driven Development
 
 * TDD works on specific examples
 * PBT on universel properties
