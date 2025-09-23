@@ -94,10 +94,10 @@ print 'FizzBuzz'.
 ```fsharp
 [<Fact>]
 let ``Three should be a Fizz`` () =
-    test <@ FizzBuzz.fizzBuzz 3 = "Fizz" @>
+    FizzBuzz.fizzBuzz 3 = "Fizz"
  
 let ``Five should be a Buzz`` () =
-    test <@ FizzBuzz.fizzBuzz 5 = "Buzz" @>
+    FizzBuzz.fizzBuzz 5 = "Buzz"
     
 let ``Seven should be a number`` () = ...
 let ``Nine should be a Fizz`` () = ...
@@ -315,7 +315,7 @@ Check.One(
                     |> Gen.filter (fun i -> i % 3 = 0 && not (i % 5 = 0))
                     |> Arb.fromGen
         Prop.forAll gen (fun x ->
-            test <@ FizzBuzz.fizzBuzz x = "Fizz" @>
+            FizzBuzz.fizzBuzz x = "Fizz"
             )
 ```
 
@@ -336,7 +336,7 @@ type MultiplyOfOnly3Modifier =
 
 [<Property(Arbitrary = [| typeof<MultiplyOfOnly3Modifier> |])>]
 let ```test multiply of three``` (x: MultiplyOfOnly3) =
-    test <@ FizzBuzz.fizzBuzz x = "Fizz" @>
+    FizzBuzz.fizzBuzz x = "Fizz"
 ```
 
 ----
