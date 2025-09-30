@@ -312,7 +312,7 @@ gulp.task('serve', () => {
         `!${slidesRoot}**/node_modules/**`, // ignore node_modules
     ], gulp.series('reload'))
 
-    gulp.watch(['slides/**/*.html', 'slides/**/*.md'], gulp.series('js', 'reload', 'test'))
+    gulp.watch(['slides/**/*.html', 'slides/**/*.md'], gulp.series('js', 'reload'))
 
     gulp.watch(['js/**'], gulp.series('js', 'reload', 'eslint'))
 
@@ -329,6 +329,6 @@ gulp.task('serve', () => {
         'slides/css/**/*.css'
     ], gulp.series('css-core', 'reload'))
 
-    gulp.watch(['test/*.html'], gulp.series('test'))
+    // gulp.watch(['test/*.html'], gulp.series('test'))
 
 })
