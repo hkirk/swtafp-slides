@@ -7,13 +7,13 @@
 
 ### Agenda
 
-* Functors (easy peasy)
-* Monads
+* Functors (easy peasy)<br/><!-- .element: class="fragment" -->
+* Monads<br/><!-- .element: class="fragment" -->
     * variations
-* Computation Expressions
+* Computation Expressions<br/><!-- .element: class="fragment" -->
     * task / async
-* Applicatives
-* CE continued
+* Applicatives<br/><!-- .element: class="fragment" -->
+* Extending CE<br/><!-- .element: class="fragment" -->
 
 ---
 
@@ -50,7 +50,7 @@ List.map id [1;2;3;4;5]
 #### Functor laws - composition
 
 * given two functions `f` and `g` you get the same result by
-    * mapping over `f` and then `g` as
+    * mapping over `f` and then `g` 
     * mapping over `f >> g`
 
 ```fsharp
@@ -154,11 +154,11 @@ val bind: ('a -> m<'b>) -> m<'a> -> m<'b>
 
 #### `return'`
 
-* Typically just a type constructor
+* In F# (normally) just a type constructor
 
 ```fsharp
-let maybeA = Some 1
-let maybeB = None
+let someA = Some 1
+let someB = None
 let result = Ok (myAPIData)
 ```
 
@@ -169,11 +169,10 @@ let result = Ok (myAPIData)
 ```fsharp
 // Option.bind
 let bind f = function
-          // to a wrappe value
+        // to a wrappe value
     | Some v -> f v // returns a wrapped value
     | None   -> None
-                            //  |- wrapped value
-                            // v 
+
 bind (fun v -> Some (v+1)) (Some 4)
 // val it: int option = Some 5
 ```
@@ -380,15 +379,17 @@ let addThreeOptions (a: int option)
 
 ### Async programming in F#
 
-* <!-- .element: class="fragment" -->'task {}' is used to consume Task<T> from C# otherwise use<br/>
-* <!-- .element: class="fragment" -->'async {}'<br/>
-* <!-- .element: class="fragment" -->Diference are 'async' are specifications of work, 'task' are representation of work
+* <!-- .element: class="fragment" --><code>task {}</code> is used to consume <code>Task<T><code> from C# otherwise use<br/>
+* <!-- .element: class="fragment" --><code>async {}</code><br/>
+* <!-- .element: class="fragment" -->Diference:
+    * `async` are specifications of work
+    * `task` are representation of work
 
 ----
 
 ### `async` examples
 
-```fsharp
+```fsharp [2-8|12-15]
 let printTotalFileBytesUsingAsync (path: string) =
     async {
         let! bytes = File.ReadAllBytesAsync(path)
@@ -400,8 +401,9 @@ let printTotalFileBytesUsingAsync (path: string) =
 
 [<EntryPoint>]
 let main argv =
-    let result = printTotalFileBytesUsingAsync "path-to-file.txt"
-                 |> Async.RunSynchronously
+    let toRun = printTotalFileBytesUsingAsync "path-to-file.txt"
+    let result = toRun |> Async.RunSynchronously
+                 
     printfn $"{result}"
     0
 ```
@@ -416,9 +418,10 @@ Async computation is first started when `Async.RunSynchronously` is executed
 
 ### Control execution
 
-* `Async.Parallel`
-* `Async.Sequential`
-* ...
+* `Async.*`
+    * `Parallel`
+    * `Sequential`
+    * ...
 
 ---
 
@@ -431,8 +434,8 @@ Async computation is first started when `Async.RunSynchronously` is executed
 ```fsharp
 // Defined by these to functions
 val pure: 'a -> F<'a>
-val apply: F<('a -> 'b)> -> F<'a> -> F<'b>
 // Operator: (<*>), also called lift
+val apply: F<('a -> 'b)> -> F<'a> -> F<'b>
 // Note here 'F' is the applicative type
 ```
 <!-- .element: class="fragment" -->
@@ -449,6 +452,8 @@ Note:
 `<*>` is also called `liftA2` and sometimes `apply` :)
 
 ----
+
+<!-- .slide: data-visibility="hidden" -->
 
 ### `flatMap` or `List.collect` 
 
@@ -473,23 +478,23 @@ val collect: (mapping: 'T -> 'U list) -> (list: 'T list)
 
 #### Examples
 
-```fsharp [1-5|6-12|14-17]
+```fsharp [1-5|11|9-12|14-17]
 module List =
-    // val apply : fs:('a -> 'b) list -> l:'a list -> 'b list
+    // val apply : fs:('a -> 'b) list -> l:'a list 
+    //                  -> 'b list
     let apply fs l = 
         fs |> List.collect (fun f ->
                 l |> List.map f)
 let odds = [1;3;5;7;9]
 let evens = [2;4;6;8;0]
-let partialApplied numbers =
+let partialApplied evens odds =
     (List.apply 
         (List.apply [fun odd even -> (odd, even)] odds)
             numbers)
-let all = 
-    (partialApplied evens)
+let all = partialApplied evens odds
 
-type allFaces = []
-type allSuits = []
+type allFaces = [...]
+type allSuits = [...]
 let fullDeck = [fun f s -> { Face = f; Suit = s }]
                     <*> allFaces <*> allSuits
 ```
@@ -521,13 +526,12 @@ u <*> pure y = pure (fun a -> a y) <*> u
 
 Note:
 
-```fsharp
 List.map string [1;2;3;4] = apply [string] [1;2;3;4]
 
 // Interchange in F#
 `[add1] <*> [1] = [fun a -> a 1] <*> [add1]`
 // We can change the parameters and apply - this forces us to create a function (lambda) expression which takes a functions and apply - for the types to be correct.
-```
+
 
 ----
 
@@ -577,7 +581,7 @@ let applicativeAdd (a: int option)
 
 #### Parallel computations
 
-```fsharp [4-6|10-13]
+```fsharp [3-6|10-13]
 type OptionBuilder() =
     ...
     member _.MergeSources (x,y) =
@@ -595,6 +599,11 @@ let addThreeOptions a b c =
 ```
 
 Note: 
+
+* MergeSources is used to lift a function and a value into the computation context, similar to pure and apply.
+* BindReturn applies the function to the results of the two computations, analogous to apply.
+
+
 ```fsharp
 module Option =
     let apply fOpt xOpt = 
