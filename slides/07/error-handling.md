@@ -401,9 +401,13 @@ let bind3 func = function
 #### Now we can compose
 
 ```fsharp
+let validated2 input = ...
+// val validated2: 'B -> Result<'C, 'Error>
+
 let combinedValidation =
-  let validated2' = bind validated2 // 'B -> Result<'C, 'Error>
-  let validated3' = bind validated3 // 'C -> Result<'D, 'Error>
+  let validated2' = bind validated2
+  // val validated2': Result<B, 'Error> -> Result<'C, 'Error>
+  let validated3' = bind validated3
 
   validated1 >> validated2' >> validated3'
 ```
