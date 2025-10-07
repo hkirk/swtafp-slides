@@ -11,7 +11,7 @@
 * Result / Either monad<br/><!-- .element: class="fragment" -->
 * Monadic error handling<br/><!-- .element: class="fragment" -->
   * Composition
-  * Convertion
+  * Conversion
   * Exceptions && Parallel validation
 
 ---
@@ -21,7 +21,7 @@
 * A 'normal' program consists of
   1. Input validation<br/><!-- .element: class="fragment" -->
   2. Reading data from db/api<br/><!-- .element: class="fragment" -->
-  3. Complete functions in buisiness logic<br/><!-- .element: class="fragment" -->
+  3. Complete functions in business logic<br/><!-- .element: class="fragment" -->
   4. Updatting data in db<br/><!-- .element: class="fragment" -->
   5. Accessing network<br/><!-- .element: class="fragment" -->
   6. Showing results<br/><!-- .element: class="fragment" -->
@@ -154,7 +154,7 @@ let dostuffwithPerson person =
     | Some bornIn ->
       let newData = createNewPerson person bornIn
       let result = db.updateMunicipality newData
-      "Sucess"
+      "Success"
     | None -> "Municipality not found"
   | None -> "Person not found"
 
@@ -167,7 +167,7 @@ let useCase json: ReturnType =
 
 ```
 
-Note: Could have choosen to return `Result` from our functions instead of Options - same problem
+Note: Could have chosen to return `Result` from our functions instead of Options - same problem
 
 ----
 
@@ -214,7 +214,7 @@ In many other languages Result is called an `Either`
 #### Extending this to our general case
 
 ```fsharp [1-6|8-13]
-type Success = Sucesss
+type Success = Sucess
 type Errors =
   | DBError
   | IOError
@@ -354,7 +354,7 @@ So how to compose these functions?
 * <!-- .element: class="fragment" -->To compose two functions like
   * `'A -> Result<'B, 'E>`
   * `'B -> Result<'C, 'E>`
-* <!-- .element: class="fragment" -->Monadic bind is excatly an adapter
+* <!-- .element: class="fragment" -->Monadic bind is excactly an adapter
 
 ```fsharp
 let bind func = // being explicit about currying
@@ -393,7 +393,7 @@ let bind3 func = function
   | Error e  -> Error e
 ```
 
-**Note**: Both functions doing excatly the same as the above one. 
+**Note**: Both functions doing exactly the same as the above one. 
 
 
 ----
@@ -488,7 +488,7 @@ let (>=>) aFun bFun =
 
 ----
 
-#### Comparision
+#### Comparison
 
 * <div class="fragment" data-fragment-index="1"><b>Bind</b> - Converts a 'switch function' into what <a href="http://www.fsharpforfunandprofit.com">the blog</a> calls a 'two-track function'<br/>
   Used when combining single function
