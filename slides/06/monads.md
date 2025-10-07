@@ -168,13 +168,15 @@ let result = Ok (myAPIData)
 
 ```fsharp
 // Option.bind
-let bind f = function
+let bind f x =
+    match x with
         // to a wrappe value
     | Some v -> f v // returns a wrapped value
     | None   -> None
 
 bind (fun v -> Some (v+1)) (Some 4)
 // val it: int option = Some 5
+bind (fun v -> Some (v+1)) (None)
 ```
 
 ----
@@ -490,7 +492,7 @@ let evens = [2;4;6;8;0]
 let partialApplied evens odds =
     (List.apply 
         (List.apply [fun odd even -> (odd, even)] odds)
-            numbers)
+            evens)
 let all = partialApplied evens odds
 
 type allFaces = [...]

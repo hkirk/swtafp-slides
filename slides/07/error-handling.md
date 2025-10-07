@@ -7,9 +7,9 @@
 
 ### Agenda
 
-* Problem
-* Result / Either monad
-* Monadic error handling
+* Problem<br/><!-- .element: class="fragment" -->
+* Result / Either monad<br/><!-- .element: class="fragment" -->
+* Monadic error handling<br/><!-- .element: class="fragment" -->
   * Composition
   * Convertion
   * Exceptions && Parallel validation
@@ -19,13 +19,13 @@
 ### Problem
 
 * A 'normal' program consists of
-  1. Validation
-  2. Reading data from db/api
-  3. Complete functions in buisiness logic
-  4. Updatting data in db
-  5. Accessing network
-  6. Showing results
-* <div><b>Note</b>: here is I\O - we solve that next time</div><!-- .element: class="fragment" -->
+  1. Input validation<br/><!-- .element: class="fragment" -->
+  2. Reading data from db/api<br/><!-- .element: class="fragment" -->
+  3. Complete functions in buisiness logic<br/><!-- .element: class="fragment" -->
+  4. Updatting data in db<br/><!-- .element: class="fragment" -->
+  5. Accessing network<br/><!-- .element: class="fragment" -->
+  6. Showing results<br/><!-- .element: class="fragment" -->
+* <br/><div><b>Note</b>: here is I\O - we solve that next time</div><!-- .element: class="fragment" -->
 
 ----
 
@@ -92,27 +92,23 @@ let useCase =
 
 #### But what about the actual errors
 
-![Error paths](./img/Recipe_ErrorPath.png)
+![Error paths](./img/error-path.png)
 
 ----
 
 #### two problems
 
 * Functions fail in different ways<!-- .element: class="fragment" data-fragment-index="0" -->
-  * IOError
-  * DBError
-  * ValidationError
-  * Verification error
-  * Authentication error<br/><br/>
-* How do we compose code that can result in errors with our FP functions?
+  * IOError, DBError,  ValidationError, VerificationError, AuthenticationError, ...<br/><br/>
+* How to compose code that fails with functional functions?
 <!-- .element: class="fragment" data-fragment-index="1" -->
 
 ```fsharp
-type PersonOrError = Person | ValidationError 
+type PersonOrError = Person of p | ValidationError of string
 // E.g
 let validatePerson (json: string): PersonOrError =
 ```
-<!-- .element: class="fragment" data-fragment-index="1" -->
+<!-- .element: class="fragment" data-fragment-index="2" -->
 
 ----
 
@@ -148,7 +144,7 @@ let useCase (json:string) =
 
 #### Syntactic sugar 
 
-```fsharp
+```fsharp [14-19|1-12 ]
 let dostuffwithPerson person =
   let ssnOpt = db.readSSN person
   match ssnOpt with
@@ -165,8 +161,8 @@ let dostuffwithPerson person =
 let useCase json: ReturnType =
   let person = validatePerson json
   match person with
-  | Some p -> doStuffWithPerson person
-  | None -> "Validation error"
+  | Person p -> doStuffWithPerson person
+  | ValidationError s -> s
 
 
 ```
@@ -177,7 +173,7 @@ Note: Could have choosen to return `Result` from our functions instead of Option
 
 #### Return Types
 
-Introduciong types for all success/error cases
+Creating a single type for a use-case
 
 ```fsharp
 type ReturnType =
@@ -188,10 +184,6 @@ type ReturnType =
   /// ...
 ```
 
-----
-
-#### Analysis of Proposal
-
 Drawbacks:
 * <!-- .element: class="fragment" -->hard to 'match' on<br/>
 * will consist of 'all' error types in our application<br/><!-- .element: class="fragment" -->
@@ -200,19 +192,7 @@ Drawbacks:
 
 ---
 
-#### Either
-
-```fsharp
-type NoValueResult = Success | Error
-// or
-type Either<'TSuccess, 'TError> =
-  | Success of 'TSuccess
-  | Error of 'TError 
-```
-
-----
-
-### F# Option and Result
+### F# `Option` and `Result`
 
 ```fsharp
 type Option<'T> =
@@ -225,11 +205,15 @@ type Result<'T,'TError> =
 
 * Both are monads<!-- .element: class="fragment" -->
 
+Note:
+
+In many other languages Result is called an `Either`
+
 ----
 
 #### Extending this to our general case
 
-```fsharp [1-6|8-10|11-13]
+```fsharp [1-6|8-13]
 type Success = Sucesss
 type Errors =
   | DBError
@@ -251,6 +235,22 @@ let ourUseCase2 input: Result<Success, Errors list> =
 
 <iframe src="https://giphy.com/embed/l0Hlxvd5L0Qrn4JP2" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/southparkgifs-l0Hlxvd5L0Qrn4JP2">via GIPHY</a></p>
 
+
+
+----
+
+# Monads - repcap
+
+* Consists of:  
+  * <!-- .element: class="fragment" --><code>return</code> - wraps a data type in monadic type<br/>
+  * <!-- .element: class="fragment" --><code>bind</code> - transform the encapsulated value<br/>
+  * + monadic laws<!-- .element: class="fragment" -->
+
+```fsharp
+val return: 'A -> M<'A>
+val bind: ('A -> M<'B>) -> M<'A> -> M<'B>
+```
+<!-- .element: class="fragment" -->
 
 
 ----
@@ -286,28 +286,14 @@ else
   Result.getError a
 ```
 
-----
-
-# Monads - repcap
-
-* return - wraps a data type in monadic type<br/><!-- .element: class="fragment" -->
-* <!-- .element: class="fragment" -->bind - transform the encapsulated value: 'A -> M<'B><br/>
-* monadic laws<!-- .element: class="fragment" -->
-
-```fsharp
-val return: 'A -> M<'A>
-val bind: ('A -> M<'B>) -> M<'A> -> M<'B>
-```
-<!-- .element: class="fragment" -->
-
 
 ----
 
 ### Example with `Result`
 
-```fsharp
+```fsharp [3-6|8]
 type person = {email: string; name: string}
-let validatePerson input =
+let validatePerson (input: string*string) =
   if invalidEmail (fst input) then
     Error "Email not valid"
   elif invalidName (snd input) then
@@ -335,7 +321,7 @@ let invalidName (str: string) =
 
 #### 
 
-```fsharp [2|4,6,8|2,10]
+```fsharp [2,10]
 type person = {email: string; name: string}
 let validatePerson input: Result<Person, string> =
   if validEmail (fst input) then
@@ -356,27 +342,19 @@ So how to compose these functions?
 #### Input -> Output
 
 * We have a bunch a functions on the form<!-- .element: class="fragment" -->
-  * `'Input -> Monad<'Output>`
+  * `'T -> Monad<'U>`
 * Could be one of these<!-- .element: class="fragment" -->
-  * `Option<'Result>`
-  * `Result<'Result, 'Error>`
-
-----
-
-#### Composing in general
-
-* <!-- .element: class="fragment" -->Functions like: f1: 'A -> 'B and f2: 'B -> C` 
-  * can be composed `f1 >> f2`
-* <!-- .element: class="fragment" -->Or even <br/>f3: 'A*'B -> 'C*'D and f4: 'C*'D -> 'E*'F
-  * `f3 >> f4`
-* <!-- .element: class="fragment" -->So functions 'Input -> 'Result is easy to compose
+  * `Option<'T>`
+  * `Result<'T, 'TError>`
 
 ----
 
 #### Creating an adapter
 
-* <!-- .element: class="fragment" -->To compose functions liked 'A -> Result<'B, 'E> we need an adapter<br/>
-* <!-- .element: class="fragment" -->Monadic bind to the rescue
+* <!-- .element: class="fragment" -->To compose two functions like
+  * `'A -> Result<'B, 'E>`
+  * `'B -> Result<'C, 'E>`
+* <!-- .element: class="fragment" -->Monadic bind is excatly an adapter
 
 ```fsharp
 let bind func = // being explicit about currying
@@ -385,8 +363,8 @@ let bind func = // being explicit about currying
     | Ok value -> func value
     | Error e  -> Error e
 
-let converted = bind validatePerson
-// val: converted: Result<'A, 'E> -> Result<'B, 'E>
+let convertedValidatePerson = bind validatePerson
+// val: convertedValidatePerson: Result<'A, 'E> -> Result<'B, 'E>
 ```
 <!-- .element: class="fragment" -->
 
@@ -513,14 +491,6 @@ let (>=>) aFun bFun =
 * <div class="fragment" data-fragment-index="2"><b>SwitchComposition</b> - Converts two 'switch functions' into a single new 'switch function'<br/>
   Chaining a number of functions together
 
-----
-
-#### Other 'simular' tools 
-
-* 'map' for functors types<br/><!-- .element: class="fragment" -->
-* parallel monadic functions<br/><!-- .element: class="fragment" -->
-* domain events / logging etc.<br/><!-- .element: class="fragment" -->
-
 ---
 
 #### Composing with simple functions 
@@ -538,13 +508,13 @@ let switch f input =
 
 #### Functions with side effects
 
-* E.g. save output, logging<!-- .element: class="fragment" -->
+* E.g. save output, logging
 
-```fsharp
+```fsharp [2-5|1,11]
 let log msg: unit = printfn "-- %O" msg
 
-let tee f x =
-  f x
+let tee fn x =
+  fn x
   x
 
 let combinedValidation =
@@ -553,20 +523,20 @@ let combinedValidation =
   >=> validated3
   >=> switch (tee log)
 ```
-<!-- .element: class="fragment" -->
+
 
 ----
 
 ### Exceptions
 
-* Integrating with code that throws exceptions<!-- .element: class="fragment" -->
+* Integrating with code that throws exceptions
 
-```fsharp
+```fsharp[3-7|1,13]
 let doStuff input = invalidArg "input" "always wrong"
 
-let tryCatch f input =
+let tryCatch fn input =
   try
-    f input |> Ok
+    fn input |> Ok
   with
     | ex -> Error ex.Message
 
@@ -576,7 +546,7 @@ let combinedValidation =
   >=> validated3
   >=> tryCatch (tee doStuff)
 ```
-<!-- .element: class="fragment" -->
+
 
 Note:
 
@@ -591,9 +561,9 @@ let doStuff (input: string) =
 
 ### Parallel validation
 
-Lets think fold :) combining pairwise
+Think monoids :) combining pairwise
 
-```fsharp [1|3|6|4-5]
+```fsharp [1-2|3|6|4-5]
 let plus combineOks combineErrors switch1 switch2 x = 
     match (switch1 x),(switch2 x) with
     | Ok s1, Ok s2       -> Ok (combineOks s1 s2)
