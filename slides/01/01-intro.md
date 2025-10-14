@@ -8,6 +8,7 @@
 ----
 
 TODO(https://github.com/hkirk/swtafp-slides/actions/runs/18314148772/job/52149804003)
+TODO(Update index.html files 1-4 with thingy.css link and pdffragments false)
 
 ## Agenda
 
