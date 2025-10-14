@@ -480,7 +480,7 @@ val collect: (mapping: 'T -> 'U list) -> (list: 'T list)
 
 #### Examples
 
-```fsharp [1-5|11|9-12|14-17]
+```fsharp [1-6|11|9-12|14-17]
 module List =
     // val apply : fs:('a -> 'b) list -> l:'a list 
     //                  -> 'b list
