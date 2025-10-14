@@ -22,7 +22,7 @@
 * Design pattern that alters nested values<br/><!-- .element: class="fragment" -->
 * A mapping in an elevated worlds between 'types'<!-- .element: class="fragment" -->
     * using 'normal' functions
-* They are structure preseving<!-- .element: class="fragment" -->
+* They are structure preserving<!-- .element: class="fragment" -->
     * e.g. `List<string> -> List<int>`
 * <!-- .element: class="fragment" -->Typically called `map`
     * `List.map: (mapper: 'a -> 'b) 'a list`
@@ -243,7 +243,7 @@ Free monads uses an AST to represent a computation and at the same time keep the
 ### Also
 
 * Comonads<!-- .element: class="fragment" -->
-    * Can be seens as a reduction from a computation back down to values
+    * Can be seem as a reduction from a computation back down to values
 * Additive monads<!-- .element: class="fragment" -->
     * Monad with binary operators 'mplus' and 'mzero'
     * E.g. List with '[]' and '::'
@@ -288,7 +288,7 @@ let monadicAdd (a: int option)
 type OptionBuilder() =
     member _.Return(x) = // Monad return'
         Some x
-// Staticly somewhere
+// Statically somewhere
 let option = OptionBuilder()
 
 let create () =
@@ -307,7 +307,7 @@ type OptionBuilder() =
     member _.Bind(x, f) =
         Option.bind f x // Monadic bind
 
-// Staticly somewhere
+// Statically somewhere
 let option = OptionBuilder()
 
 let useBind (intOption: int option): int option =
@@ -383,7 +383,7 @@ let addThreeOptions (a: int option)
 
 * <!-- .element: class="fragment" --><code>task {}</code> is used to consume <code>Task<T><code> from C# otherwise use<br/>
 * <!-- .element: class="fragment" --><code>async {}</code><br/>
-* <!-- .element: class="fragment" -->Diference:
+* <!-- .element: class="fragment" -->Difference:
     * `async` are specifications of work
     * `task` are representation of work
 
