@@ -1,13 +1,13 @@
 <!-- .slide: data-background="#003d73" -->
 
-## Reactive programing
+## Reactive programming
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
 ---
 
 
-### Reactive programing
+### Reactive programming
 
 * Declarative paradigm
     * responding to events
@@ -26,7 +26,7 @@ b <- 'new_value'
 
 ----
 
-### Reactive programing
+### Reactive programming
 
 * ReactiveX
     * RXjs (used in Angular, ..)
@@ -40,7 +40,7 @@ b <- 'new_value'
 
 * Emitting and consuming events are async<br/><!-- .element: class="fragment" -->
 * Events are async<br/><!-- .element: class="fragment" -->
-* Events vs Reactive programing<br/><!-- .element: class="fragment" -->
+* Events vs Reactive programming<br/><!-- .element: class="fragment" -->
     * robustness
     * extend
 * Learing curve<br/><!-- .element: class="fragment" -->

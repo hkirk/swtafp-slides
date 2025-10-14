@@ -214,7 +214,7 @@ In many other languages Result is called an `Either`
 #### Extending this to our general case
 
 ```fsharp [1-6|8-13]
-type Success = Sucess
+type Success = Success
 type Errors =
   | DBError
   | IOError
@@ -354,7 +354,7 @@ So how to compose these functions?
 * <!-- .element: class="fragment" -->To compose two functions like
   * `'A -> Result<'B, 'E>`
   * `'B -> Result<'C, 'E>`
-* <!-- .element: class="fragment" -->Monadic bind is excactly an adapter
+* <!-- .element: class="fragment" -->Monadic bind is exactly an adapter
 
 ```fsharp
 let bind func = // being explicit about currying

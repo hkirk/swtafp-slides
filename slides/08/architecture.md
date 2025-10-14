@@ -190,7 +190,7 @@ It don't - but if layered architecture kindof forces it to.
 
 ----
 
-### Refactor `checck`
+### Refactor `check`
 
 ```fsharp
 let check capacity reservedSeats reservation =
@@ -263,7 +263,7 @@ let add1Times2' = add1 >> times2
 * Pure functions<br/><!-- .element: class="fragment" -->
 * Impure functions
 * Know which are which<!-- .element: class="fragment" -->
-    * and how to seperate
+    * and how to separate
 
 ----
 
