@@ -6,7 +6,6 @@
 
 ----
 
-TODO(https://github.com/hkirk/swtafp-slides/actions/runs/18314148772/job/52149804003)
 
 ### Agenda
 
@@ -41,7 +40,7 @@ So to adhere to DIP
 * Creating a **PDF** invoice, requires
     * Products
     * Prices before and after taxes
-    * Custumer information
+    * Customer information
     * Date
     * Invoice number
 
@@ -119,7 +118,7 @@ Note: Not only for FP - but very used especially in FP so e.g. F# and Haskell
 
 <!-- TODO: New example -->
 
-### A Resturant example
+### A Restaurant example
 
 ```fsharp
 module Capacity
@@ -142,7 +141,7 @@ let check capacity getReservedSeats reservation =
 
 ### Controller / Use case
 
-* Resturant check if reservation can be accepted
+* Restaurant check if reservation can be accepted
 
 
 ```fsharp
@@ -230,9 +229,9 @@ let add1Times2' = add1 >> times2
 ### The function `reserveTable`
 
 1. could application logic<br/><!-- .element: class="fragment" --> 
-1. thereby not something you would nessesary reuse<br/><!-- .element: class="fragment" --> 
+1. thereby not something you would necessary reuse<br/><!-- .element: class="fragment" --> 
 1. because:<br/><!-- .element: class="fragment" --> 
-    * handle resevation validation in the same manner?
+    * handle reservation validation in the same manner?
     * handle input/output different
 
 ----
