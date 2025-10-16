@@ -104,7 +104,7 @@ Fitness app (but you can choose your own domain)<!-- .element: class="fragment" 
 
 ---
 
-## What is Functional programing
+## What is Functional programming
 
 Applying and composing of functions
 
@@ -115,7 +115,7 @@ Applying and composing of functions
 - Imperative<!-- .element: class="fragment" data-fragment-index="0" -->  
   - Procedural (C)
   - OOP (C++, C#)
-* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in imperative programing</b> one would
+* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in imperative programming</b> one would
   * use statements to modify state
   * focus on how the program should achieve its goal<br/>
 
@@ -127,7 +127,7 @@ Applying and composing of functions
 - Declarative <!-- .element: class="fragment" data-fragment-index="0" -->  
   - Functional (F\#)
   - Logic (Prolog)
-* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in declarative programing</b> the focus is on 
+* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in declarative programming</b> the focus is on 
   * expressing commands
   * focus on what should be accomplished
 

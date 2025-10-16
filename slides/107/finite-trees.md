@@ -3,6 +3,10 @@
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
+<!--  
+codespell:ignore Ser, Thi
+ -->
+
 ----
 
 ### Agenda
@@ -91,7 +95,7 @@ type CBox2 =
 ```
 
 Note:
-CBox1 is the same as CBox - if you take Cons/Nil into acount
+CBox1 is the same as CBox - if you take Cons/Nil into account
 
 CBox2 is more specific, but inserting into CBox2 is more cumbersome
 
@@ -258,7 +262,7 @@ let resistance tree =
 * From Greek and means Down+Shape
 * Used to collapse a recursive structure to a new value
     * think Fold/FoldBack from List
-* All functions on recusive datastructure can be defined by this technique 
+* All functions on recursive datastructure can be defined by this technique 
 
 ----
 
@@ -294,9 +298,9 @@ List.fold folder state list = ???
 
 ### Why
 
-So why should you use catamorphisms in pratice
+So why should you use catamorphisms in practice
 
-* Resuse
+* Reuse
 * Encapsulation
 * Flexibility
 * Mapping
@@ -307,14 +311,14 @@ So why should you use catamorphisms in pratice
 ### Reuse
 
 * Recursive datastructure can be quite complex
-    * Only have recusive logic in one place
-    * Seperate the 'how' and 'what'
+    * Only have recursive logic in one place
+    * Separate the 'how' and 'what'
         * FP in a nutshell
         * Sounds like SRP
 
 note:
 
-Seperations of concern
+Separations of concern
 
 
 ----
@@ -351,7 +355,7 @@ let rec circuitRec fComp fSer fPar tree =
 ```
 
 * `circuitRec` looks the same - but handle the new case
-* Sometimes it's usefull to avoid existing functionality to change becuase datastructure below changes
+* Sometimes it's useful to avoid existing functionality to change because datastructure below changes
 * You can also use [Active Patterns](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/active-patterns) to hide data
 
 ----
@@ -413,7 +417,7 @@ let convert tree =
 
 ### Deep Copy
 
-Could also be used to make a clone of the origianl value
+Could also be used to make a clone of the original value
 
 ```fsharp
 let deepCopy tree =
@@ -439,7 +443,7 @@ let fComp comp = Comp comp
 2. For non-recursive cases pass the function all the data associated with this type
 3. For recursive data
     * First call the catamorphism recursively on the nested value
-    * Then pass thet function the result from the recursive call
+    * Then pass that function, the result from the recursive call
 
 
 ----
