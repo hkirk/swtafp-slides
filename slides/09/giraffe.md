@@ -180,7 +180,7 @@ let bind (handler : HttpHandler) (handler2 : HttpHandler) =
 ### `Compose`
 
 * Operator (>=>)<br/><!-- .element: class="fragment" -->
-* build on bind, but is optimzed<br/><!-- .element: class="fragment" -->
+* build on bind, but is optimized<br/><!-- .element: class="fragment" -->
 * E.g.<br/><!-- .element: class="fragment" -->
 ```fsharp
 let app = compose (route "/") (Successful.OK "Hello World")
@@ -219,7 +219,7 @@ let App =
 ### `Choose`
 
 * A HttpHandler<br/><!-- .element: class="fragment" -->
-* Iterates throgh multiple HttpHandlers and apply fist that fits<br/><!-- .element: class="fragment" -->
+* Iterates through multiple HttpHandlers and apply fist that fits<br/><!-- .element: class="fragment" -->
 ```fsharp
 let app =
   choose [
@@ -247,7 +247,7 @@ let app =
 
 ```fsharp [1, 6]
 let endpoints =
-  [] // a list of enpoints
+  [] // a list of endpoints
 let configureApp (appBuilder : IApplicationBuilder) =
   appBuilder
       .UseRouting()

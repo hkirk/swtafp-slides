@@ -20,7 +20,7 @@
 
 ----
 
-### Referential transperency 
+### Referential transparency 
 
 * You can replace a function call with the result
     * Caching<br/><!-- .element: class="fragment"  data-fragment-index="0" -->
@@ -161,7 +161,7 @@ So the properties of FizzBuzz is:
 
 ### Testing properties
 
-* So we need a way to genrate
+* So we need a way to generate
     * numbers that are multiply of 3 and 5<br/><!-- .element: class="fragment"-->
     * numbers that are multiply of 3 but not 5<br/><!-- .element: class="fragment"-->
     * numbers that are multiply of 5 but not 3<br/><!-- .element: class="fragment"-->
