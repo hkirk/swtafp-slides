@@ -163,7 +163,7 @@ and BST<'a> =
 * Finite<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
 * Immutable<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
     * All operations returns a new `set`
-* Mathmatical set operations available<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* Mathematical set operations available<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
 * Only elements where 'ordering' is defined<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
 * Internally represented as a 'BBT<'a>'<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
 
@@ -223,7 +223,7 @@ Set.difference first third
 
 * <!-- .element: class="fragment" --> map, filter, `fold`, foldBack are all $ O(n) $<br/>
 * <!-- .element: class="fragment" --> complexity of recursion is in worst case $ O(n*log(n)) $<br/>
-* <!-- .element: class="fragment" --> Enumarations can be used to simplify and optimize this
+* <!-- .element: class="fragment" --> Enumerations can be used to simplify and optimize this
 
 ---
 
@@ -358,7 +358,7 @@ let cachedNat = Seq.cache nat
 ```
 
 * <!-- .element: class="fragment"  data-fragment-index="0" --><code>Seq.item 5 cachedNat<code> will evaluate all elements from '0-5'<br/>
-* <!-- .element: class="fragment"  data-fragment-index="0" -->Calling again will not evalute elements '0-5' again
+* <!-- .element: class="fragment"  data-fragment-index="0" -->Calling again will not evaluate elements '0-5' again
 
 ---
 
