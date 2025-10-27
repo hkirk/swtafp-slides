@@ -123,11 +123,11 @@ Note: Not only for FP - but very used especially in FP so e.g. F# and Haskell
 ----
 
 <!-- TODO: New example - from example -->
-<!-- in that case link to this for inspiration: https://jkone27-3876.medium.com/f-onion-architecture-in-92-lines-of-code-129c5d7877ca -- >
+<!-- in that case link to this for inspiration: https://jkone27-3876.medium.com/f-onion-architecture-in-92-lines-of-code-129c5d7877ca -->
 
 ### A Restaurant example
 
-```fsharp
+```fsharp [6-10]
 module BLL
 
 type Error = CapacityExceeded
@@ -151,7 +151,7 @@ let check capacity getReservedSeats reservation =
 * Restaurant check if reservation can be accepted
 
 
-```fsharp
+```fsharp [4]
 let connStr = "..."
 let reserveTable = 
     Validate.reservation
@@ -174,7 +174,7 @@ let getReservedSeats = getReservedSeatsFromDb connStr
 ```
 
 * <!-- .element: class="fragment" --> 'getReservedSeats' has sideeffect
-    * signature shows no sign of being impure
+    * signature is not honest
 
 ----
 
@@ -205,7 +205,7 @@ let check capacity reservedSeats reservation =
 
 So now calling '`check`' is a bit more tedious
 
-```fsharp
+```fsharp [4-6]
 let connStr = ".."
 let reserveTable =
   Validate.reservation
@@ -261,7 +261,7 @@ let add1Times2' = add1 >> times2
 ## Generalization
 
 * Pure functions<br/><!-- .element: class="fragment" -->
-* Impure functions
+* Impure functions<br/><!-- .element: class="fragment" -->
 * Know which are which<!-- .element: class="fragment" -->
     * and how to separate
 
