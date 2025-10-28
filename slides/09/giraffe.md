@@ -91,7 +91,7 @@ let main _ =
 
 ### Defining Giraffe Services
 
-```fsharp [5-6]
+```fsharp [1-3]
 let configureServices (services: IServiceCollection) =
     // Add Giraffe to the ASP.NET Core pipeline
     services.AddGiraffe() |> ignore
@@ -291,7 +291,7 @@ let app =
 * <!-- .element: class="fragment" --><code>route</code> being the main<br/>
   * `route "/info" >=> info`
 * <!-- .element: class="fragment" --><code>routeCi</code> - non exact match<br/>
-  * `route "/info" >=> info`
+  * `routeCi "/info" >=> info`
 * <!-- .element: class="fragment" --><code>routex</code> - regex<br/>
   * `routex "/info(/?)' >=> info`
 * ....<br/><!-- .element: class="fragment" -->
