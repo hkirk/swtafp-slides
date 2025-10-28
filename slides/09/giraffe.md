@@ -43,7 +43,8 @@
 * (micro) Web framework build as middleware to ASP.NET Core<br/><!-- .element: class="fragment" --> 
 * Make use of 'all' build in middlewares<br/><!-- .element: class="fragment" --> 
   * static file, authentication, authorization, ..
-* Built as a functional framework (which we like)<br/><!-- .element: class="fragment" --> 
+* Built as a functional framework <!-- .element: class="fragment" --> 
+  * which we like :) <br/>
 * Very simple concept<br/><!-- .element: class="fragment" --> 
 
 ```fsharp
@@ -53,6 +54,18 @@ type HttpHandler = HttpFunc -> HttpContext -> HttpFuncResult
 ```
 <!-- .element: class="fragment" --> 
 
+note:
+
+* HttpFuncResult:
+  * A Task<HttpContext option> representing the asynchronous result of an HTTP operation.
+* HttpFunc:
+  * A function HttpContext -> HttpFuncResult that takes a HttpContext and returns an HttpFuncResult.
+  * Acts as a middleware step in Giraffe’s pipeline.
+* HttpHandler:
+  * A function HttpFunc -> HttpContext -> HttpFuncResult that composes with the next HttpFunc in the pipeline.
+  * Signature: (next: HttpFunc) -> (ctx: HttpContext) -> HttpFuncResult.
+  * Example: GET >=> route "/hello" >=> text "Hello World".
+
 ---
 
 ### Setting up Giraffe
@@ -61,7 +74,41 @@ type HttpHandler = HttpFunc -> HttpContext -> HttpFuncResult
   * `PM> Install-Package Giraffe`
 
 
-```fsharp [7-8]
+```fsharp [3-4]
+[<EntryPoint>]
+let main _ =
+    let builder = WebApplication.CreateBuilder(args)
+    configureServices builder.Services
+
+    let app = builder.Build()
+
+    configureApp app
+    app.Run()
+    0
+```
+
+----
+
+### Defining Giraffe Services
+
+```fsharp [5-6]
+let configureServices (services: IServiceCollection) =
+    // Add Giraffe to the ASP.NET Core pipeline
+    services.AddGiraffe() |> ignore
+    
+let notFoundHandler = "Not Found" |> text 
+                                  |> RequestErrors.notFound
+
+let configureApp (appBuilder: IApplicationBuilder) =
+    appBuilder
+    // Add Giraffe dependencies
+    .UseGiraffe(notFoundHandler)
+```
+
+
+----
+
+```fsharp [6| 8]
 [<EntryPoint>]
 let main _ =
     let builder = WebApplication.CreateBuilder(args)
@@ -78,9 +125,7 @@ let main _ =
 
 ### Defining Giraffe middlewere
 
-```fsharp
-let webApp = ...
-
+```fsharp [7-12]
 let configureServices (services: IServiceCollection) =
     // Add Giraffe to the ASP.NET Core pipeline
     services.AddGiraffe() |> ignore
@@ -89,23 +134,23 @@ let notFoundHandler = "Not Found" |> text |> RequestErrors.notFound
 
 let configureApp (appBuilder: IApplicationBuilder) =
     appBuilder
-    // Add Giraffe dependencies
+    // Add Giraffe dependencies: CORS, Auth, ...
     .UseGiraffe(notFoundHandler)
 ```
 
 ---
 
-### `HttpHandler`
 
-* Has a bind method (called compose)<br/><!-- .element: class="fragment" -->
-* and a operator (>=>)<br/><!-- .element: class="fragment" -->
-* plus some more (as we will see below)<br/><!-- .element: class="fragment" -->
+### `HttpHandler`
 
 ```fsharp
 type HttpFuncResult = Task<HttpContext option>
 type HttpFunc = HttpContext -> HttpFuncResult
 type HttpHandler = HttpFunc -> HttpContext -> HttpFuncResult
 ```
+
+* Has a bind method (called compose)<br/><!-- .element: class="fragment" -->
+* and a operator (>=>)<br/><!-- .element: class="fragment" -->
 
 ----
 
@@ -122,7 +167,6 @@ let sayHelloWorld : HttpHandler = text "Hello World, from Giraffe"
 
 ### Using `HttpFunc` to create `HttpHandler`
 
-* When you need access to the HttpContext<br/><!-- .element: class="fragment" -->
 ```fsharp
 // type HttpHandler = HttpFunc -> HttpContext -> HttpFuncResult
 let todo: Endpoint =
@@ -130,8 +174,12 @@ let todo: Endpoint =
     fun next ctx ->
         ServerErrors.NOT_IMPLEMENTED "" next ctx
 ```
-* Need to apply 'next' and 'ctx' to the subsequent handler<br/><!-- .element: class="fragment" -->
+* When you need access to the HttpContext<br/><!-- .element: class="fragment" -->
+* <!-- .element: class="fragment" -->Need to apply 'next' and 'ctx' to the subsequent <code>HttpHandler</code><br/>
 
+note:
+
+Use context for json, access to the request etc..
 
 ----
 
@@ -157,6 +205,10 @@ let sayHelloWorld : HttpHandler =
 
 ### Bind implementation
 
+* Http Handlers can be chained<br/><!-- .element: class="fragment" -->
+* Should look much like something we already know from last week.<!-- .element: class="fragment" -->
+
+
 ```fsharp
 //Note: concept code
 let bind (handler : HttpHandler) (handler2 : HttpHandler) =
@@ -171,28 +223,29 @@ let bind (handler : HttpHandler) (handler2 : HttpHandler) =
                 | false -> return! handler2 ctx2
         }
 ```
-
-* Should look much like something we already know from last week.
+<!-- .element: class="fragment" -->
 
 
 ----
 
 ### `Compose`
 
-* Operator (>=>)<br/><!-- .element: class="fragment" -->
-* build on bind, but is optimized<br/><!-- .element: class="fragment" -->
-* E.g.<br/><!-- .element: class="fragment" -->
+* Operator (>=>)<br/><!-- .element: class="fragment" data-fragment-index="0" -->
+* build on bind, but is optimized<br/><!-- .element: class="fragment" data-fragment-index="1" -->
+* E.g.:<br/><!-- .element: class="fragment" data-fragment-index="2" -->
 ```fsharp
 let app = compose (route "/") (Successful.OK "Hello World")
 // or
 let app = route "/" >=> Successful.OK "Hello World"
 ```
+<!-- .element: class="fragment" data-fragment-index="2" -->
 
 ----
 
 ### `Warbler`
 
-* Used when you don't want to return static content<br/><!-- .element: class="fragment"   data-fragment-index="0" -->
+* Used when you don't want to return static content<br/><!-- .element: class="fragment" data-fragment-index="0" -->
+  * and don't need context
 
 ```fsharp
 // ('a -> 'a -> 'b) -> 'a -> 'b
@@ -218,8 +271,6 @@ let App =
 
 ### `Choose`
 
-* A HttpHandler<br/><!-- .element: class="fragment" -->
-* Iterates through multiple HttpHandlers and apply fist that fits<br/><!-- .element: class="fragment" -->
 ```fsharp
 let app =
   choose [
@@ -227,39 +278,27 @@ let app =
     route "/bar" >=> text "Bar"
   ]
 ```
+* A HttpHandler<br/><!-- .element: class="fragment" -->
+* Iterates through multiple HttpHandlers<br/><!-- .element: class="fragment" -->
+  * apply first that fits
+* Can be nested<br/><!-- .element: class="fragment" -->
 
 ----
 
 ### `route`
 
-* A 'HttpHandler'<br/><!-- .element: class="fragment" data-fragment-index="0" -->
-* 'route' being the main<br/><!-- .element: class="fragment" data-fragment-index="1" -->
-  * route "/info" >=> info
-* 'routeCi' - non exact match<br/><!-- .element: class="fragment" data-fragment-index="2" -->
-  * route "/info" >=> info
-* 'routex' - regex<br/><!-- .element: class="fragment" data-fragment-index="3" -->
-  * routex "/info(/?)' >=> info
-* ....<br/><!-- .element: class="fragment" data-fragment-index="3" -->
+* <!-- .element: class="fragment" -->Also a <code>HttpHandler</code><br/>
+* <!-- .element: class="fragment" --><code>route</code> being the main<br/>
+  * `route "/info" >=> info`
+* <!-- .element: class="fragment" --><code>routeCi</code> - non exact match<br/>
+  * `route "/info" >=> info`
+* <!-- .element: class="fragment" --><code>routex</code> - regex<br/>
+  * `routex "/info(/?)' >=> info`
+* ....<br/><!-- .element: class="fragment" -->
 
 ----
 
-### Endpoint routing
-
-```fsharp [1, 6]
-let endpoints =
-  [] // a list of endpoints
-let configureApp (appBuilder : IApplicationBuilder) =
-  appBuilder
-      .UseRouting()
-      .UseEndpoints(fun e -> e.MapGiraffeEndpoints(endpoints))
-  |> ignore
-```
-
-* From Giraffe 5.x
-
-----
-
-### Routes
+### Routes and routing
 
 ```fsharp
 let endpoints =
@@ -274,6 +313,23 @@ let endpoints =
       route "/test" handler1
     ]
   ]
+
+app.UseGiraffe(webApp)
+```
+
+
+note: 
+
+Giraffe 5.x
+
+```fsharp [1, 6]
+let endpoints =
+  [] // a list of endpoints
+let configureApp (appBuilder : IApplicationBuilder) =
+  appBuilder
+      .UseRouting()
+      .UseEndpoints(fun e -> e.MapGiraffeEndpoints(endpoints))
+  |> ignore
 ```
 
 ----
