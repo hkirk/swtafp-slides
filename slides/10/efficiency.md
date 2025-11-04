@@ -187,7 +187,7 @@ val it : int = 1409286144
 ### Using continuations to optimize
 
 * Accumulative parameter (above) is not always possible<br/><!-- .element: class="fragment" data-fragment-index="1" -->
-* Continuations is a genenral pattern for making tail-recursion<!-- .element: class="fragment" data-fragment-index="2" -->
+* Continuations is a general pattern for making tail-recursion<!-- .element: class="fragment" data-fragment-index="2" -->
 
 In general we will transform:<!-- .element: class="fragment" data-fragment-index="3" -->
 
