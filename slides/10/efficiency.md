@@ -7,26 +7,26 @@
 
 ### Agenda
 
-* Stack/Heap
-* Recursion
+* Stack/Heap<br/><!-- .element: class="fragment" -->
+* Recursion<br/><!-- .element: class="fragment" -->
   * Tail recursion
-* Optimization
+* Optimization<br/><!-- .element: class="fragment" -->
 
 ---
 
 ## Stack and Heap
 
-* Much like C#, Java, etc.<!-- .element: class="fragment" -->
-* Memory is split into Stack and Heap<!-- .element: class="fragment" -->
+* Much like C#, Java, etc.<br/><!-- .element: class="fragment" -->
+* Memory is split into Stack and Heap<br/><!-- .element: class="fragment" -->
 
 ----
 
 ### Stack
 
 * Stackframes<br/><!-- .element: class="fragment" -->
-    * Holds primitive values<br/><!-- .element: class="fragment" -->
-        * Some objects
-    * Reference for objects on Heap<br/><!-- .element: class="fragment" -->
+* Holds primitive values<br/><!-- .element: class="fragment" -->
+    * Some objects
+* Reference for objects on Heap<br/><!-- .element: class="fragment" -->
 
 
 ----
@@ -35,7 +35,7 @@
 
 * Values/objects bound at the same level is kept in a stackframe<br/><!-- .element: class="fragment" -->
 * Evaluating local declarations will push a stackframe on top<br/><!-- .element: class="fragment" -->
-* When result is found/computed - stackframe wil be popped<br/><!-- .element: class="fragment" -->
+* When result is found/computed - stackframe will be popped<br/><!-- .element: class="fragment" -->
 
 ---
 
@@ -67,13 +67,14 @@ let rec pow = function
     | (s: string, n) -> s + pow (s, n-1)
 ```
 
-* After the recusive call there are still computations in this function<!-- .element: class="fragment" -->
-    * add '`s`' to result - so new stackframe will be created
+* <!-- .element: class="fragment"  --> <code>pow (s, n+1)</code> creates a new stack frame<br/>
+* <!-- .element: class="fragment"  -->'old stackframe' is still needed <code>s + xxx</code><br/>
 
 ----
 
 ### Tail Recursion
 
+- <!-- .element: class="fragment" -->Lets try and rewrite function so we don't have extra work after <code>pow</code><br/>
 ```fsharp
 let pow' (input: string * int) =
     let rec powInner acc = function
@@ -81,8 +82,11 @@ let pow' (input: string * int) =
         | (s: string, n) -> powInner (acc + s) (s, n-1)
     powInner "" input
 ```
-
-This is tail recursive - last expression is recursive call<!-- .element: class="fragment" -->
+<!-- .element: class="fragment" -->
+- Because last expression is recursive call<br/><!-- .element: class="fragment" -->
+- This means:<br/><!-- .element: class="fragment" -->
+    - Compiler can 'reuse'/delete existing stackframe
+    - we call this tail recursive
 
 note: 
 
@@ -99,27 +103,15 @@ let pow' (input: string * int) =
 
 #### Accumulative value
 
-```fsharp
-let rec fact n =
-    match n with
-    | 0L | 1L -> 1L
-    | _ -> n * fact(n-1L)
-    
-// Same as
-let rec fact' = function
-    | 0L | 1L -> 1L
-    | n -> n * fact' (n-1L)
-```
-<!-- .element: class="fragment" data-fragment-index="0" -->
 
 ```fsharp
 let fact'' n =
-    let rec factInner = function
+    let rec factInner (acc, n) =
+        match (acc, n) with 
         | (0L, m) -> m
         | (n, m) -> factInner (n-1L, n*m)
     factInner (n, 1)
 ```
-<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -127,12 +119,12 @@ let fact'' n =
 
 ```fsharp
 let fact'' n =
-    let rec factInner = function
+    let rec factInner (acc, n) =
+        match (acc, n) with 
         | (0L, m) (* base condition *) -> m // last operation
         | (n, m) -> factInner (n-1L, n*m)   // continue operation
     factInner (n, 1)
 ```
-
 
 Looping on a special form:<!-- .element: class="fragment" data-fragment-index="1" -->
 
@@ -187,7 +179,7 @@ val it : int = 1409286144
     * `tr checker cont last (cont value)` will not build large expressions
     * `cont value`<br/> will be evaluated at each step
 * <!-- .element: class="fragment" -->This are $O(n)$ - in the fact example<br/>
-* <!-- .element: class="fragment" -->The same evironment/stack frame can be reused
+* <!-- .element: class="fragment" -->The same environment/stack frame can be reused
     * $O(1)$ stack space consumption
 
 ----
@@ -257,7 +249,7 @@ Is this tail recursive?
 
 ----
 
-### Implementaion with continuations
+### Implementation with continuations
 
 ```fsharp [9|6-7|5-8]
 let rec countC t c =
@@ -288,7 +280,7 @@ let rec countC t c =
 
 * This should be a continuation-based imp.
 
-```fsharp
+```fsharp [6-10|11-16]
 // this version doesn't causes stack overflow - it uses a private stack 
 [<CompiledName("FoldBack")>]
 let foldBack<'T,'State> folder (list:'T list) (state:'State) = 
@@ -392,14 +384,9 @@ public class Md5VsSha256
 
 ---
 
-## References
+## More resources 
 
 * [Writing high performance F# code](https://bartoszsypytkowski.com/writing-high-performance-f-code/)
 
-----
 
-### Other sources
-
-[![Lock-Free Algorithms For Ultimate Performance](./img/lock-free.png)](https://www.infoq.com/presentations/Lock-free-Algorithms/ "Lock-Free Algorithms For Ultimate Performance")
-
-<video data-autoplay src=""></video>
+* [![Lock-Free Algorithms For Ultimate Performance](./img/lock-free.png)](https://www.infoq.com/presentations/Lock-free-Algorithms/ "Lock-Free Algorithms For Ultimate Performance")
