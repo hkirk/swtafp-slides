@@ -106,8 +106,8 @@ let pow' (input: string * int) =
 
 ```fsharp
 let fact'' n =
-    let rec factInner (acc, n) =
-        match (acc, n) with 
+    let rec factInner (n, acc) =
+        match (n, acc) with 
         | (0L, m) -> m
         | (n, m) -> factInner (n-1L, n*m)
     factInner (n, 1)
