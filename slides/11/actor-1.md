@@ -92,7 +92,7 @@ spawn myActorSystem "name" (fn: Actor<'Msg> -> Cont<'Msg, 'Returned>)
     * `<!` (tell)
         * fire and forget (returns `unit`)
     * `<?` (ask)
-        * wait for the reponse (returns `Async<'<Msg>`)
+        * wait for the response (returns `Async<'<Msg>`)
 
 ```fsharp
 actor <! "This is a message"
