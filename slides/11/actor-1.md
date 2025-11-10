@@ -7,22 +7,22 @@
 
 ### Agenda
 
-* What is Akka.Net
+* What is Akka.Net<br/><!-- .element: class="fragment" -->
   * Actor / Actorsystem
   * Messages
-* IActorRef
-* Actor Hierarchies + Supervision
-* ActorSelection
-* Actor lifecycle
+* IActorRef<br/><!-- .element: class="fragment" -->
+* Actor Hierarchies + Supervision<br/><!-- .element: class="fragment" -->
+* ActorSelection<br/><!-- .element: class="fragment" -->
+* Actor lifecycle<br/><!-- .element: class="fragment" -->
 
 ---
 
 ### What is Akka.Net
 
-* An actor framework - (ported from Scala Akka)<!-- .element: class="fragment" data-fragment-index="2" -->
+* An actor framework - (ported from Scala Akka)<!-- .element: class="fragment"  -->
     * Actor model is from SmallTalk - OO done right :)
     * inspiration from Erlang
-* Consists of<!-- .element: class="fragment" data-fragment-index="3" -->
+* Consists of<!-- .element: class="fragment" -->
     * actors
     * messages
 
@@ -67,16 +67,19 @@ Creating an actor
 ```fsharp
 open Akka.FSharp
 
-// for the message-processor kind of actor
+// for the 'message-recieving' kind of actor
 spawn myActorSystem "name" (actorOf (fn : 'Msg -> unit))
 
-// for the message-sender kind of actor
+// for the 'message-sending' kind of actor
 spawn myActorSystem "name" (actorOf2 
                         (fn : Actor<'Msg> -> 'Msg -> unit))
+
+// for the 'state-holding' kind of actor
+spawn myActorSystem "name" (fn: Actor<'Msg> -> Cont<'Msg, 'Returned>)
 ```
 
 * Akka.FSharp nuget package contains<!-- .element: class="fragment" -->
-    * `spawn` `actofOf` and `actorOf2`
+    * `spawn`, `actorOf`, and `actorOf2`
 
 ----
 
@@ -84,11 +87,12 @@ spawn myActorSystem "name" (actorOf2
 
 * Actors can send messages to each other<br/><!-- .element: class="fragment" -->
 * Messages are immutable and strongly typed<br/><!-- .element: class="fragment" -->
+* Messages are send asynchronously <br/><!-- .element: class="fragment" -->
 * Operators<br/><!-- .element: class="fragment" -->
     * `<!` (tell)
-        * sends an async message to the `actor`
+        * fire and forget (returns `unit`)
     * `<?` (ask)
-        * sends an async message and wait for response
+        * wait for the reponse (returns `Async<'<Msg>`)
 
 ```fsharp
 actor <! "This is a message"
@@ -120,6 +124,7 @@ note:
 #### Continuing
 
 4. In you main function create an actor system
+    * *or where you need the system*
 ```fsharp
 [<EntryPoint>]
 let main argv =
@@ -147,7 +152,7 @@ let helloActor msg =
 
 ```
 
-This is of the type `'M -> unit`
+This is of the type `'Msg -> unit`
 
 ----
 
@@ -163,7 +168,7 @@ This is of the type `'M -> unit`
                              (actorOf helloActor)
     actor <! "something"
     actor <! "hello"
-    actorSystem.WhenTerminated.Wait()
+    actorSystem.WhenTerminated.Wait() // Show how to terminated later
 ```
 
 ----
@@ -196,8 +201,7 @@ let test2Actor = spawn myActorSystem "test2Actor"
 
 ### Manually creating an actor
 
-* Computational expression
-
+* Computational expression<br/><!-- .element: class="fragment" -->
 ```fsharp
 let firstActor (mailbox:Actor<_>) =
   let rec loop() = actor {
@@ -211,25 +215,20 @@ let firstActor (mailbox:Actor<_>) =
 let myFirstActor = spawn myActorSystem "myFirstActor"
                                              firstActor
 ```
+* <!-- .element: class="fragment" --><code>actofOf</code> and <code>actofOf2</code> hides CE<br/>
 
 ----
 
 ### Creation of actors summary
 
-1. `actorOf`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-```fsharp
-'M -> unit
-```
-2. `actorOf2`
-```fsharp
-Actor<'M> -> 'M -> unit
-```
-3. manually
-```fsharp
-actor {
-    ...
-}
-```
+1. actorOf<br/><!-- .element: class="fragment" -->
+    - `'Msg -> unit`
+1. actorOf2<br/><!-- .element: class="fragment" -->
+    - `Actor<'M> -> 'M -> unit`
+1. manually<br/><!-- .element: class="fragment" -->
+    - <code>actor {
+        ...
+    }</code>
 
 ---
 
@@ -253,7 +252,7 @@ match msg with
 #### Unknown messages
 
 * if an actor receives an unknown messages it is ignored and possibly logged<br/><!-- .element: class="fragment" -->
-* if we change the actor from above<!-- .element: class="fragment" -->
+* if we change the previous actor<!-- .element: class="fragment" -->
 
 ```fsharp
 let helloActor (mailbox:Actor<_>) msg =
@@ -269,7 +268,7 @@ Note: There exists an actor type `ReceiveActor` which `handles` unknown messages
 
 #### Messages in F#
 
-* Its a good idea to use a set of predefiend messages for each Actor.
+* Best practices is to define a type for each actor
     * e.g.
 ```fsharp
 // Messages.fs
@@ -323,28 +322,30 @@ And run the program - notice than first messages is handled by the actor system
 
 ### `IActorRef`
 
-* Reference/handle to another actor<br/><!-- .element: class="fragment" -->
-* Used to send message through the 'ActorSystem'<br/><!-- .element: class="fragment" -->
-    * we never talk directly to an actor
+* Reference/handle to another actor<br/><!-- .element: class="fragment" data-fragment-index="1" -->
+* Used to send message through the 'ActorSystem'<br/><!-- .element: class="fragment" data-fragment-index="2" -->
+    * *we never talk directly to an actor*
     ```fsharp
     let actor = actorOf2 helloActor
     ```
-* 'ActorSystem' helps communications between actors<br/><!-- .element: class="fragment" -->
+* 'ActorSystem' do communications between actors<br/><!-- .element: class="fragment" data-fragment-index="3" -->
     * wraps messages in an envelope with metadata
-    * allow location transparency
-        * actor can live on another machines
+    * allow for location transparency*<br/><br/>
+        
+\* actor can live on another machines<!-- .element: style="font-size: 18px; " class="fragment" data-fragment-index="3" -->
 
 ----
 
 #### Getting an `IActorRef`
 
 1. Create an actor<br/><!-- .element: class="fragment" -->
-```fsharp
-let myFirstActor = spawn myActorSystem "myFirstActor"
-                             (actorOf firstActor)
-```
-2. Get 'parent', 'siblings' or 'children', etc. from mailbox <br/><!-- .element: class="fragment" -->
-3. Look up the actor via the 'ActorPath' - we will see this later<br/><!-- .element: class="fragment" -->
+    ```fsharp
+    let myFirstActor = spawn myActorSystem "myFirstActor"
+                                (actorOf firstActor)
+    ```
+2. Get 'parent', 'children' or 'sender', etc. from mailbox <br/><!-- .element: class="fragment" -->
+3. Get actor from 'ActorPath'<br/><!-- .element: class="fragment" -->
+    * we will see this next week
 
 ----
 
@@ -495,17 +496,21 @@ actorSystem.WhenTerminated.Wait ()
 #### Guardians
 
 * '/' - root guardian actor.<br/><!-- .element: class="fragment" -->
-    * Supervises `/user/` and `/system`
+    * Supervises `/user` and `/system`
 * '/system' - system guardian<br/><!-- .element: class="fragment" -->
     * Responsible for closing down system
     * Utility functions like logging etc.
 * '/user' - Guardian actor / root actor<br/><!-- .element: class="fragment" -->
-    * Parent to our actors
+    * Parent to all other  actors
 
 Note:
 
 `/` is the only actor which don't have another actor
 
+
+----
+
+![Akka Actor hierarchy](./img/hierarchy_overview.png)
 
 ----
 
@@ -528,13 +533,15 @@ let b1 = spawn mailbox.context "b1" basicActor
 ```
 <!-- .element: class="fragment" data-fragment-index="3" -->
 
+
 ----
 
 #### Supervision
 
 * Actor only supervise children<br/><!-- .element: class="fragment" -->
-* Supervision 'starts' when something goes wrong e.g. an exception in a child actor<br/><!-- .element: class="fragment" -->
-    * Errors is wrapped in a `Failure` message and send to parent.
+* Supervision 'starts' when something goes wrong
+    *  e.g. an exception in a child actor<br/><!-- .element: class="fragment" -->
+    * errors is wrapped in a `Failure` message and send to parent.
 * Parent actor handle message based on<br/><!-- .element: class="fragment" -->
     * 1. how the child failed
     * 2. what directive is executed - based on `SupervisionStrategy`
@@ -547,18 +554,18 @@ let b1 = spawn mailbox.context "b1" basicActor
 2. 'c1' suspends operations<br/><!-- .element: class="fragment" -->
 3. The system sends a 'Failure' message to 'c1's' parent 'b1'<br/><!-- .element: class="fragment" -->
 4. 'b1' issues a directive to 'c1' telling it what should happen<br/><!-- .element: class="fragment" -->
-5. system continue to work<br/><!-- .element: class="fragment" -->
+5. System (hopefully) continue to work<br/><!-- .element: class="fragment" -->
 
 ----
 
 #### Supervision directives
 
 
-* **Restart** the child (default): this is the common case
-* **Stop** the child: this permanently terminates the child actor
-* **Escalate** the error (and stop itself)
+* <!-- .element: class="fragment" --><b>Restart</b> the child (default): this is the common case<br/>
+* <!-- .element: class="fragment" --><b>Stop</b> the child: this permanently terminates the child actor<br/>
+* <!-- .element: class="fragment" --><b>Escalate</b> the error (and stop itself)<br/>
     * this is the parent saying "I don't know what to do! I'm gonna stop everything and ask MY parent!"
-* **Resume** processing (ignores the error)
+* <!-- .element: class="fragment" --><b>Resume</b> processing (ignores the error)<br/>
     * you generally won't use this. Ignore it for now
 
 
@@ -566,28 +573,28 @@ let b1 = spawn mailbox.context "b1" basicActor
 
 #### Supervision strategies
 
-* **One-For-One** strategy (default)
+* <!-- .element: class="fragment" --> <b>One-For-One</b> strategy (default)
     * only failing actor is affected - not siblings
-* **All-For-One**
+* <!-- .element: class="fragment" --><b>All-For-One</b>
     * failing actor and all siblings are effected.
 
 ----
 
 ### Supervsion strategy example
 
-```fsharp
-let aref =
-    spawnOpt system "my-actor" (actorOf2 myActor)
-       [ SpawnOption.SupervisorStrategy (Strategy.OneForOne (
-                (fun error ->
+```fsharp [2-3|7,9,11,13|4|14]
+let actorRef =
+ spawnOpt system "my-actor" (actorOf2 myActor)
+    [ SpawnOption.SupervisorStrategy (
+        Strategy.OneForOne ((fun error ->
             match error with
-                // maybe non-critical, ignore & keep going
+            // maybe non-critical, ignore & keep going
             | :? ArithmeticException -> Directive.Resume
-                // no idea what to do
+            // no idea what to do
             | :? InsanelyBadException -> Directive.Escalate
-                // can't recover, stop failing child
+            // can't recover, stop failing child
             | :? NotSupportedException -> Directive.Stop
-                // otherwise restart failing child
+            // otherwise restart failing child
             | _ -> Directive.Restart                        
             ), 10, TimeSpan.FromSeconds(60.)))]
 ```
