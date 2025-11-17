@@ -326,7 +326,7 @@ And run the program - notice than first messages is handled by the actor system
 * Used to send message through the 'ActorSystem'<br/><!-- .element: class="fragment" data-fragment-index="2" -->
     * *we never talk directly to an actor*
     ```fsharp
-    let actor = spwan myActorSystem "hellowActor"
+    let actor = spawn myActorSystem "hellowActor"
                         (actorOf2 helloActor)
     ```
 * 'ActorSystem' do communications between actors<br/><!-- .element: class="fragment" data-fragment-index="3" -->

@@ -21,7 +21,7 @@
 
 Actor have 5 stage life cycle
 
-`Starting`, `Recieving`, `Stopping`, `Terminated` and `Restarting`
+`Starting`, `Receiving`, `Stopping`, `Terminated` and `Restarting`
 
 ![Lifecycle](./img/lifecycle.png) <!--- .element style="height: 300px" --->
 
@@ -31,7 +31,7 @@ Actor have 5 stage life cycle
 #### Lifecycle stages
 
 * <!-- .element: class="fragment" --><span style="font-weight: bold">Starting</span>: Actor is waking up<br/>
-* <!-- .element: class="fragment" --><span style="font-weight: bold">Recieving</span>: Actor is accepting messages<br/>
+* <!-- .element: class="fragment" --><span style="font-weight: bold">Receiving</span>: Actor is accepting messages<br/>
 * <!-- .element: class="fragment" --><span style="font-weight: bold">Stopping</span>: Actor is cleaning up its state, or saving state if restarting<br/>
 * <!-- .element: class="fragment" --><span style="font-weight: bold">Terminated</span>: Actor is dead<br/>
 * <!-- .element: class="fragment" --><span style="font-weight: bold">Restarting</span>: Actor is about to restart<br/>
@@ -151,7 +151,7 @@ selection' <! someMessage
 
 * In a dynamic system where actors are created/removed<br/><!-- .element: class="fragment" -->
     * you can send messages to known addresses
-* Don't need to be hardcoded adresses, messages can represent actorPath<br/><!-- .element: class="fragment" -->
+* Don't need to be hardcoded addresses, messages can represent actorPath<br/><!-- .element: class="fragment" -->
 
 ----
 
