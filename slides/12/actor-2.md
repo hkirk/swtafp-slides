@@ -99,7 +99,7 @@ let aref = spawn system "actor" (sampleActor)
 #### ActorSelection details
 
 * ActorSelection<br/><!-- .element: class="fragment" -->
-    * The processs of looking up an actor
+    * The process of looking up an actor
     * The object returned from that lookup
 * ActorSelection don't give you a 1:1 relationship<br/><!-- .element: class="fragment" -->
 * ActorSelection give you a handle to all actors behind that path<br/><!-- .element: class="fragment" -->
@@ -133,7 +133,7 @@ selection' <! someMessage
 
 ----
 
-#### Location transparancy
+#### Location transparency
 
 * Means that we don't care where the actor is running
     * could be in the same process _or_
@@ -158,7 +158,7 @@ selection' <! someMessage
 
 #### Adaptive system design
 
-* Help when buidling actor system<br/><!-- .element: class="fragment" -->
+* Help when building actor system<br/><!-- .element: class="fragment" -->
 * You can introduce new actors without going back and changing the existing system<br/><!-- .element: class="fragment" -->
 
 
@@ -190,7 +190,7 @@ Because:
 
 ### Good design
 
-* Never rely on one hierachy design from another<br/><!-- .element: class="fragment" -->
+* Never rely on one hierarchy design from another<br/><!-- .element: class="fragment" -->
 * Always communicate via top-level actors<br/><!-- .element: class="fragment" -->
 * Delegate risky operations to leafs<br/><!-- .element: class="fragment" -->
 
@@ -243,7 +243,7 @@ In the actor model, an actor can be in one of a number of different states
 let actor (mailbox: Actor<_>) =
     let rec authenticating () =
       actor {
-        let! message = mailbox.Recieve ()
+        let! message = mailbox.Receive ()
         match message with
         |AuthenticationSuccess -> return! authenticated ()
       }
@@ -261,7 +261,7 @@ let actor (mailbox: Actor<_>) =
 #### Different states
 
 * In the above example our actor can handle messages base on 3 states<br/><!-- .element: class="fragment" -->
-    * `autenticating`, `unauthenticated` and `authenticated`
+    * `authenticating`, `unauthenticated` and `authenticated`
 * This enables reusablitity, and different work with little code<br/><!-- .element: class="fragment" -->
 * Safe because actors only handle one messages at a time.<br/><!-- .element: class="fragment" -->
 
@@ -458,7 +458,7 @@ Try to evenly distribute work
 
 ----
 
-#### Load balacing 2 (Pool only)
+#### Load balancing 2 (Pool only)
 
 * <!-- .element: class="fragment" --><code>Resizable</code> - Forward to routee with fewest messages in mailbox
     1. Idle routee
