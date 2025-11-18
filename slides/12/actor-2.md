@@ -522,6 +522,16 @@ let coordinator = mailbox.Context.ActorOf(
 
 ---
 
+### Akka.NET ecosystem
+
+* Akka.TestKit
+* Akka.Remote
+* Akka.Persistence
+* Akka.Cluster
+* Akka.Streams
+
+----
+
 ### References
 
 * [https://petabridge.com/](https://petabridge.com/)
