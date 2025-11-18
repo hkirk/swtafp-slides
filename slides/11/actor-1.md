@@ -12,8 +12,7 @@
   * Messages
 * IActorRef<br/><!-- .element: class="fragment" -->
 * Actor Hierarchies + Supervision<br/><!-- .element: class="fragment" -->
-* ActorSelection<br/><!-- .element: class="fragment" -->
-* Actor lifecycle<br/><!-- .element: class="fragment" -->
+
 
 ---
 
