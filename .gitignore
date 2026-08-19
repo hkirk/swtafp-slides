@@ -9,4 +9,9 @@ log/*.log
 tmp/**
 node_modules/
 .sass-cache
-dist/*.map
+presentation
+presentation.zip
+dist/reveal.es5.js
+react/dist
+react/demo/dist
+dev.html

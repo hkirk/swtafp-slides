@@ -4,34 +4,32 @@
  * GLOBAL STYLES
  *********************************************/
 
-@import "./exposer";
-
 .reveal-viewport {
-	@include bodyBackground();
-	background-color: $backgroundColor;
+	background: var(--r-background);
+	background-color: var(--r-background-color);
 }
 
 .reveal {
-	font-family: $mainFont;
-	font-size: $mainFontSize;
+	font-family: var(--r-main-font);
+	font-size: var(--r-main-font-size);
 	font-weight: normal;
-	color: $mainColor;
+	color: var(--r-main-color);
 }
 
 .reveal ::selection {
-	color: $selectionColor;
-	background: $selectionBackgroundColor;
+	color: var(--r-selection-color);
+	background: var(--r-selection-background-color);
 	text-shadow: none;
 }
 
 .reveal ::-moz-selection {
-	color: $selectionColor;
-	background: $selectionBackgroundColor;
+	color: var(--r-selection-color);
+	background: var(--r-selection-background-color);
 	text-shadow: none;
 }
 
 .reveal .slides section,
-.reveal .slides section>section {
+.reveal .slides section > section {
 	line-height: 1.3;
 	font-weight: inherit;
 }
@@ -46,36 +44,43 @@
 .reveal h4,
 .reveal h5,
 .reveal h6 {
-	margin: $headingMargin;
-	color: $headingColor;
+	margin: var(--r-heading-margin);
+	color: var(--r-heading-color);
 
-	font-family: $headingFont;
-	font-weight: $headingFontWeight;
-	line-height: $headingLineHeight;
-	letter-spacing: $headingLetterSpacing;
+	font-family: var(--r-heading-font);
+	font-weight: var(--r-heading-font-weight);
+	line-height: var(--r-heading-line-height);
+	letter-spacing: var(--r-heading-letter-spacing);
 
-	text-transform: $headingTextTransform;
-	text-shadow: $headingTextShadow;
+	text-transform: var(--r-heading-text-transform);
+	text-shadow: var(--r-heading-text-shadow);
 
 	word-wrap: break-word;
 }
 
-.reveal h1 {font-size: $heading1Size; }
-.reveal h2 {font-size: $heading2Size; }
-.reveal h3 {font-size: $heading3Size; }
-.reveal h4 {font-size: $heading4Size; }
-
 .reveal h1 {
-	text-shadow: $heading1TextShadow;
+	font-size: var(--r-heading1-size);
+}
+.reveal h2 {
+	font-size: var(--r-heading2-size);
+}
+.reveal h3 {
+	font-size: var(--r-heading3-size);
+}
+.reveal h4 {
+	font-size: var(--r-heading4-size);
 }
 
+.reveal h1 {
+	text-shadow: var(--r-heading1-text-shadow);
+}
 
 /*********************************************
  * OTHER
  *********************************************/
 
 .reveal p {
-	margin: $blockMargin 0;
+	margin: var(--r-block-margin) 0;
 	line-height: 1.3;
 }
 
@@ -150,17 +155,17 @@
 	display: block;
 	position: relative;
 	width: 70%;
-	margin: $blockMargin auto;
+	margin: var(--r-block-margin) auto;
 	padding: 5px;
 
 	font-style: italic;
 	background: rgba(255, 255, 255, 0.05);
-	box-shadow: 0px 0px 2px rgba(0,0,0,0.2);
+	box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
 }
-	.reveal blockquote p:first-child,
-	.reveal blockquote p:last-child {
-		display: inline-block;
-	}
+.reveal blockquote p:first-child,
+.reveal blockquote p:last-child {
+	display: inline-block;
+}
 
 .reveal q {
 	font-style: italic;
@@ -170,11 +175,11 @@
 	display: block;
 	position: relative;
 	width: 90%;
-	margin: $blockMargin auto;
+	margin: var(--r-block-margin) auto;
 
 	text-align: left;
 	font-size: 0.55em;
-	font-family: $codeFont;
+	font-family: var(--r-code-font);
 	line-height: 1.2em;
 
 	word-wrap: break-word;
@@ -183,8 +188,9 @@
 }
 
 .reveal code {
-	font-family: $codeFont;
+	font-family: var(--r-code-font);
 	text-transform: none;
+	tab-size: 2;
 }
 
 .reveal pre code {
@@ -193,6 +199,14 @@
 	overflow: auto;
 	max-height: 400px;
 	word-wrap: normal;
+}
+
+.reveal .code-wrapper {
+	white-space: normal;
+}
+
+.reveal .code-wrapper code {
+	white-space: pre;
 }
 
 .reveal table {
@@ -212,13 +226,13 @@
 	border-bottom: 1px solid;
 }
 
-.reveal table th[align="center"],
-.reveal table td[align="center"] {
+.reveal table th[align='center'],
+.reveal table td[align='center'] {
 	text-align: center;
 }
 
-.reveal table th[align="right"],
-.reveal table td[align="right"] {
+.reveal table th[align='right'],
+.reveal table td[align='right'] {
 	text-align: right;
 }
 
@@ -248,73 +262,70 @@
 }
 
 .reveal img {
-	margin: $blockMargin 0;
+	margin: var(--r-block-margin) 0;
 }
-
 
 /*********************************************
  * LINKS
  *********************************************/
 
 .reveal a {
-	color: $linkColor;
+	color: var(--r-link-color);
 	text-decoration: none;
-	transition: color .15s ease;
+	transition: color 0.15s ease;
 }
-	.reveal a:hover {
-		color: $linkColorHover;
-		text-shadow: none;
-		border: none;
-	}
+.reveal a:hover {
+	color: var(--r-link-color-hover);
+	text-shadow: none;
+	border: none;
+}
 
 .reveal .roll span:after {
 	color: #fff;
-	background: darken( $linkColor, 15% );
+	// background: darken( var(--r-link-color), 15% );
+	background: var(--r-link-color-dark);
 }
-
 
 /*********************************************
  * Frame helper
  *********************************************/
 
 .reveal .r-frame {
-	border: 4px solid $mainColor;
+	border: 4px solid var(--r-main-color);
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
 .reveal a .r-frame {
-	transition: all .15s linear;
+	transition: all 0.15s linear;
 }
 
 .reveal a:hover .r-frame {
-	border-color: $linkColor;
+	border-color: var(--r-link-color);
 	box-shadow: 0 0 20px rgba(0, 0, 0, 0.55);
 }
-
 
 /*********************************************
  * NAVIGATION CONTROLS
  *********************************************/
 
 .reveal .controls {
-	color: $linkColor;
+	color: var(--r-link-color);
 }
-
 
 /*********************************************
  * PROGRESS BAR
  *********************************************/
 
 .reveal .progress {
-	background: rgba(0,0,0,0.2);
-	color: $linkColor;
+	background: rgba(0, 0, 0, 0.2);
+	color: var(--r-link-color);
 }
 
 /*********************************************
  * PRINT BACKGROUND
  *********************************************/
- @media print {
-    .backgrounds {
-        background-color: $backgroundColor;
-    }
+@media print {
+	.backgrounds {
+		background-color: var(--r-background-color);
+	}
 }

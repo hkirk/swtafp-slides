@@ -1,4 +1,4 @@
-import { closest } from '../utils/util.js'
+import { closest } from '../utils/util'
 
 /**
  * Manages focus when a presentation is embedded. This
@@ -76,6 +76,12 @@ export default class Focus {
 	isFocused() {
 
 		return this.state === STATE_FOCUS;
+
+	}
+
+	destroy() {
+
+		this.Reveal.getRevealElement().classList.remove( 'focused' );
 
 	}
 

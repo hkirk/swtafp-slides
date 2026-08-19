@@ -5,10 +5,6 @@
 		<meta charset="utf-8">
 
 		<title>reveal.js - Test Markdown</title>
-
-		<link rel="stylesheet" href="../dist/reveal.css">
-		<link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css">
-		<script src="../node_modules/qunit/qunit/qunit.js"></script>
 	</head>
 
 	<body style="overflow: auto;">
@@ -274,6 +270,13 @@
 						```
 					</script>
 				</section>
+				<section data-markdown class="with-offset">
+					<script type="text/template">
+						```[123:]
+						code
+						```
+					</script>
+				</section>
 				<section data-markdown class="with-line-highlights-and-lanugage">
 					<script type="text/template">
 						```javascript [1,2,3]
@@ -281,13 +284,41 @@
 						```
 					</script>
 				</section>
+				<section data-markdown class="with-line-highlights-offset-and-lanugage">
+					<script type="text/template">
+						```javascript [456: 3,4,5]
+						code
+						```
+					</script>
+				</section>
+				<section data-markdown class="with-line-offset-and-lanugage">
+					<script type="text/template">
+						```javascript [756:]
+						code
+						```
+					</script>
+				</section>
+				<section data-markdown class="with-code-in-fragment">
+					<script type="text/template">
+					```js
+					foo.bar();
+					```
+
+					<!-- .element: class="fragment" -->
+					</script>
+				</section>
 			</div>
 		</div>
 
 		<script type="module">
-			import Reveal from '../dist/reveal.esm.js'
-			import Markdown from '../plugin/markdown/markdown.esm.js'
-			import Highlight from '../plugin/highlight/highlight.esm.js'
+			import 'reveal.css';
+			import 'qunit/qunit/qunit.css';
+			import QUnit from 'qunit';
+			import Reveal from 'reveal.js';
+			import Markdown from 'reveal.js/plugin/markdown'
+			import Highlight from 'reveal.js/plugin/highlight'
+
+			QUnit.config.testTimeout = 30000;
 
 			let deck1 = new Reveal( document.querySelector( '.deck1' ), { plugins: [ Markdown ] })
 			deck1.addEventListener( 'ready', function() {
@@ -370,7 +401,7 @@
 				QUnit.module( 'Options' );
 
 				QUnit.test( 'Options are set', function( assert ) {
-					assert.strictEqual( deck4.getPlugin( 'markdown' ).marked.defaults.smartypants, true );
+					assert.strictEqual( deck4.getPlugin( 'markdown' ).markdownOptions.smartypants, true );
 				});
 
 				QUnit.test( 'Smart quotes are activated', function( assert ) {
@@ -449,8 +480,25 @@
 					assert.strictEqual( deck6.getRevealElement().querySelectorAll( '.with-line-highlights .hljs[data-line-numbers="1,2,3"]' ).length, 1 );
 				});
 
+				QUnit.test( '```[234: ] line offset only', function( assert ) {
+					assert.strictEqual( deck6.getRevealElement().querySelectorAll( '.with-offset .hljs[data-ln-start-from="123"]' ).length, 1 );
+				});
+
 				QUnit.test( '```javascript [1,2,3] enables line highlights and sets language', function( assert ) {
 					assert.strictEqual( deck6.getRevealElement().querySelectorAll( '.with-line-highlights-and-lanugage .hljs.javascript[data-line-numbers="1,2,3"]' ).length, 1 );
+				});
+
+				QUnit.test( '```javascript [123: 3,4,5] add line offset and enables line highlights and sets language', function( assert ) {
+					assert.strictEqual( deck6.getRevealElement().querySelectorAll( '.with-line-highlights-offset-and-lanugage .hljs.javascript[data-line-numbers="3,4,5"]' ).length, 1 );
+					assert.strictEqual( deck6.getRevealElement().querySelectorAll( '.with-line-highlights-offset-and-lanugage .hljs.javascript[data-ln-start-from="456"]' ).length, 1 );
+				});
+
+				QUnit.test( '```javascript [756:] add line offset and sets no line highlights and sets language', function( assert ) {
+					assert.strictEqual( deck6.getRevealElement().querySelectorAll( '.with-line-offset-and-lanugage .hljs.javascript[data-ln-start-from="756"]' ).length, 1 );
+				});
+				
+				QUnit.test( '```block should allow custom fragment', function( assert ) {
+					assert.strictEqual( deck6.getRevealElement().querySelectorAll( '.with-code-in-fragment pre.fragment' ).length, 1 );
 				});
 
 			} );
