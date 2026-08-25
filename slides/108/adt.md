@@ -97,7 +97,7 @@ let rec priceAcc costSoFar = function
     | Box b -> priceAcc (costSoFar+1.0) b
 ```
 
-we are back with pattern macthing
+we are back with pattern matching
 
 ----
 
@@ -199,7 +199,7 @@ Continuations <!-- .element: class="fragment" -->
 
 ## FoldBack
 
-So the above implementaton with accumulators 
+So the above implementation with accumulators 
 
 ```fsharp
 let descriptionWithAccumulators boxes =
@@ -305,9 +305,9 @@ let rec foldBackBoxes fItem fBox gen boxes =
 
 ### Fold/FoldBack generally
 
-1. Create a function paramter to handle each case
-2. Add a accumulator paramter
-3. For non-recursive cases pass the accumulator and all case data to the function paramter
+1. Create a function parameter to handle each case
+2. Add a accumulator parameter
+3. For non-recursive cases pass the accumulator and all case data to the function parameter
 
 ```fsharp
 | Item x    -> gen (fItem x)
@@ -322,7 +322,7 @@ let rec foldBackBoxes fItem fBox gen boxes =
     ```fsharp
     | Box b     -> 
     ```
-    1. pass the handler the accumulator plus all data associated with the case -> a new accumlator value
+    1. pass the handler the accumulator plus all data associated with the case -> a new accumulator value
     ```fsharp
         let newGen i =
             let newAcc = fBox i
@@ -337,7 +337,7 @@ let rec foldBackBoxes fItem fBox gen boxes =
 
 ## Iterations vs recursion
 
-So we have 3 implementatins
+So we have 3 implementations
 
 * cata (recursive bottom-up)
 * fold (iterative top-down)
@@ -414,7 +414,7 @@ let foldArraySubRight (f:OptimizedClosures.FSharpFunc<'T,_,_>) (arr: 'T[]) start
 type RGB = | Red | Green | Blue
 type Colour = 
     | rgb of RBB
-    | Transparant
+    | Transparent
 ```
 
 Sum of sizes of components:
@@ -481,7 +481,7 @@ type Alpha = | Transp | NonTrans
 type AlphaR = { Alpha: bool}
 ```
 
-both have size 2, so we can translate between them without loosing data.
+both have size 2, so we can translate between them without losing data.
 
 This is an [Isomorphism](https://en.wikipedia.org/wiki/Isomorphism)
 
@@ -515,7 +515,7 @@ size(Int32.TryParse) ---- size(int) + 2
 Given to different way of modeling the same problem
 
 ```fsharp
-type UserInfo = {name: string} // + other usefull stuff
+type UserInfo = {name: string} // + other useful stuff
 type SessionId = SessionId of int
 type WebSiteUser = 
     | RegisteredUser of SessionId * UserInfo

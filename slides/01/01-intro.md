@@ -52,8 +52,8 @@ note:
 
 ## Qualification description
 
-* <!-- .element: class="fragment" --><b>Apply</b> and <b>explain</b> functional programing as a programing paradigm<br/>
-* <!-- .element: class="fragment" --><b>Design</b> and <b>implement</b> solutions building on functional programing<br/>
+* <!-- .element: class="fragment" --><b>Apply</b> and <b>explain</b> functional programming as a programming paradigm<br/>
+* <!-- .element: class="fragment" --><b>Design</b> and <b>implement</b> solutions building on functional programming<br/>
 * <!-- .element: class="fragment" --><b>Explain</b> the Actor model<br/>
 * <!-- .element: class="fragment" --><b>Design</b> and <b>implement</b> solutions with the Actor model<br/>
 * <!-- .element: class="fragment" --><b>Design</b>, <b>explain</b> and <b>combine</b> functional design patterns when developing applications<br/>
@@ -139,7 +139,7 @@ Fitness app (but you can choose your own domain)<!-- .element: class="fragment" 
 
 ---
 
-## What is Functional programing
+## What is Functional programming
 
 Applying and composing of functions
 
@@ -150,7 +150,7 @@ Applying and composing of functions
 - Imperative<!-- .element: class="fragment" data-fragment-index="0" -->  
   - Procedural (C)
   - OOP (C++, C#)
-* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in imperative programing</b> one would
+* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in imperative programming</b> one would
   * use statements to modify state
   * focus on how the program should achieve its goal<br/>
 
@@ -293,7 +293,7 @@ swtafp/TestProjectCmd/Library/Library.fs(6,9): error FS0039: The value, namespac
 
 ----
 
-### 'Old' way of defining programing entrypoint
+### 'Old' way of defining programming entrypoint
 
 ```fsharp
 [<EntryPoint>]
@@ -437,7 +437,7 @@ Language intro
 
 ### Conditional
 
-- if-then-else expresion<!-- .element: class="fragment" -->
+- if-then-else expression<!-- .element: class="fragment" -->
 ```fsharp
 if x > 0 then 1 else 0
 ```
@@ -464,7 +464,7 @@ if x > 0 then 1 else 0
 - <!-- .element: class="fragment" -->Type <code>string</code><br/>
 - <!-- .element: class="fragment" -->Can represent <code>string</code> as <code>char list</code> (more on lists later)<br/>
 - <!-- .element: class="fragment" -->Operators: <code>+, [i], [i..j], [i..], [..i]</code><br/>
-  * *Depracated* ~~`.[i]`, `.[i..j]`, `.[i..]`, `.[..i]`~~ 
+  * *Deprecated* ~~`.[i]`, `.[i..j]`, `.[i..]`, `.[..i]`~~ 
 - <!-- .element: class="fragment" -->Functional vs 'dot' operator
 ```fsharp
 String.length "Hello f#"
@@ -553,7 +553,7 @@ let rec factorial n =
 
 ### Pattern Matching
 
-- F# match construct expresion<br/><!-- .element: class="fragment" -->
+- F# match construct expression<br/><!-- .element: class="fragment" -->
 ```fsharp
 match expr with
   | pattern1 [when condition] -> expr1
@@ -581,7 +581,7 @@ Here `_` is a wildcard that mactches everything
 
 Note:
 
-Keyword `function` is a shorthand for `fun` and a `match` in functions that takes a singel argument
+Keyword `function` is a shorthand for `fun` and a `match` in functions that takes a single argument
 
 ```fsharp
 let rec factororial = function
@@ -632,7 +632,7 @@ match result with
 ```
 - Access with:<br/><!-- .element: class="fragment" -->
   - functions '`fst`' or '`snd`'
-  - **or** pattern mathing - with deconstruction
+  - **or** pattern matching - with deconstruction
 
 ---
 

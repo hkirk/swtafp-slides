@@ -37,4 +37,8 @@ Content 3.2
 
 ## External 3.4 (Math)
 
+<<<<<<< HEAD
 $$ J(\theta_0,\theta_1) = \sum_{i=0} $$
+=======
+`\[ J(\theta_0,\theta_1) = \sum_{i=0} \]`
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9

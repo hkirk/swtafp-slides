@@ -5,6 +5,13 @@
 		<meta charset="utf-8">
 
 		<title>reveal.js - Test Scroll View</title>
+<<<<<<< HEAD
+=======
+
+		<link rel="stylesheet" href="../dist/reveal.css">
+		<link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css">
+		<script src="../node_modules/qunit/qunit/qunit.js"></script>
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 	</head>
 
 	<body style="overflow: auto;">
@@ -39,6 +46,7 @@
 
 		</div>
 
+<<<<<<< HEAD
 		<script type="module">
 			import 'reveal.css';
 			import 'qunit/qunit/qunit.css';
@@ -48,6 +56,13 @@
 			QUnit.config.testTimeout = 30000;
 			QUnit.config.reorder = false;
 			QUnit.config.autostart = false;
+=======
+		<script src="../dist/reveal.js"></script>
+		<script>
+
+			QUnit.config.testTimeout = 30000;
+			QUnit.config.reorder = false;
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 			function getScrollHeight() {
 				return Reveal.getViewportElement().scrollHeight;
@@ -57,11 +72,17 @@
 				return Reveal.getViewportElement().offsetHeight;
 			}
 
+<<<<<<< HEAD
 			QUnit.module( 'Scroll View' );
 
 			Reveal.initialize({ view: 'scroll' }).then( async () => {
 
 				QUnit.start();
+=======
+			Reveal.initialize({ view: 'scroll' }).then( async () => {
+
+				QUnit.module( 'Scroll View' );
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 				QUnit.test( 'Activates', assert => {
 					assert.ok( getScrollHeight() > getViewportHeight(), 'Is overflowing' );

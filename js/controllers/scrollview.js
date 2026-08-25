@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { HORIZONTAL_SLIDES_SELECTOR, HORIZONTAL_BACKGROUNDS_SELECTOR } from '../utils/constants'
 import { queryAll } from '../utils/util'
+=======
+import { HORIZONTAL_SLIDES_SELECTOR, HORIZONTAL_BACKGROUNDS_SELECTOR } from '../utils/constants.js'
+import { queryAll } from '../utils/util.js'
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 const HIDE_SCROLLBAR_TIMEOUT = 500;
 const MAX_PROGRESS_SPACING = 4;
@@ -17,8 +22,11 @@ export default class ScrollView {
 		this.Reveal = Reveal;
 
 		this.active = false;
+<<<<<<< HEAD
 		this.activeProgressBarPage = null;
 		this.activeProgressBarTrigger = null;
+=======
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 		this.activatedCallbacks = [];
 
 		this.onScroll = this.onScroll.bind( this );
@@ -173,11 +181,14 @@ export default class ScrollView {
 		this.viewportElement.removeEventListener( 'scroll', this.onScroll );
 		this.viewportElement.classList.remove( 'reveal-scroll' );
 
+<<<<<<< HEAD
 		if( this.pendingScrollRaf ) {
 			cancelAnimationFrame( this.pendingScrollRaf );
 			this.pendingScrollRaf = 0;
 		}
 
+=======
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 		this.removeProgressBar();
 
 		this.Reveal.getSlidesElement().innerHTML = this.slideHTMLBeforeActivation;
@@ -269,9 +280,12 @@ export default class ScrollView {
 			this.progressBar = null;
 		}
 
+<<<<<<< HEAD
 		this.activeProgressBarPage = null;
 		this.activeProgressBarTrigger = null;
 
+=======
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 	}
 
 	layout() {
@@ -561,6 +575,7 @@ export default class ScrollView {
 	syncProgressBar() {
 
 		this.progressBarInner.querySelectorAll( '.scrollbar-slide' ).forEach( slide => slide.remove() );
+<<<<<<< HEAD
 		this.activeProgressBarPage = null;
 		this.activeProgressBarTrigger = null;
 
@@ -568,6 +583,8 @@ export default class ScrollView {
 			page.progressBarSlide = null;
 			page.scrollTriggers.forEach( trigger => trigger.progressBarElement = null );
 		} );
+=======
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 		const scrollHeight = this.viewportElement.scrollHeight;
 		const viewportHeight = this.viewportElement.offsetHeight;
@@ -598,7 +615,11 @@ export default class ScrollView {
 				this.progressBarInner.appendChild( page.progressBarSlide );
 
 				// Visual representations of each scroll trigger
+<<<<<<< HEAD
 				page.scrollTriggers.forEach( ( trigger, i ) => {
+=======
+				page.scrollTriggerElements = page.scrollTriggers.map( ( trigger, i ) => {
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 					const triggerElement = document.createElement( 'div' );
 					triggerElement.className = 'scrollbar-trigger';
@@ -608,13 +629,25 @@ export default class ScrollView {
 
 					if( i === 0 ) triggerElement.style.display = 'none';
 
+<<<<<<< HEAD
 					trigger.progressBarElement = triggerElement;
+=======
+					return triggerElement;
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 				} );
 
 			} );
 
 		}
+<<<<<<< HEAD
+=======
+		else {
+
+			this.pages.forEach( page => page.progressBarSlide = null );
+
+		}
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 	}
 
@@ -633,7 +666,10 @@ export default class ScrollView {
 		const scrollProgressMid = Math.max( Math.min( ( scrollTop + viewportHeight / 2 ) / this.viewportElement.scrollHeight, 1 ), 0 );
 
 		let activePage;
+<<<<<<< HEAD
 		let activeScrollTrigger = null;
+=======
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 		this.slideTriggers.forEach( ( trigger ) => {
 			const { page } = trigger;
@@ -646,7 +682,11 @@ export default class ScrollView {
 				page.loaded = true;
 				this.Reveal.slideContent.load( page.slideElement );
 			}
+<<<<<<< HEAD
 			else if( !shouldPreload && page.loaded ) {
+=======
+			else if( page.loaded ) {
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 				page.loaded = false;
 				this.Reveal.slideContent.unload( page.slideElement );
 			}
@@ -668,7 +708,10 @@ export default class ScrollView {
 			activePage.scrollTriggers.forEach( ( trigger ) => {
 				if( scrollProgressMid >= trigger.range[0] && scrollProgressMid <= trigger.range[1] ) {
 					this.activateTrigger( trigger );
+<<<<<<< HEAD
 					activeScrollTrigger = trigger;
+=======
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 				}
 				else if( trigger.active ) {
 					this.deactivateTrigger( trigger );
@@ -677,11 +720,15 @@ export default class ScrollView {
 		}
 
 		// Update our visual progress indication
+<<<<<<< HEAD
 		this.setProgressBarValue(
 			scrollTop / ( this.viewportElement.scrollHeight - viewportHeight ),
 			activePage,
 			activeScrollTrigger
 		);
+=======
+		this.setProgressBarValue( scrollTop / ( this.viewportElement.scrollHeight - viewportHeight ) );
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 	}
 
@@ -689,15 +736,21 @@ export default class ScrollView {
 	 * Moves the progress bar playhead to the specified position.
 	 *
 	 * @param {number} progress 0-1
+<<<<<<< HEAD
 	 * @param {object} activePage
 	 * @param {object} activeScrollTrigger
 	 */
 	setProgressBarValue( progress, activePage = null, activeScrollTrigger = null ) {
+=======
+	 */
+	setProgressBarValue( progress ) {
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 		if( this.progressBar ) {
 
 			this.progressBarPlayhead.style.transform = `translateY(${progress * this.progressBarScrollableHeight}px)`;
 
+<<<<<<< HEAD
 			if( this.activeProgressBarPage !== activePage ) {
 				this.activeProgressBarPage?.progressBarSlide?.classList.remove( 'active' );
 				activePage?.progressBarSlide?.classList.add( 'active' );
@@ -709,6 +762,17 @@ export default class ScrollView {
 				activeScrollTrigger?.progressBarElement?.classList.add( 'active' );
 				this.activeProgressBarTrigger = activeScrollTrigger;
 			}
+=======
+			this.getAllPages()
+				.filter( page => page.progressBarSlide )
+				.forEach( ( page ) => {
+					page.progressBarSlide.classList.toggle( 'active', page.active === true );
+
+					page.scrollTriggers.forEach( ( trigger, i ) => {
+						page.scrollTriggerElements[i].classList.toggle( 'active', page.active === true && trigger.active === true );
+					} );
+				} );
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 			this.showProgressBar();
 
@@ -931,6 +995,7 @@ export default class ScrollView {
 
 	onScroll() {
 
+<<<<<<< HEAD
 		if( this.pendingScrollRaf ) return;
 
 		this.pendingScrollRaf = requestAnimationFrame( () => {
@@ -938,6 +1003,10 @@ export default class ScrollView {
 			this.syncScrollPosition();
 			this.storeScrollPosition();
 		} );
+=======
+		this.syncScrollPosition();
+		this.storeScrollPosition();
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 	}
 

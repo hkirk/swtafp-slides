@@ -4,8 +4,12 @@
  * of external markdown documents.
  */
 
+<<<<<<< HEAD
 import { Marked } from 'marked';
 import { markedSmartypants } from 'marked-smartypants';
+=======
+import { marked } from 'marked';
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 const DEFAULT_SLIDE_SEPARATOR = '\r?\n---\r?\n',
 	  DEFAULT_VERTICAL_SEPARATOR = null,
@@ -370,12 +374,16 @@ const Plugin = () => {
 		}
 
 		if ( element.nodeType === Node.COMMENT_NODE ) {
+<<<<<<< HEAD
 		let targetElement = previousElement;
 		if( targetElement && ( targetElement.tagName === 'UL' || targetElement.tagName === 'OL' ) ) {
 			targetElement = targetElement.lastElementChild || targetElement;
 		}
 
 		if ( addAttributeInElement( element, targetElement, separatorElementAttributes ) === false ) {
+=======
+			if ( addAttributeInElement( element, previousElement, separatorElementAttributes ) === false ) {
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 				addAttributeInElement( element, section, separatorSectionAttributes );
 			}
 		}
@@ -433,6 +441,7 @@ const Plugin = () => {
 
 			deck = reveal;
 
+<<<<<<< HEAD
 			let { renderer: customRenderer, animateLists, smartypants, ...markedOptions } = deck.getConfig().markdown || {};
 
 			const renderer = customRenderer || {
@@ -469,6 +478,56 @@ const Plugin = () => {
 			if( smartypants ) {
 				markedInstance.use( markedSmartypants() );
 			}
+=======
+			let { renderer, animateLists, ...markedOptions } = deck.getConfig().markdown || {};
+
+			if( !renderer ) {
+				renderer = new marked.Renderer();
+
+				renderer.code = ( code, language ) => {
+
+					// Off by default
+					let lineNumberOffset = '';
+					let lineNumbers = '';
+
+					// Users can opt in to show line numbers and highlight
+					// specific lines.
+					// ```javascript []        show line numbers
+					// ```javascript [1,4-8]   highlights lines 1 and 4-8
+					// optional line number offset:
+					// ```javascript [25: 1,4-8]   start line numbering at 25,
+					//                             highlights lines 1 (numbered as 25) and 4-8 (numbered as 28-32)
+					if( CODE_LINE_NUMBER_REGEX.test( language ) ) {
+						let lineNumberOffsetMatch =  language.match( CODE_LINE_NUMBER_REGEX )[2];
+						if (lineNumberOffsetMatch){
+							lineNumberOffset =  `data-ln-start-from="${lineNumberOffsetMatch.trim()}"`;
+						}
+
+						lineNumbers = language.match( CODE_LINE_NUMBER_REGEX )[3].trim();
+						lineNumbers = `data-line-numbers="${lineNumbers}"`;
+						language = language.replace( CODE_LINE_NUMBER_REGEX, '' ).trim();
+					}
+
+					// Escape before this gets injected into the DOM to
+					// avoid having the HTML parser alter our code before
+					// highlight.js is able to read it
+					code = escapeForHTML( code );
+
+					// return `<pre><code ${lineNumbers} class="${language}">${code}</code></pre>`;
+
+					return `<pre><code ${lineNumbers} ${lineNumberOffset} class="${language}">${code}</code></pre>`;
+				};
+			}
+
+			if( animateLists === true ) {
+				renderer.listitem = text => `<li class="fragment">${text}</li>`;
+			}
+
+			marked.setOptions( {
+				renderer,
+				...markedOptions
+			} );
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 			return processSlides( deck.getRevealElement() ).then( convertSlides );
 

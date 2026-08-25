@@ -105,7 +105,7 @@ let generateList max =
 * Functions in F# are first class citizen<!-- .element: class="fragment" data-fragment-index="0" -->
   * functions can be input and output from functions<!-- .element: class="fragment" data-fragment-index="0" -->
 * First-order functions<!-- .element: class="fragment" data-fragment-index="1" -->
-  * *values* as paramters and returns values<!-- .element: class="fragment" data-fragment-index="1" -->
+  * *values* as parameters and returns values<!-- .element: class="fragment" data-fragment-index="1" -->
 * Higher order functions<!-- .element: class="fragment" data-fragment-index="2" -->
   * *functions* as parameters and/or return functions<!-- .element: class="fragment" data-fragment-index="2" -->
 
@@ -142,8 +142,8 @@ plusThree 5
 
 ## Prefix and Infix operators
 
-* Some operators are alwas prefix others can be both
-  * Operators begining with `!` and any number of `~` except `!=` are prefix
+* Some operators are always prefix others can be both
+  * Operators beginning with `!` and any number of `~` except `!=` are prefix
   * `+`, `-`, `+.`, `-.`, `&`, `&&`, `%`, and `%%` can be both prefix and infix
   * Prefix operators defined by starting with `~`
   * `!`, `*`, `/`, `<`, `=`, `>`, `?`, `@`, `^`, `|`, `.` or a sequence of these can be used as infix
@@ -179,7 +179,7 @@ let (~+) a = a+42 // properly a stupid idea :)
 
 ## Pipe
 
-#### Or 'function appliation operators'
+#### Or 'function application operators'
 
 ```fsharp
 [2;3;4;5;6;6] |> List.filter (fun y -> y < 4)
@@ -426,7 +426,7 @@ let rec reverse = function
 
 * <!-- .element: class="fragment" --><code>List.rev</code> is from List module<br/>
 * <!-- .element: class="fragment" --><code>List.rev</code> is an efficient way of reversing a list
-  * oppose to the naive implemetation (above)<br/>
+  * oppose to the naive implementation (above)<br/>
 
 
 Note:
@@ -482,12 +482,12 @@ List.map (fun element -> string element) list
 ```fsharp
 let tempSF = [59;61;62;64;63;67;66;67;70;70;64;64;58;64]
 
-let tempSFCelcius = List.map
+let tempSFCelsius = List.map
   (fun fahrenheit -> ((float fahrenheit) - 32.0) * (5.0/9.0))
   tempSF
-let tempSFCelciusRounded =
-  List.map (fun celcius -> Math.Round(celcius))
-  tempSFCelcius
+let tempSFCelsiusRounded =
+  List.map (fun celsius -> Math.Round(celsius))
+  tempSFCelsius
 //val it : float list =
 //  [15.0; 16.0; 17.0; 18.0; 17.0; 19.0; 19.0; 19.0; 
 //   21.0; 21.0; 18.0; 18.0; 14.0; 18.0]
@@ -593,7 +593,7 @@ foldBack: ('T -> 'State -> 'State) ->
 ```
 
 * Accumulate in the opposite order from `fold`
-* Order of paramters are different
+* Order of parameters are different
 * FoldBack is always `$ O(n) $`
 
 ----

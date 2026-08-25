@@ -58,6 +58,8 @@ module BST =
     // Code for creating/adding etc.
 ```
 
+* Declared with tuple for simplification
+
 ----
 
 ##### Invariants
@@ -102,15 +104,29 @@ let rec contains (x: 'a) (n: BST<'a>) =
 
 ```
 
+note:
+
+Types to allow for . (dot) operator
+
+```fsharp
+
+type Node<'a> = { left: BST<'a>; elem: 'a; right: BST<'a> }
+and BST<'a> =
+    // | Leaf of 'a
+    | Empty
+    | Node of Node<'a>
+
+```
+
 ----
 
 ### Implementing `insert`
 
 
 * Algorithm:  ![BST](./img/bst.png "Binary search tree") <!-- .element: style="width: 250px; float: right" -->
-    1. Use a variation of 'contains' to locate correct place to insert<!-- .element: class="fragment"  data-fragment-index="0" --><br/>
-    2. Copy nodes as we move down through the tree<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
-* Example<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+    1. Use a variation of 'contains' to locate correct place to insert<!-- .element: class="fragment" --><br/>
+    2. Copy nodes as we move down through the tree<!-- .element: class="fragment" --><br/>
+* Example<!-- .element: class="fragment" --><br/>
     * Inserting 9
 
 ----
@@ -147,7 +163,7 @@ let rec contains (x: 'a) (n: BST<'a>) =
 * Finite<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
 * Immutable<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
     * All operations returns a new `set`
-* Mathmatical set operations available<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* Mathematical set operations available<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
 * Only elements where 'ordering' is defined<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
 * Internally represented as a 'BBT<'a>'<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
 
@@ -206,8 +222,8 @@ Set.difference first third
 ## Sets in general
 
 * <!-- .element: class="fragment" --> map, filter, `fold`, foldBack are all $ O(n) $<br/>
-* <!-- .element: class="fragment" --> complexity of recusion is in worst case $ O(n*log(n)) $<br/>
-* <!-- .element: class="fragment" --> Enumarations can be used to simplify and optimize this
+* <!-- .element: class="fragment" --> complexity of recursion is in worst case $ O(n*log(n)) $<br/>
+* <!-- .element: class="fragment" --> Enumerations can be used to simplify and optimize this
 
 ---
 
@@ -342,7 +358,7 @@ let cachedNat = Seq.cache nat
 ```
 
 * <!-- .element: class="fragment"  data-fragment-index="0" --><code>Seq.item 5 cachedNat<code> will evaluate all elements from '0-5'<br/>
-* <!-- .element: class="fragment"  data-fragment-index="0" -->Calling again will not evalute elements '0-5' again
+* <!-- .element: class="fragment"  data-fragment-index="0" -->Calling again will not evaluate elements '0-5' again
 
 ---
 

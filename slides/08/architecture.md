@@ -6,40 +6,44 @@
 
 ----
 
+
 ### Agenda
 
-* Problem
-* Ports & Adapters
-* Abstraction
-* Other
+* Problem<br/><!-- .element: class="fragment" -->
+* Ports & Adapters<br/><!-- .element: class="fragment" -->
+* Generalization<br/><!-- .element: class="fragment" -->
+* Other<br/><!-- .element: class="fragment" -->
 
 ---
 
-### Problem
+### Layered architecture
 
 
 ![Classic 3 layer architecture](./img/3layer.png)
 
+* Breaks DIP<br/><!-- .element: class="fragment" -->
+    * BLL depends on details in DAL
+* BLL calls impure code<br/><!-- .element: class="fragment" -->
+
 Note:
 
-Breaks DIP - BLL depends on details in DAL
+
 
 ----
 
-#### Small change
-
-So to adhere to DIP
+#### Satisfying DIP
 
 ![Updated 3 layer architecture](./img/3layer2.png)
 
 ----
 
-#### Why keep BLL pure
+
+#### Usecase for creating invoices
 
 * Creating a **PDF** invoice, requires
     * Products
     * Prices before and after taxes
-    * Custumer information
+    * Customer information
     * Date
     * Invoice number
 
@@ -54,9 +58,8 @@ public void GenerateInvoice(Order order, Customer customer)
 }
 ```
 
-* Testing
-    * requires us to compare files
-    * But what about date and invoice number?
+* This has side-effect, invoice number, date, output where?<br/><!-- .element: class="fragment" -->
+* Hard to test!<br/><!-- .element: class="fragment" -->
 
 Note:
 
@@ -65,7 +68,7 @@ Note:
 
 ----
 
-#### Handling internalization
+#### Extending with internalization
 
 ```csharp
 public void GenerateInvoice(Order order,
@@ -73,9 +76,9 @@ public void GenerateInvoice(Order order,
                             Language lang) {}
 ```
 
-Call `GenerateInvoice` twice on for each language - what problems does this introduce?
+* Problems from side-effects?<br/><!-- .element: class="fragment" -->
 
-![Invoice-lang](./img/invoice-lang.png)
+![Invoice-lang](./img/invoice-lang.png)<!-- .element: class="fragment" -->
 
 ----
 
@@ -88,6 +91,10 @@ So each call to `GeneateInvoice` increments invoice number :(
 #### Solution
 
 ![Invoice-lang-fp](./img/invoice-lang-fp.png)
+
+Note:
+
+GenerateTemplate and CreateInvoice should be pure functions
 
 ---
 
@@ -115,12 +122,13 @@ Note: Not only for FP - but very used especially in FP so e.g. F# and Haskell
 
 ----
 
-<!-- TODO: New example -->
+<!-- TODO: New example - from example -->
+<!-- in that case link to this for inspiration: https://jkone27-3876.medium.com/f-onion-architecture-in-92-lines-of-code-129c5d7877ca -->
 
-### A Resturant example
+### A Restaurant example
 
-```fsharp
-module Capacity
+```fsharp [6-10]
+module BLL
 
 type Error = CapacityExceeded
 type Reservation = {Quantity: int}
@@ -140,14 +148,14 @@ let check capacity getReservedSeats reservation =
 
 ### Controller / Use case
 
-* Resturant check if reservation can be accepted
+* Restaurant check if reservation can be accepted
 
 
-```fsharp
+```fsharp [4]
 let connStr = "..."
 let reserveTable = 
     Validate.reservation
-    >> bind (Capacity.check 10 (getReservedSeatsFromDb connStr))
+    >> bind (BLL.check 10 (getReservedSeatsFromDb connStr))
     >> map (saveReservation connStr) // same as below
   //>> map (fun res -> (saveReservation connStr) res)
 ```
@@ -159,25 +167,30 @@ let reserveTable =
 ```fsharp
 let getReservedSeatsFromDb (connStr: string)
                            (reservations: Reservation): int = 
-    // TODO: load reserved seats from database
+    failwith "Not implemented"
 
 let getReservedSeats = getReservedSeatsFromDb connStr
 // val getReservedSeats : (Reservation -> int)
 ```
 
-* <!-- .element: class="fragment" --> So 'getReservedSeats' are inpure - but that do not show in the signature.
+* <!-- .element: class="fragment" --> 'getReservedSeats' has sideeffect
+    * signature is not honest
 
 ----
 
 ### Partial application
 
-* <!-- .element: class="fragment" --> Our pure function 'check', will be inpure in production
+* <!-- .element: class="fragment" -->Our pure function <code>check</code>, will be impure in production<br/>
+    * by injecting `getReservedSeatsFromDb`
+* <!-- .element: class="fragment" -->But why do <code>check</code> need <code>getReservedSeats</code> at all?
 
-* But why do 'check' need getReservedSeats at all?  <!-- .element: class="fragment" -->
+Note:
+
+It don't - but if layered architecture kindof forces it to.
 
 ----
 
-### Rewrite
+### Refactor `check`
 
 ```fsharp
 let check capacity reservedSeats reservation =
@@ -192,12 +205,13 @@ let check capacity reservedSeats reservation =
 
 So now calling '`check`' is a bit more tedious
 
-```fsharp
+```fsharp [4-6]
 let connStr = ".."
 let reserveTable =
   Validate.reservation
-    >> map  (getReservedSeatsFromDb connStr r, r)
-    >> bind (fun (i, r) -> Capacity.check 10 i r)
+    >> map  (getReservedSeatsFromDb connStr res, res)
+    >> bind (fun (capacity, res) ->  
+                        BLL.check 10 capacity res)
     >> map  (saveReservation connStr)
 ```
 
@@ -227,10 +241,10 @@ let add1Times2' = add1 >> times2
 
 ### The function `reserveTable`
 
-1. could application logic<br/><!-- .element: class="fragment" --> 
-1. thereby not something you would nessesary reuse<br/><!-- .element: class="fragment" --> 
+1. could be application logic<br/><!-- .element: class="fragment" --> 
+1. thereby not something you would necessary reuse<br/><!-- .element: class="fragment" --> 
 1. because:<br/><!-- .element: class="fragment" --> 
-    * handle resevation validation in the same manner?
+    * handle reservation validation in the same manner?
     * handle input/output different
 
 ----
@@ -244,19 +258,21 @@ let add1Times2' = add1 >> times2
 
 ---
 
-## Abstractions
+## Generalization
 
-* Pure functions
-* Impure functions
+* Pure functions<br/><!-- .element: class="fragment" -->
+* Impure functions<br/><!-- .element: class="fragment" -->
+* Know which are which<!-- .element: class="fragment" -->
+    * and how to separate
 
 ----
 
 ### Calling functions
 
-1. Pure functions **may** call other pure functions
-2. Impure functions **may** call other impure functions
-3. Impure functions **may** call other pure functions
-4. ___Pure functions **may not** call other impure functions___
+1. <!-- .element: class="fragment" -->Pure functions <b>may</b> call other pure functions<br/>
+2. <!-- .element: class="fragment" -->Impure functions <b>may</b> call other impure functions<br/>
+3. <!-- .element: class="fragment" -->Impure functions <b>may</b> call other pure functions<br/>
+4. <!-- .element: class="fragment" --><i>Pure functions <b>may not</b> call other impure functions</i><br/>
 
 ----
 
@@ -317,3 +333,4 @@ We will take a closer look at this later
 ## References
 
 * [Conditional composition of functions](https://blog.ploeh.dk/2016/07/04/conditional-composition-of-functions/)
+* Other reading material: [Ports'n'Adapters](https://gist.github.com/hkdobrev/b68b7fe77adfb409f5add21ba4664d12)

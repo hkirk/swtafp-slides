@@ -72,8 +72,13 @@ export default class Overlay {
 
 		this.viewport.innerHTML =
 			`<header class="r-overlay-header">
+<<<<<<< HEAD
 				<a class="r-overlay-header-button r-overlay-external" href="${url}" target="_blank"><span class="icon"></span></a>
 				<button class="r-overlay-header-button r-overlay-close"><span class="icon"></span></button>
+=======
+				<a class="r-overlay-button r-overlay-external" href="${url}" target="_blank"><span class="icon"></span></a>
+				<button class="r-overlay-button r-overlay-close"><span class="icon"></span></button>
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 			</header>
 			<div class="r-overlay-spinner"></div>
 			<div class="r-overlay-content">
@@ -125,7 +130,11 @@ export default class Overlay {
 
 		this.viewport.innerHTML =
 			`<header class="r-overlay-header">
+<<<<<<< HEAD
 				<button class="r-overlay-header-button r-overlay-close">Esc <span class="icon"></span></button>
+=======
+				<button class="r-overlay-button r-overlay-close">Esc <span class="icon"></span></button>
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 			</header>
 			<div class="r-overlay-spinner"></div>
 			<div class="r-overlay-content"></div>`;
@@ -262,7 +271,11 @@ export default class Overlay {
 
 			this.viewport.innerHTML = `
 				<header class="r-overlay-header">
+<<<<<<< HEAD
 					<button class="r-overlay-header-button r-overlay-close">Esc <span class="icon"></span></button>
+=======
+					<button class="r-overlay-button r-overlay-close">Esc <span class="icon"></span></button>
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 				</header>
 				<div class="r-overlay-content">
 					<div class="r-overlay-help-content">${html}</div>
@@ -348,9 +361,13 @@ export default class Overlay {
 				// Let the browser handle meta keys naturally so users can cmd+click
 				return;
 			}
+<<<<<<< HEAD
 			const dataPreviewLink = linkTarget.getAttribute( 'data-preview-link' );
 			const dataPreviewLinkIsUrl = typeof dataPreviewLink === 'string' && dataPreviewLink.startsWith( 'http' );
 			let url = dataPreviewLinkIsUrl ? dataPreviewLink : linkTarget.getAttribute( 'href' );
+=======
+			let url = linkTarget.getAttribute( 'href' ) || linkTarget.getAttribute( 'data-preview-link' );
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 			if( url ) {
 				this.previewIframe( url );
 				event.preventDefault();

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import speakerViewHTML from './speaker-view.html?raw'
+=======
+import speakerViewHTML from './speaker-view.html'
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 import { marked } from 'marked';
 

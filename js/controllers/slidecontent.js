@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { extend, queryAll, closest, getMimeTypeFromFile, encodeRFC3986URI } from '../utils/util'
 import { isMobile } from '../utils/device'
+=======
+import { extend, queryAll, closest, getMimeTypeFromFile, encodeRFC3986URI } from '../utils/util.js'
+import { isMobile } from '../utils/device.js'
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 import fitty from 'fitty';
 
@@ -9,7 +14,11 @@ import fitty from 'fitty';
  */
 export default class SlideContent {
 
+<<<<<<< HEAD
 	allowedToPlayAudio = null;
+=======
+	allowedToPlay = true;
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 	constructor( Reveal ) {
 
@@ -17,6 +26,7 @@ export default class SlideContent {
 
 		this.startEmbeddedMedia = this.startEmbeddedMedia.bind( this );
 		this.startEmbeddedIframe = this.startEmbeddedIframe.bind( this );
+<<<<<<< HEAD
 		this.preventIframeAutoFocus = this.preventIframeAutoFocus.bind( this );
 		this.ensureMobileMediaPlaying = this.ensureMobileMediaPlaying.bind( this );
 
@@ -47,6 +57,9 @@ export default class SlideContent {
 
 			this.clearMediaPlaybackErrors();
 		} );
+=======
+		this.ensureMobileMediaPlaying = this.ensureMobileMediaPlaying.bind( this );
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 	}
 
@@ -359,7 +372,28 @@ export default class SlideContent {
 					else if( isMobile ) {
 						el.addEventListener( 'canplay', this.ensureMobileMediaPlaying );
 
+<<<<<<< HEAD
 						this.playMediaElement( el );
+=======
+						el.addEventListener( 'canplay', this.ensureMobileMediaPlaying );
+
+						// If autoplay does not work, ensure that the controls are visible so
+						// that the viewer can start the media on their own
+						if( promise && typeof promise.catch === 'function' && el.controls === false ) {
+							promise
+							.then( () => {
+								this.allowedToPlay = true;
+							})
+							.catch( () => {
+								el.controls = true;
+
+								// Once the video does start playing, hide the controls again
+								el.addEventListener( 'play', () => {
+									el.controls = false;
+								} );
+							} );
+						}
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 					}
 					// If the media isn't loaded, wait before playing
 					else {
@@ -451,7 +485,23 @@ export default class SlideContent {
 			// Don't restart if media is already playing
 			if( event.target.paused || event.target.ended ) {
 				event.target.currentTime = 0;
+<<<<<<< HEAD
 				this.playMediaElement( event.target );
+=======
+				const promise = event.target.play();
+
+				if( promise && typeof promise.catch === 'function' ) {
+					promise
+						.then( () => {
+							this.allowedToPlay = true;
+						} )
+						.catch( ( error ) => {
+							if( error.name === 'NotAllowedError' ) {
+								this.allowedToPlay = false;
+							}
+						} );
+				}
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 			}
 		}
 
@@ -620,6 +670,7 @@ export default class SlideContent {
 	 * typically happens when media playback is initiated without a
 	 * direct user interaction.
 	 */
+<<<<<<< HEAD
 	isAllowedToPlayAudio() {
 
 		return this.allowedToPlayAudio;
@@ -743,6 +794,11 @@ export default class SlideContent {
 	afterSlideChanged() {
 
 		this.clearMediaPlaybackErrors();
+=======
+	isNotAllowedToPlay() {
+
+		return !this.allowedToPlay;
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 	}
 

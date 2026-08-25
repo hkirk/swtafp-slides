@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { queryAll, enterFullscreen } from '../utils/util'
 import { isAndroid } from '../utils/device'
+=======
+import { queryAll, enterFullscreen } from '../utils/util.js'
+import { isAndroid } from '../utils/device.js'
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 /**
  * Manages our presentation controls. This includes both
@@ -66,11 +71,17 @@ export default class Controls {
 	 */
 	configure( config, oldConfig ) {
 
+<<<<<<< HEAD
 		const speakerOnly = config.controls === 'speaker' || config.controls === 'speaker-only';
 
 		this.element.style.display = (
 			config.controls &&
 			(!speakerOnly || this.Reveal.isSpeakerNotes())
+=======
+		this.element.style.display = (
+			config.controls &&
+			(config.controls !== 'speaker-only' || this.Reveal.isSpeakerNotes())
+>>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 		) ? 'block' : 'none';
 
 		this.element.setAttribute( 'data-controls-layout', config.controlsLayout );

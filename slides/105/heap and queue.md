@@ -39,7 +39,7 @@ Records, unions, Lists etc etc.
 
 * Fewer movings parts
 * Thread-safe by default
-* % Not nessesary performance optimal.
+* % Not necessary performance optimal.
     * Change to use mutable datastructures within a module/function to gain performance.
 
 ----
@@ -149,7 +149,7 @@ So here we utilises that `Seq` is lazy
 let l' = Seq.append l r
 ```
 
-This do not evalute `r` before its needed
+This do not evaluate `r` before its needed
 
 ----
 

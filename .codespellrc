@@ -5,4 +5,4 @@ check-hidden = true
 # Ignore super long lines -- must be minimized etc, acronyms
 # and some near hit variables
 ignore-regex = ^.{120,}|\b(currentY|FOM)\b
-# ignore-words-list =
+ignore-words-list = Ser,Thi

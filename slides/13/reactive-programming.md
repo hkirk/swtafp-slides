@@ -1,19 +1,19 @@
 <!-- .slide: data-background="#003d73" -->
 
-## Reactive programing
+## Reactive programming
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
 ---
 
 
-### Reactive programing
+### Reactive programming
 
 * Declarative paradigm
     * responding to events
 * Imparative vs declarative
 
-```[1-3|4-8]
+```fsharp [1-3|4-8]
 // Imparative
 let a = b + c
 // a is assigned and never changed
@@ -22,17 +22,19 @@ let a' = b + c
 b <- 'new_value'
 // a is now recombuted
 ```
-<!-- .element: class="fragment" -->
+
 
 ----
 
-### Reactive programing
+### Reactive programming
 
-* ReactiveX
+* Learing curve<br/><!-- .element: class="fragment" -->
+* ReactiveX<!-- .element: class="fragment" -->
     * RXjs (used in Angular, ..)
     * Rx.NET
     * RxJava
     * ...
+* Akka.Stream (C#/Java)<br/><!-- .element: class="fragment" -->
 
 ----
 
@@ -40,10 +42,10 @@ b <- 'new_value'
 
 * Emitting and consuming events are async<br/><!-- .element: class="fragment" -->
 * Events are async<br/><!-- .element: class="fragment" -->
-* Events vs Reactive programing<br/><!-- .element: class="fragment" -->
+* Events and Reactive programming<br/><!-- .element: class="fragment" -->
     * robustness
     * extend
-* Learing curve<br/><!-- .element: class="fragment" -->
+
 
 ---
 
@@ -69,7 +71,7 @@ Async.RunSynchronously basicTimer1
 
 ----
 
-### Using the built in Observable
+### Using the built in F# Observable
 
 ```fsharp [1-13|14-21]
 let createTimerAndObservable timerInterval =
@@ -95,6 +97,14 @@ timerEventStream
 Async.RunSynchronously basicTimer2
 ```
 
+note:
+
+Convertion from C# IEvent to F# IObservable (simplified)
+
+Happens in the compiler
+
+
+
 ----
 
 ### Piping events
@@ -112,6 +122,41 @@ timerEventStream
 ### Merging events
 
 ![Live code](https://resources.jetbrains.com/storage/products/rider/img/meta/preview.png "" )
+
+---
+
+### Akka Streams
+
+* Streaming model built on top of Akkas actors<br/><!-- .element: class="fragment" -->
+* Backpressure is handled explictly by framwork<br/><!-- .element: class="fragment" -->
+* Can be distributed on different nodes<br/><!-- .element: class="fragment" -->
+* Error handling uses Supervision strategy<br/><!-- .element: class="fragment" -->
+
+----
+
+* Source - originator for data<br/><!-- .element: class="fragment" -->
+* Flow - subscribe, process and proceed<br/><!-- .element: class="fragment" -->
+* Sink - Endpoint stream<br/><!-- .element: class="fragment" -->
+* Graph DSL<br/><!-- .element: class="fragment" -->
+    * With faning out `Broadcast` and `Balance`, ...
+    * and faning in `MergePrefered`, ...
+
+
+----
+
+### Difffences
+
+* Observable<!-- .element: class="fragment" -->
+    * Declarative
+    * Stateless
+    * LINQ syntax
+* Akka Stream<!-- .element: class="fragment" -->
+    * actor based
+    * State can be hold in actors
+    * Distributed
+    * Backpressure
+
+
 
 ---
 

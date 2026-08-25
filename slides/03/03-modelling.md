@@ -1,5 +1,5 @@
 <!-- .slide: data-background="#003d73" -->
-# Type / Model based programing
+# Type / Model based programming
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
@@ -177,11 +177,11 @@ type Birthday = Person * Date
 * uses '`of`'
 
 ```fsharp
-type Meassurement = Cm | Meter | Kilometer
+type Measurement = Cm | Meter | Kilometer
 type IntOrBool =
   | I of Int
   | B of Bool
-// type Meassurement' =
+// type Measurement' =
 //  | Cm
 //  | Meter
 //  | Kilometer
@@ -206,18 +206,18 @@ let someValue = Some 3
 
 ### Enumeration
 
-* Simular to sum type
+* Similar to sum type
   * Uses `Equal` and `int` value
   * Not type safe
 
 ```fsharp
-type Meassurement = CM = 0 | Meter = 1 | Kilometer = 2
+type Measurement = CM = 0 | Meter = 1 | Kilometer = 2
 // [<Struct>]
-//type Meassurement =
+//type Measurement =
 //  | CM = 0
 //  | Meter = 1
 //  | Kilometer = 2
-let cm = Meassurement.CM
+let cm = Measurement.CM
 ```
 
 ----
@@ -582,8 +582,8 @@ Note:
 Methods above comes from the realization:
 
 It should be possible to:
-* test wether a color can be extended by a country
-* test wether two countries are neighbours
+* test weather a color can be extended by a country
+* test weather two countries are neighbours
 * Extend a color with country.
 
 ---
