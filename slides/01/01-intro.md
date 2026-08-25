@@ -7,12 +7,36 @@
 
 ----
 
+![Segmentation Fault](./img/tshirt.png "Segmention fault")
+
+
+note:
+
+- master thesis after 3 months
+  - running C++ impl af dynamic self adjusting skip list
+  - but corrupted memory
+- using the next 4 weeks to get the overnight tests running
+  - chasing bugs in 2.000 lines of code that mutated data structure all over the place
+- Realised
+   - not algorithm problem
+   - _BUT_ mutation
+- This course
+  - functional programming - not abstract theory
+  - right before you bacherlor
+    - so code to fight you. But gives you
+    - Immutability, Type safety, composition over complexity
+- after course you can
+  - write code where compiler catches errors before running it
+  - easy to test without boiler plate code
+
+
+----
+
 ## Agenda
 
-* Introduction
+* Course Introduction
 * What is FP
 * Why F\#
-* Program files
 * F\#
   * Types
   * Functions
@@ -40,17 +64,34 @@
 
 * <!-- .element: class="fragment" -->Lectures:
   * 4 hours per week
-  * ~`$\frac{1}{2}$` lecturing
-  * ~`$\frac{1}{2}$` exercises
+  * ~$\frac{1}{2}$ lecturing
+  * ~$\frac{1}{2}$ exercises
 * <!-- .element: class="fragment" -->Read before, exercises after
 
-----
-
-### Plan
-
-![Schedule](./img/Schedule.png "Schedule") <!-- .element: style="height: 600px" -->
 
 ----
+
+<!-- .slide: style="font-size:24px" -->
+
+## Schedule Competencies
+
+| Week | Topic | Capability Gained |
+|:-----|:------|:------------------|
+| 1 | Intro to FP and F# | Think declaratively, not imperatively |
+| 2 | Functions, types, lists | Compose small units into larger abstractions |
+| 3 | Model/typed-based programming | Invalid states don't compile |
+| 4 | Persistent data structures |No dangling pointers or mutation races |
+| 5 | Property-based testing |Edge cases found automatically, not by luck |
+| 6 | Functors, Applicatives, Monads | Chain computations with explicit error handling |
+| 7 | Error handling | Railway-oriented error flows - failures propagate without crashes |
+| 8 | Functional Architecture | Business logic at core, side-effects at boundaries |
+| 9 | Web | Build backends without shared mutable state |
+| 10 | Efficiency | Profile-driven optimization, not premature tuning |
+| 11-12 | Actor Model | Concurrency without race conditions |
+| 13 | Reactive programming | Event-driven systems with predictable data flow |
+
+----
+
 
 ### Expectations
 
@@ -64,9 +105,6 @@
 
 &#10067; <!-- .element: style="font-size: 160px" -->
 
-Please answer <!-- .element: class="fragment" data-fragment-index="1" -->  [Precourse form](https://forms.office.com/Pages/ResponsePage.aspx?id=Nh39Ycv-yke319DfA3ChmFfM6yOYKkRGgOhMw4EZFoNUQ0xZM1NCTEJRV0pXS01MTjFZWTZMUEczTi4u) <!-- .element:  class="fragment" data-fragment-index="1" -->
-
-![QR](./img/precourse_qe.png "") <!-- .element: style="width: 200px" class="fragment" data-fragment-index="1" -->
 
 ----
 
@@ -94,7 +132,7 @@ Fitness app (but you can choose your own domain)<!-- .element: class="fragment" 
 ### Exam
 
 - 20 minutes oral exam<br/><!-- .element: class="fragment" -->
-- <!-- .element: class="fragment" -->Draw a subject (<i>5-10</i>)<br/>
+- <!-- .element: class="fragment" -->Draw a random subject (<i>9</i> last semester)<br/>
 - <!-- .element: class="fragment" -->Explain theory <b>and</b> show how this can be applied<br/>
 - Include code when you see fit<!-- .element: class="fragment" -->
   - exercises/assignments
@@ -124,6 +162,7 @@ Applying and composing of functions
 - Declarative <!-- .element: class="fragment" data-fragment-index="0" -->  
   - Functional (F\#)
   - Logic (Prolog)
+  - Relational Algebra (SQL)
 * <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in declarative programing</b> the focus is on 
   * expressing commands
   * focus on what should be accomplished
@@ -137,7 +176,7 @@ Minimize 'side-effects'
 - Changing values of variable<br/><!-- .element: class="fragment" data-fragment-index="1" -->
 - I/O<br/><!-- .element: class="fragment" data-fragment-index="2" -->
 - Throwing exceptions<br/><!-- .element: class="fragment" data-fragment-index="3" -->
-- &#9758; We are going to try minimize and control side-effects<!-- .element: class="fragment" data-fragment-index="4" -->  
+- <!-- .element: class="fragment" data-fragment-index="4" --> &#9758; We are going to try minimize and <b>control</b> side-effects<br/>
   - **not** removing them altogheter<!-- .element: class="fragment" data-fragment-index="4" -->  
 
 ----
@@ -157,12 +196,17 @@ Minimize 'side-effects'
 
 ### Advantages
 
-- Makes us better OOP developers<br/><!-- .element: class="fragment" -->
-- Help us develop more modular code<br/><!-- .element: class="fragment" -->
-- Makes writing testable code easy<br/><!-- .element: class="fragment" -->
-- Can help us write 'efficient' code<br/><!-- .element: class="fragment" -->
-- Less code -> fewer bugs<br/><!-- .element: class="fragment" -->
-- Fairly simple and clean syntax<br/><!-- .element: class="fragment" -->
+- Makes us better OOP developers<br/><!-- .element: class="fragment"  data-fragment-index="1" -->
+  - -> give you leverage for your bachelor thesis
+- Help us develop more composable code<br/><!-- .element: class="fragment"  data-fragment-index="2" -->
+- Makes writing testable code easy<br/><!-- .element: class="fragment"  data-fragment-index="3" -->
+- Can help us write 'efficient' code*<br/><!-- .element: class="fragment"  data-fragment-index="4" -->
+- Less code -> fewer bugs<br/><!-- .element: class="fragment"  data-fragment-index="5" -->
+- Fairly simple and clean syntax<br/><!-- .element: class="fragment"  data-fragment-index="6" -->
+
+
+\* Efficiency comes from compiler-correctness, not just raw speed <br/><!-- .element: class="fragment"  data-fragment-index="4" -->
+
 
 
 ----
@@ -174,6 +218,10 @@ Minimize 'side-effects'
 
 ![Learning curve FP vs OOP](./img/programming_languages_curve.png "Learning curve") <!-- .element: style="width: 500px" -->
 
+
+note:
+
+not 3 weeks but 3 months.
 
 ---
 
@@ -223,14 +271,15 @@ Creating a project*
 
 ### File order matters
 
-- <!-- .element: class="fragment" -->Create F# file <code>Library2.fs</code>
+- <!-- .element: class="fragment" data-fragment-index="1" -->Create F# file <code>Library2.fs</code>
 ```fsharp
 // Library2.fs
 module Talk =
     let reply replier = printf "Reply from %s" replier
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
-- <!-- .element: class="fragment" -->Reference <code>Talk.Reply</code> from existing file
+- <!-- .element: class="fragment" data-fragment-index="2" -->Reference <code>Talk.Reply</code> from existing file
 ```fsharp
 // Library.fs
 module Say =
@@ -238,8 +287,9 @@ module Say =
         printfn "Hello %s" name
         Talk.reply "me"
 ```
+<!-- .element: class="fragment" data-fragment-index="2" -->
 
-swtafp/TestProjectCmd/Library/Library.fs(6,9): error FS0039: The value, namespace, type or module 'Talk' is not defined. Maybe you want one of the following:   tan [swtafp/TestProjectCmd/Library/Library.fsproj] <!-- .element: style="color: red; font-size: 18px" class="fragment" -->
+swtafp/TestProjectCmd/Library/Library.fs(6,9): error FS0039: The value, namespace, type or module 'Talk' is not defined. Maybe you want one of the following:   tan [swtafp/TestProjectCmd/Library/Library.fsproj] <!-- .element: style="color: red; font-size: 18px" class="fragment" data-fragment-index="3"  -->
 
 ----
 
@@ -297,7 +347,7 @@ In newer .NET projects, this is more like C#
 
 ### Signature files (.fsi)
 
-- `FileName.fsi`&nbsp;is&nbsp;signature&nbsp;file&nbsp;for&nbsp;`FileName.fs`
+- '`FileName.fsi`'&nbsp;is&nbsp;signature&nbsp;file&nbsp;for&nbsp;'`FileName.fs`'
 - Signature file describes<!-- .element: class="fragment" -->
   - Types
   - Namespaces
@@ -310,41 +360,36 @@ In newer .NET projects, this is more like C#
 
 ```fsharp
 // Module1.fsi
-
 namespace Library1
-  module Module1 =
-    val function1 : int -> int
-    type Type1 =
-        new : unit -> Type1
-        member method1 : unit -> unit
-        member method2 : unit -> unit
+
+  module Module1
+  val add : int -> int -> int
+  val multiply : int -> int -> int
+  val greet : string -> string
 ```
 
 
 ```fsharp
 // Module1.fs
-namespace Library1
+namespace Module1
 
-module Module1 =
-    let function1 x = x + 1
-
-    type Type1() =
-        member type1.method1() =
-            printfn "type1.method1"
-        member type1.method2() =
-            printfn "type1.method2"
+module Program
+  let add x y = x + y
+  let multiply x y = x * y
+  let greet name = sprintf "Hello, %s!" name
 ```
 
 ----
 
 ### Scripting files (<code>.fsx</code>)
 
-* As other scripting langauges (bash, powershell)<br/><!-- .element: class="fragment" -->
-* Is not compiled<br/><!-- .element: class="fragment" -->
-* Execute in terminal:<br/><!-- .element: class="fragment" -->
+* As other scripting langauges (bash, powershell)<br/><!-- .element: class="fragment" data-fragment-index="1"  -->
+* Is not compiled<br/><!-- .element: class="fragment" data-fragment-index="2" -->
+* Execute in terminal:<br/><!-- .element: class="fragment" data-fragment-index="3" -->
 ```bash
 $ dotnet fsi filename.fsx
 ```
+<!-- .element: class="fragment" data-fragment-index="3" -->
 
 ---
 
@@ -442,18 +487,20 @@ String.length "Hello f#"
 
 ### Bindings
 
-- <!-- .element: class="fragment" -->variables
+- <!-- .element: class="fragment" data-fragment-index="2" -->variables
 ```fsharp
 let phi = 3.14159
 // val phi : float = 3.14159
 ```
-- <!-- .element: class="fragment" -->functions 
+<!-- .element: class="fragment" data-fragment-index="2" -->
+- <!-- .element: class="fragment" data-fragment-index="3" -->functions 
 ```fsharp
 let identity a = a
 // val identity: a: 'a -> 'a
 let max x y = if x > y then x else y
 // val max : x:'a -> y:'a -> 'a when 'a : comparison
 ```
+<!-- .element: class="fragment" data-fragment-index="3" -->
 
 ----
 
@@ -491,8 +538,8 @@ let maxInt (x: int) y = if x > y then x else y
 
 - <!-- .element: class="fragment" data-fragment-index="1" -->Factorial definition: 
   - `0! = 1`
-  - `n! = n * ((n-1)!)` for `n > 0`
-- <!-- .element: class="fragment" data-fragment-index="2" -->In F\#
+  - `n! = n * ((n-1)!)` - for n > 0
+- <!-- .element: class="fragment" data-fragment-index="2" -->In F#
    - Keyword '`rec`'
    
 ```fsharp
@@ -500,7 +547,7 @@ let rec factorial n =
   if (n = 0) then 1
   else n * factorial (n-1)
 ```
-<!-- .element: class="fragment" data-fragment-index="3" -->
+<!-- .element: class="fragment" data-fragment-index="2" -->
 
 ----
 
@@ -600,18 +647,21 @@ match result with
 
 ### Construction
 
-- <!-- .element: class="fragment" -->Building list can be done staticly with the <code>[]</code> list constructor
+- <!-- .element: class="fragment" data-fragment-index="2" -->Building list can be done staticly with the <code>[]</code> list constructor
 ```fsharp
 let l1 = [1; 2; 3; 4; 5]
 ```
-- <!-- .element: class="fragment" -->or dynamicly with the <code>::</code> (<b>cons</b> operator)
+<!-- .element: class="fragment" data-fragment-index="2" -->
+- <!-- .element: class="fragment" data-fragment-index="3" -->or dynamicly with the <code>::</code> (<b>cons</b> operator)
 ```fsharp
 let l2 = 1::2::3::4::5::[]
 ```
-- <!-- .element: class="fragment" --><code>::</code> is right-assiciative
+<!-- .element: class="fragment" data-fragment-index="3" -->
+- <!-- .element: class="fragment" data-fragment-index="4" --><code>::</code> is right-assiciative
 ```fsharp
 let l3 = 1::(2::(3::(4::(5::[]))))
 ```
+<!-- .element: class="fragment" data-fragment-index="4" -->
 
 ----
 
@@ -654,35 +704,37 @@ We will get back to the List module in next week<!-- .element: class="fragment" 
 ### Functions on list
 
 
-- <!-- .element:  class="fragment" -->Defining a sum function for lists
+- <!-- .element: class="fragment" data-fragment-index="2" -->Defining a sum function for lists
 ```fsharp
 let rec sum l =
     if List.isEmpty l
     then 0
     else List.head l + sum (List.tail l)
 ```
-- or with pattern matching <!-- .element:  class="fragment" -->
+<!-- .element: class="fragment" data-fragment-index="2" -->
+- or with pattern matching <!-- .element: class="fragment" data-fragment-index="3" -->
 ```fsharp
 let rec sum l =
     match l with
     | [] -> 0
     | (x::xs) -> x + sum xs
 ```
-
+<!-- .element: class="fragment" data-fragment-index="3" -->
 
 
 ----
 
 ### Two things about last example
 
-* <!-- .element:  class="fragment" -->Pattern matching
+* <!-- .element: class="fragment" data-fragment-index="2" -->Pattern matching
   * decompose <b>any</b> data structures directly in the match expression
-* <!-- .element: class="fragment" --> '<code>function</code>' vs '<code>match x with</code>'
+* <!-- .element: class="fragment" data-fragment-index="3" -->'<code>function</code>' vs '<code>match x with</code>'
 ```fsharp
 let rec sum = function
   | [] -> 0
   | (x::xs) -> x + sum xs
 ```
+<!-- .element: class="fragment" data-fragment-index="3" -->
 
 ---
 
