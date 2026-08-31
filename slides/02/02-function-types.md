@@ -84,6 +84,28 @@ let multiply a b = a * b
 let multiplyFloat (a: float) (b:float) : float = a * b
 // val multiplyFloat: a: float -> b: float -> float
 ```
+<!-- .element: class="fragment" -->
+
+----
+
+### Generics
+
+```fsharp
+// Generic type parameters 'a and 'b
+let apply f a = f a
+// val apply: f: ('a -> 'b) -> a: 'a -> 'b
+```
+<!-- .element: class="fragment" -->
+
+```fsharp
+// Staticlly resolved type parameter
+let inline multiply a b = a * b
+val inline multiply:
+  a: ^a -> b: ^b -> 'c when (^a or ^b) 
+  : (static member ( * ) : ^a * ^b -> 'c)
+```
+<!-- .element: class="fragment" -->
+
 
 ----
 
@@ -594,7 +616,7 @@ foldBack: ('T -> 'State -> 'State) ->
 
 * Accumulate in the opposite order from `fold`
 * Order of parameters are different
-* FoldBack is always `$ O(n) $`
+* FoldBack is always $ O(n) $
 
 ----
 
@@ -644,33 +666,34 @@ Stopped due to error
 
 ### Monoid rules
 
-* Associative<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
-* Binary operations<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
-* Identity element<!-- .element: class="fragment"  data-fragment-index="3" -->
+* Binary operations<!-- .element: class="fragment" --><br/>
+* Identity element<!-- .element: class="fragment" --><br/>
+* Associative<!-- .element: class="fragment" --><br/>
 
 ----
 
 ### Why Monoids
 
-* Rather simple constructs we see a lot<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
+* Rather simple constructs we see a lot<!-- .element: class="fragment" --><br/>
   * We 'add' data together all the time
-* Make for simpler programs<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* Make for simpler programs<!-- .element: class="fragment" --><br/>
   * if your types behaves like built-in types
 
 ----
 
 ### Strings concatenation
 
-* `("a"+"b")+"c" = "a"+("b"+"c")`<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
-* `""+"a" = "a"+""`<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* Binary operation '+' <!-- .element: class="fragment" --><br/>
+* `""+"a" = "a"+""`<!-- .element: class="fragment"  --><br/>
+* `("a"+"b")+"c" = "a"+("b"+"c")`<!-- .element: class="fragment" --><br/>
 
 ----
 
 ### List
 
 * binary operation?<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
-* associative?<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
 * identity?<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
+* associative?<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
 
 
 ----
