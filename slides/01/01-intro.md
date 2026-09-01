@@ -163,7 +163,7 @@ Applying and composing of functions
   - Functional (F\#)
   - Logic (Prolog)
   - Relational Algebra (SQL)
-* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in declarative programing</b> the focus is on 
+* <!-- .element: class="fragment" data-fragment-index="1" -->  <b>in declarative programming</b> the focus is on 
   * expressing commands
   * focus on what should be accomplished
 
@@ -177,7 +177,7 @@ Minimize 'side-effects'
 - I/O<br/><!-- .element: class="fragment" data-fragment-index="2" -->
 - Throwing exceptions<br/><!-- .element: class="fragment" data-fragment-index="3" -->
 - <!-- .element: class="fragment" data-fragment-index="4" --> &#9758; We are going to try minimize and <b>control</b> side-effects<br/>
-  - **not** removing them altogheter<!-- .element: class="fragment" data-fragment-index="4" -->  
+  - **not** removing them altogether<!-- .element: class="fragment" data-fragment-index="4" -->  
 
 ----
 
@@ -383,7 +383,7 @@ module Program
 
 ### Scripting files (<code>.fsx</code>)
 
-* As other scripting langauges (bash, powershell)<br/><!-- .element: class="fragment" data-fragment-index="1"  -->
+* As other scripting languages (bash, powershell)<br/><!-- .element: class="fragment" data-fragment-index="1"  -->
 * Is not compiled<br/><!-- .element: class="fragment" data-fragment-index="2" -->
 * Execute in terminal:<br/><!-- .element: class="fragment" data-fragment-index="3" -->
 ```bash
