@@ -92,7 +92,7 @@
 	"devEngines": {
 		"runtime": {
 			"name": "node",
-			"version": ">=20.19.0",
+			"version": ">=22.12.0",
 			"onFail": "error"
 		}
 	},
@@ -102,7 +102,7 @@
 		"presentation"
 	],
 	"devDependencies": {
-		"esbuild": "^0.28.0",
+		"esbuild": "^0.28.1",
 		"fitty": "^2.4.2",
 		"glob": "^13.0.6",
 		"highlight.js": "^11.11.1",
@@ -110,21 +110,25 @@
 		"marked": "^17.0.5",
 		"marked-smartypants": "^1.1.11",
 		"node-qunit-puppeteer": "^2.2.1",
+		"puppeteer": "^25.8.0",
 		"qunit": "^2.25.0",
 		"sass": "^1.98.0",
 		"typescript": "^6.0.2",
-		"vite": "^8.0.3",
+		"vite": "^8.0.16",
 		"vite-plugin-dts": "^4.5.4"
 	},
 	"overrides": {
 		"@microsoft/api-extractor": {
 			"minimatch": "10.2.4"
+		},
+		"node-qunit-puppeteer": {
+			"puppeteer": "$puppeteer"
 		}
 	},
 	"allowScripts": {
 		"@parcel/watcher@2.5.0": true,
-		"esbuild@0.28.0": true,
+		"esbuild@0.28.2": true,
 		"fsevents@2.3.3": true,
-		"puppeteer@24.38.0": true
+		"puppeteer@25.8.0": true
 	}
 }

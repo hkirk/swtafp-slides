@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import SlideContent from './controllers/slidecontent'
 import SlideNumber from './controllers/slidenumber'
 import JumpToSlide from './controllers/jumptoslide'
@@ -22,57 +21,21 @@ import Playback from './components/playback'
 import { defaultConfig } from './config.ts'
 import * as Util from './utils/util'
 import * as Device from './utils/device'
-=======
-import SlideContent from './controllers/slidecontent.js'
-import SlideNumber from './controllers/slidenumber.js'
-import JumpToSlide from './controllers/jumptoslide.js'
-import Backgrounds from './controllers/backgrounds.js'
-import AutoAnimate from './controllers/autoanimate.js'
-import ScrollView from './controllers/scrollview.js'
-import PrintView from './controllers/printview.js'
-import Fragments from './controllers/fragments.js'
-import Overview from './controllers/overview.js'
-import Keyboard from './controllers/keyboard.js'
-import Location from './controllers/location.js'
-import Controls from './controllers/controls.js'
-import Progress from './controllers/progress.js'
-import Pointer from './controllers/pointer.js'
-import Plugins from './controllers/plugins.js'
-import Overlay from './controllers/overlay.js'
-import Touch from './controllers/touch.js'
-import Focus from './controllers/focus.js'
-import Notes from './controllers/notes.js'
-import Playback from './components/playback.js'
-import defaultConfig from './config.js'
-import * as Util from './utils/util.js'
-import * as Device from './utils/device.js'
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 import {
 	SLIDES_SELECTOR,
 	HORIZONTAL_SLIDES_SELECTOR,
 	VERTICAL_SLIDES_SELECTOR,
 	POST_MESSAGE_METHOD_BLACKLIST
-<<<<<<< HEAD
 } from './utils/constants'
 import { version as VERSION } from '../package.json';
 export { VERSION };
-=======
-} from './utils/constants.js'
-
-// The reveal.js version
-export const VERSION = '5.2.1';
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 /**
  * reveal.js
  * https://revealjs.com
  * MIT licensed
  *
-<<<<<<< HEAD
  * Copyright (C) 2011-2026 Hakim El Hattab, https://hakim.se
-=======
- * Copyright (C) 2011-2022 Hakim El Hattab, https://hakim.se
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
  */
 export default function( revealElement, options ) {
 
@@ -729,6 +692,7 @@ export default function( revealElement, options ) {
 			slide.style.removeProperty( 'top' );
 			slide.removeAttribute( 'hidden' );
 			slide.removeAttribute( 'aria-hidden' );
+			slide.removeAttribute( 'inert' );
 		} );
 
 	}
@@ -905,7 +869,7 @@ export default function( revealElement, options ) {
 				for( let i = 0, len = visibleSlides.length; i < len; i++ ) {
 					const slide = visibleSlides[ i ];
 
-					if( ( config.center || slide.classList.contains( 'center' ) ) ) {
+					if( config.center || slide.classList.contains( 'center' ) ) {
 						// Vertical stacks are not centred since their section
 						// children will be
 						if( slide.classList.contains( 'stack' ) ) {
@@ -1446,10 +1410,7 @@ export default function( revealElement, options ) {
 		}
 
 		if( slideChanged ) {
-<<<<<<< HEAD
 			slideContent.afterSlideChanged();
-=======
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 			dispatchSlideChanged( origin );
 		}
 
@@ -1543,11 +1504,8 @@ export default function( revealElement, options ) {
 
 		// Start or stop embedded content like videos and iframes
 		if( slideChanged ) {
-<<<<<<< HEAD
 			slideContent.afterSlideChanged();
 
-=======
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 			if( previousSlide ) {
 				slideContent.stopEmbeddedContent( previousSlide );
 				slideContent.stopEmbeddedContent( previousSlide.slideBackgroundElement );
@@ -1594,7 +1552,6 @@ export default function( revealElement, options ) {
 		if( config.sortFragmentsOnSync === true ) {
 			fragments.sortAll();
 		}
-<<<<<<< HEAD
 
 		// Re-apply slide state classes for the current indices.
 		// This ensures dynamically inserted/removed slides receive
@@ -1603,8 +1560,6 @@ export default function( revealElement, options ) {
 			indexh = updateSlides( HORIZONTAL_SLIDES_SELECTOR, indexh );
 			indexv = updateSlides( VERTICAL_SLIDES_SELECTOR, indexv );
 		}
-=======
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 		controls.update();
 		progress.update();
@@ -1957,6 +1912,14 @@ export default function( revealElement, options ) {
 			}
 
 		}
+
+		// Prevent offscreen slides from receiving keyboard focus. Unlike the
+		// hidden attribute, inert is not overridden when nearby slides are made
+		// display: block for transitions.
+		const allowAllSlides = overview.isActive() || scrollView.isActive() || printView.isActive();
+		Util.queryAll( dom.wrapper, SLIDES_SELECTOR ).forEach( slide => {
+			slide.toggleAttribute( 'inert', !allowAllSlides && slide !== currentSlide && !slide.contains( currentSlide ) );
+		} );
 
 	}
 
@@ -2944,12 +2907,9 @@ export default function( revealElement, options ) {
 
 		getComputedSlideSize,
 		setCurrentScrollPage,
-<<<<<<< HEAD
 
 		// Allows for manually removing slides prior to reveal.js initialization
 		removeHiddenSlides,
-=======
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 		// Returns the current scale of the presentation content
 		getScale: () => scale,

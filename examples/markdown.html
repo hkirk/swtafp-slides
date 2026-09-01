@@ -35,7 +35,6 @@
 					</script>
 				</section>
 
-<<<<<<< HEAD
 				<!-- Slides are separated by regexp matching newline + three dashes + newline, vertical slides identical but two dashes -->
 				<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
 					<script type="text/template">
@@ -43,27 +42,6 @@
 						Slide 1.1
 
 						--
-=======
-                <!-- Slides are separated by three dashes (the default) -->
-                <section data-markdown>
-                    <script type="text/template">
-                        ## Demo 1
-                        Slide 1
-                        ---
-                        ## Demo 1
-                        Slide 2
-                        ---
-                        ## Demo 1
-                        Slide 3
-                    </script>
-                </section>
-
-                <!-- Slides are separated by regexp matching newline + three dashes + newline, vertical slides identical but two dashes -->
-                <section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
-                    <script type="text/template">
-                        ## Demo 2
-                        Slide 1.1
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 						## Demo 2
 						Slide 1.2
@@ -80,14 +58,7 @@
 					<script type="text/template">
 						A
 
-<<<<<<< HEAD
 						---
-=======
-                <!-- No "extra" slides, since the separator can't be matched ("---" will become horizontal rulers) -->
-                <section data-markdown data-separator="$x">
-                    <script type="text/template">
-                        A
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 						B
 
@@ -133,7 +104,6 @@
 					<script type="text/template">
 						## echo.c
 
-<<<<<<< HEAD
 						```c [287: 2|4,6]
 						/* All of the options in this arg are valid, so handle them. */
 						p = arg + 1;
@@ -186,52 +156,6 @@
 		<script src="../dist/plugin/highlight.js"></script>
 		<script src="../dist/plugin/notes.js"></script>
 		<script src="../dist/plugin/math.js"></script>
-=======
-                <!-- add optional line count offset, in this case 287 -->
-                <section data-markdown>
-                    <script type="text/template">
-                        ## echo.c
-
-                        ```c [287: 2|4,6]
-                        /* All of the options in this arg are valid, so handle them. */
-                        p = arg + 1;
-                        do {
-                            if (*p == 'n')
-                                nflag = 0;
-                            if (*p == 'e')
-                                eflag = '\\';
-                        } while (*++p); 
-                        ```
-                        [source](https://git.busybox.net/busybox/tree/coreutils/echo.c?h=1_36_stable#n287)
-                    </script>
-                </section>
-
-                <!-- Images -->
-                <section data-markdown>
-                    <script type="text/template">
-                        ![Sample image](https://static.slid.es/logo/v2/slides-symbol-512x512.png)
-                    </script>
-                </section>
-
-                <!-- Math -->
-                <section data-markdown>
-					## The Lorenz Equations
-					`\[\begin{aligned}
-					\dot{x} &amp; = \sigma(y-x) \\
-					\dot{y} &amp; = \rho x - y - xz \\
-					\dot{z} &amp; = -\beta z + xy
-					\end{aligned} \]`
-                </section>
-
-            </div>
-		</div>
-
-		<script src="../dist/reveal.js"></script>
-        <script src="../plugin/markdown/markdown.js"></script>
-        <script src="../plugin/highlight/highlight.js"></script>
-        <script src="../plugin/notes/notes.js"></script>
-        <script src="../plugin/math/math.js"></script>
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 
 		<script>
 			Reveal.initialize({
@@ -240,15 +164,11 @@
 				history: true,
 				center: true,
 
-<<<<<<< HEAD
 				markdown: {
 					smartypants: true,
 				},
 
 				plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX],
-=======
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
->>>>>>> baf60f65bd66f82a2551ad4ba8123230ee0fcec9
 			});
 		</script>
 	</body>
