@@ -668,7 +668,8 @@ Stopped due to error
 
 * Binary operations<!-- .element: class="fragment" --><br/>
 * Identity element<!-- .element: class="fragment" --><br/>
-* Associative<!-- .element: class="fragment" --><br/>
+* Associative<!-- .element: class="fragment" --><br/><br/><br/>
+* Works on a type - but its the operation we call monoids<!-- .element: class="fragment" --><br/>
 
 ----
 
@@ -683,7 +684,7 @@ Stopped due to error
 
 ### Strings concatenation
 
-* Binary operation '+' <!-- .element: class="fragment" --><br/>
+* '+' <!-- .element: class="fragment" --><br/>
 * `""+"a" = "a"+""`<!-- .element: class="fragment"  --><br/>
 * `("a"+"b")+"c" = "a"+("b"+"c")`<!-- .element: class="fragment" --><br/>
 
@@ -691,9 +692,9 @@ Stopped due to error
 
 ### List
 
-* binary operation?<!-- .element: class="fragment"  data-fragment-index="1" --><br/>
-* identity?<!-- .element: class="fragment"  data-fragment-index="3" --><br/>
-* associative?<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
+* binary operation?<!-- .element: class="fragment"  --><br/>
+* identity?<!-- .element: class="fragment" --><br/>
+* associative?<!-- .element: class="fragment"  --><br/>
 
 
 ----
