@@ -84,7 +84,7 @@ match 3 with
 
 ## Equality
 
-* Equality is structural and not referenctial be default
+* Equality is structural and not referential be default
 * Equality works with operators `=` and `<>` 
 ```fsharp
 let eq x y = if (x <> y) then "not equal" else "equal"
@@ -269,7 +269,7 @@ let v1 = 3.4<ml/cm>
 
 ### Understand the Domain 
 
-`$$ ax^2 + bx + c = 0$$`
+$$ ax^2 + bx + c = 0$$
 
 ``` fsharp [1|2|4]
 type Equation = float * float * float
@@ -280,7 +280,7 @@ type solve = Equation -> Solution
 
 Solution:
 
-`$$ x = \frac {-b \pm \sqrt {b^2 - 4ac}}{2a}$$`
+$$ x = \frac {-b \pm \sqrt {b^2 - 4ac}}{2a}$$
 
 ----
 
@@ -346,7 +346,7 @@ type Contact = {
 // Email.fsi
 module FSharpTest.Email
 
-type T
+type T = internal EmailAddr of string
 val create : string -> T option
 val value : T -> string
 ```
@@ -702,7 +702,7 @@ let transitionFromNoMessage shouldIdle idle
 
 ### Still not done
 
-* Model the domain directly in codeM<br/><!-- .element: class="fragment" -->
+* Model the domain directly in code<br/><!-- .element: class="fragment" -->
 * Type system is 'easy' to work with<br/><!-- .element: class="fragment" -->
 * Type system helps with refactoring<br/><!-- .element: class="fragment" -->
 * Keeps a TODO list<br/><!-- .element: class="fragment" -->
