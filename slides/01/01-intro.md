@@ -117,8 +117,8 @@ Fitness app (but you can choose your own domain)<!-- .element: class="fragment" 
 | Domain model         | 5      |
 | Business logic + test| 7      |
 | Error handling       | 9      |
-| Frontend             | 12     |
-| Notification         | 15     | 
+| Frontend             | 11     |
+| Notification         | 14 (Friday)     | 
 <!-- .element: class="fragment" .element: style="font-size: 26px" -->
 
 * <!-- .element: class="fragment" -->Feedback given <b>if</b>
