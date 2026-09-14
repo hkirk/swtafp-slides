@@ -16,6 +16,8 @@
 * Examples
 
 
+TODO: Add Algabraric data types (is there but more explicit show how and why)
+
 ---
 
 ### Active patterns
