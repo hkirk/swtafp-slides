@@ -99,7 +99,7 @@ Async.RunSynchronously basicTimer2
 
 note:
 
-Convertion from C# IEvent to F# IObservable (simplified)
+Conversion from C# IEvent to F# IObservable (simplified)
 
 Happens in the compiler
 
@@ -128,7 +128,7 @@ timerEventStream
 ### Akka Streams
 
 * Streaming model built on top of Akkas actors<br/><!-- .element: class="fragment" -->
-* Backpressure is handled explictly by framwork<br/><!-- .element: class="fragment" -->
+* Backpressure is handled explicitly by framework<br/><!-- .element: class="fragment" -->
 * Can be distributed on different nodes<br/><!-- .element: class="fragment" -->
 * Error handling uses Supervision strategy<br/><!-- .element: class="fragment" -->
 
