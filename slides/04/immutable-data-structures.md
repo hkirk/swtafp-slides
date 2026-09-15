@@ -161,7 +161,7 @@ and BST<'a> =
     * E.g. Red-Black tree
 * Insert cost<!-- .element: class="fragment" --><br/>
     * Immutable: $O(log n)$ per insert
-    * Mutable: $ O(1) $ refereces created
+    * Mutable: $ O(1) $ references created
 * Space efficientcy<!-- .element: class="fragment" --><br/>
     * Immutable - history
 
