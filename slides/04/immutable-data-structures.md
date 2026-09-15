@@ -153,6 +153,28 @@ and BST<'a> =
 * Does it effect run-time</br> for 'insert'?<!-- .element: class="fragment"  data-fragment-index="2" --><br/>
 
 
+----
+
+### Performance
+
+* Balancing can be done when going back un in the recursion stack<!-- .element: class="fragment" --><br/>
+    * E.g. Red-Black tree
+* Insert cost<!-- .element: class="fragment" --><br/>
+    * Immutable: $O(log n)$ per insert
+    * Mutable: $ O(1) $ refereces created
+* Space efficientcy<!-- .element: class="fragment" --><br/>
+    * Immutable - history
+
+
+
+note:
+
+Invariants Red-Black tree
+- Root is black
+- 2 consecutive nodes cannot both be red
+- all notes are either red or black
+- equal number of black nodes from root to all children (+/- 1)
+
 
 
 ---
@@ -221,19 +243,19 @@ Set.difference first third
 
 ## Sets in general
 
-* <!-- .element: class="fragment" --> map, filter, `fold`, foldBack are all $ O(n) $<br/>
+* <!-- .element: class="fragment" --> map, filter, fold, foldBack are all $ O(n) $<br/>
 * <!-- .element: class="fragment" --> complexity of recursion is in worst case $ O(n*log(n)) $<br/>
 * <!-- .element: class="fragment" --> Enumerations can be used to simplify and optimize this
 
 ---
 
-## `Map<'a, 'b>`
+## `Map<'Key, 'T>`
 
 * Invariant: Keys are unique<!-- .element: class="fragment" -->
     * Key / value pair
     * Lookup per key
 * Immutable<!-- .element: class="fragment" --><br/>
-* Implemented using 'BBT<'a>'<!-- .element: class="fragment" --><br/>
+* Implemented using 'BBT<'Key>'<!-- .element: class="fragment" --><br/>
 * As Set, Map requires ordering is defined for key type<!-- .element: class="fragment" -->
 
 Note:
