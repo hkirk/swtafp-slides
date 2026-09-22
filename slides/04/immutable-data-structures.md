@@ -13,8 +13,6 @@
 * What, Why<br/><!-- .element: class="fragment" -->
 * How<br/><!-- .element: class="fragment" -->
     * Ex. Binary Search Tree
-* Sets<br/><!-- .element: class="fragment" -->
-    * set operations
 * Maps and Sets<br/><!-- .element: class="fragment" -->
 * Sequence in F#<br/><!-- .element: class="fragment" -->
 
