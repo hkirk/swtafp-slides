@@ -1,6 +1,8 @@
 <!-- .slide: data-background="#003d73" -->
 ## Property based testing
 
+!["Lisp"](./img/lisp_cycles.png "")
+
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
 ----
@@ -14,29 +16,53 @@
 
 ---
 
-## Function properties
+<!-- .slide: data-background-image="./img/properties.jpg" -->
 
-!["Lisp"](./img/lisp_cycles.png "")
+
+## Function properties <!-- .element: style="background-color: #fff" --->
 
 ----
 
 ### Referential transparency 
 
 * You can replace a function call with the result
-    * Caching<br/><!-- .element: class="fragment"  data-fragment-index="0" -->
-    * Parallelization<br/><!-- .element: class="fragment"-->
-    * Pipelining<!-- .element: class="fragment"  -->
+    * \+ Caching<br/><!-- .element: class="fragment" -->
+    * \+ Parallelization<br/><!-- .element: class="fragment"-->
+    * \+ Pipelining<br/><!-- .element: class="fragment"  -->
+    * Property used by Property based testing<!-- .element: class="fragment"  -->
+
+```fsharp
+let formatMsg msg = 
+   $"{msg} {DateTime.Now.ToString()}" // rt?
+```
+<!-- .element: class="fragment"-->
+```fsharp
+let debugMsg level msg = 
+   $"{level}: {msg}" // rt?
+```
+<!-- .element: class="fragment"-->
+
 
 ----
 
 ### Pure functions
 
 * Functions *rely only on the input* and
-    * Deterministic<br/><!-- .element: class="fragment"-->
-    * Has no side-effect<br/><!-- .element: class="fragment"-->
-    * Works with immutable data structures<br/><!-- .element: class="fragment"-->
-    * Simplify reasoning<br/><!-- .element: class="fragment"-->
-    * Encourage modularity and compositional<br/><!-- .element: class="fragment"-->
+    * are deterministic<br/><!-- .element: class="fragment"-->
+    * has no side-effect<br/><!-- .element: class="fragment"-->
+    * \+ Simplify reasoning<br/><!-- .element: class="fragment"-->
+    * \+ Encourage modularity and compositional<br/><!-- .element: class="fragment"-->
+
+```fsharp
+let outputMsg msg = 
+   printf $"{msg}" // pure?
+```
+<!-- .element: class="fragment"-->
+
+```fsharp
+let add a b = a + b // pure?
+```
+<!-- .element: class="fragment"-->
 
 ----
 
@@ -109,18 +135,25 @@ Is this enough?<!-- .element: class="fragment" -->
 
 ----
 
-### Lazy programmer
+### AI
+
+```nohighlight
+Ah, I understand! You want a minimal function that 
+handles only these test cases
+```
 
 ```fsharp
-let fizzbuzz x =
-      match x with
-      | 3 -> "Fizz"
-      | 5 -> "Buzz"
-      | 7 -> "7"
-      | 9 -> "Fizz"
-      | 15 -> "FizzBuzz"
-      | 25 -> "Buzz"
-      | _ -> failWith "Not defined"
+module FizzBuzz
+
+let fizzBuzz n =
+    match n with
+    | 3 -> "Fizz"
+    | 5 -> "Buzz"
+    | 7 -> "7"
+    | 9 -> "Fizz"
+    | 15 -> "FizzBuzz"
+    | 25 -> "Buzz"
+    | _ -> failwith "Input not in test cases"
 ```
 
 So then what?<!-- .element: class="fragment" -->
@@ -129,6 +162,10 @@ So then what?<!-- .element: class="fragment" -->
 
 ### Creating a better tests
 
+Better test == more examples ???<br/><br/><!-- .element: class="fragment" data-fragment-index="0" -->
+
+
+or <!-- .element: class="fragment" data-fragment-index="1" -->
 ```fsharp
 let expectedList =
       randomList |> List.map (fun i ->
@@ -138,8 +175,9 @@ let expectedList =
       | n when i % 5 = 0 -> "Buzz"
       | _ -> string i)
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
-* implementing the algorithm in the test code<!-- .element: class="fragment"-->
+* implementing the algorithm in the test code<!-- .element: class="fragment" data-fragment-index="2" -->
     * so not really an option:(
 
 ----
@@ -204,7 +242,7 @@ Ok, passed 100 tests.
 
 ----
 
-### For floats
+### When it fails
 
 Did you ever test with floats?
 
@@ -246,11 +284,19 @@ Generic types not implemented due to the many constraints that can exists for th
 form: `<condition> ==> <property>`
 
 ```fsharp
+open FsCheck.FSharp
+
 let insertKeepsOrder (x:int) xs = 
     ordered xs ==> ordered (insert x xs)
 ```
 
-Can give fewer tests - if many inputs are moved. Custom generators could be an altertive<!-- .element: class="fragment" -->
+Can give fewer tests - if many inputs are moved. Custom generators could be an alternative<!-- .element: class="fragment" -->
+
+```fsharp
+[<Property(MaxTest = 10, MaxRejected = 10000)>]
+let insertKeepsOrder (x:int) (xs: int list) =  ordered xs ==> ordered ( insert x xs)
+```
+<!-- .element: class="fragment" -->
 
 ----
 
@@ -293,15 +339,12 @@ More to be found here: [Properties](https://fscheck.github.io/FsCheck//Propertie
 * Can replay failed tests<br/><!-- .element: class="fragment" -->
 
 ```fsharp
-Check.One(
-    {
-        Config.Quick with Replay =
-            Some <| Random.StdGen (1145655947,296144285)
-    },
-    fun x -> abs x >= 0
-)
+[<Property(Replay = "(7181243294727491431,16326100522474647967)")>]
+let ``Reverse of reverse of a list is the original list for float replay``(xs:list<float>) =
+  List.rev(List.rev xs) = xs
 ```
 <!-- .element: class="fragment" -->
+
 
 ---
 
@@ -309,14 +352,14 @@ Check.One(
 
 ```fsharp
 [<Property>]
-    let ``test multiply of three`` () =
-        let gen = ArbMap.defaults
-                    |> ArbMap.generate<int32>
-                    |> Gen.filter (fun i -> i % 3 = 0 && not (i % 5 = 0))
-                    |> Arb.fromGen
-        Prop.forAll gen (fun x ->
-            FizzBuzz.fizzBuzz x = "Fizz"
-            )
+let ``test multiply of three`` () =
+    let gen = ArbMap.defaults
+                |> ArbMap.generate<int32>
+                |> Gen.filter (fun i -> i % 3 = 0 && not (i % 5 = 0))
+                |> Arb.fromGen
+    Prop.forAll gen (fun x ->
+        FizzBuzz.fizzBuzz x = "Fizz"
+    )
 ```
 
 ----
@@ -343,7 +386,7 @@ let ```test multiply of three``` (x: MultiplyOfOnly3) =
 
 ### `Gen<'a>`, `Arbitrary<'a>`
 
-* <!-- .element: class="fragment"--><code>Gen<'a></code> - represent a Random 'a Generator<br/>
+* <!-- .element: class="fragment"--><code>Gen<'a></code> - represent a Random 'a generator<br/>
     * Gen.choose, Gen.constant, Gen.oneof
 * <!-- .element: class="fragment"--><code>Arbitrary<'a><code> - Wrapper around <code>Gen<'a></code><br/>
     * provides additional metadata like Shrinking for `'a`'s
