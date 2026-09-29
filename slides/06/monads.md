@@ -553,6 +553,18 @@ List.map string [1;2;3;4] = apply [string] [1;2;3;4]
 `[add1] <*> [1] = [fun a -> a 1] <*> [add1]`
 // We can change the parameters and apply - this forces us to create a function (lambda) expression which takes a functions and apply - for the types to be correct.
 
+----
+
+### Applicative interchange example
+
+``fsharp
+let add1 x = x + 1
+
+let a = Some add1 <*> Some 1
+let b = Some (fun a -> a 1) <*> Some add1
+
+a = b
+```
 
 ----
 
