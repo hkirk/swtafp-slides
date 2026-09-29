@@ -13,7 +13,7 @@
 * Computation Expressions<br/><!-- .element: class="fragment" -->
     * task / async
 * Applicatives<br/><!-- .element: class="fragment" -->
-* Extending CE<br/><!-- .element: class="fragment" -->
+    * Extending CE
 
 ---
 
@@ -250,11 +250,31 @@ Free monads uses an AST to represent a computation and at the same time keep the
 
 ---
 
+## Computation expression
+
+* F# syntax for computations that can be sequenced and combined<br/><!-- .element: class="fragment" -->
+* Can express<!-- .element: class="fragment" -->
+    * monoids, monads, monad transformers, applicative functors
+* Can single threaded or can include<!-- .element: class="fragment" -->
+    * non-determinism, async, effectfull and/or generative computations
+
+```fsharp
+async {
+    let! data = downloadData url
+    let processedData = processData data
+    return processedData
+}
+```
+<!-- .element: class="fragment" -->
+
+
+---
+
 ### Computation expressions
 
 * Existing computation expressions
-    * `async {}`
-    * `task {}`
+    * `async {}`, `task {}`
+    * `seq {}`, `query {}`
     * `actor {}`
     * `...`
 * Creating your own computation expression is possible
@@ -267,7 +287,7 @@ builder-expr { cexper }
 
 ### Why creating a `Option` CE
 
-This could be a bit more readable
+This still look complicated
 
 ```fsharp [4-6|7]
 let monadicAdd (a: int option)
@@ -291,9 +311,9 @@ type OptionBuilder() =
 // Statically somewhere
 let option = OptionBuilder()
 
-let create () =
+let create a : 'a option =
     option { // Using the Option CE
-        return 2
+        return a
     }
 ```
 
@@ -363,7 +383,7 @@ let option = OptionBuilder()
 
 ----
 
-### Our problem solved using CE
+### Our snippet solved using CE
 
 ```fsharp
 let addThreeOptions (a: int option)
@@ -434,7 +454,7 @@ Async computation is first started when `Async.RunSynchronously` is executed
 
 
 ```fsharp
-// Defined by these to functions
+// Defined by these two functions
 val pure: 'a -> F<'a>
 // Operator: (<*>), also called lift
 val apply: F<('a -> 'b)> -> F<'a> -> F<'b>
@@ -480,13 +500,12 @@ val collect: (mapping: 'T -> 'U list) -> (list: 'T list)
 
 #### Examples
 
-```fsharp [1-6|11|9-12|14-17]
+```fsharp [1-5|10|8-11|13-17]
 module List =
     // val apply : fs:('a -> 'b) list -> l:'a list 
     //                  -> 'b list
     let apply fs l = 
-        fs |> List.collect (fun f ->
-                l |> List.map f)
+        fs |> List.collect (fun f -> l |> List.map f)
 let odds = [1;3;5;7;9]
 let evens = [2;4;6;8;0]
 let partialApplied evens odds =
@@ -553,7 +572,7 @@ Every `applicative` is a `functor`, since `map` can be defined by using `pure` a
 //map f x = pure f <*> x
 map f x = apply (pure f) x
 ```
-<!-- .element: class="fragment" data-fragment-index="2" -->
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ![Applicative and functors visualized](https://blog.ploeh.dk/content/binary/functors-applicatives-bifunctors.png "") <!-- .element: style="height:300px" class="fragment" data-fragment-index="1" -->
 
