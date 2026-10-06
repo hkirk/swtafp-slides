@@ -22,14 +22,14 @@
   1. Input validation<br/><!-- .element: class="fragment" -->
   2. Reading data from db/api<br/><!-- .element: class="fragment" -->
   3. Complete functions in business logic<br/><!-- .element: class="fragment" -->
-  4. Updatting data in db<br/><!-- .element: class="fragment" -->
+  4. Updating data in db<br/><!-- .element: class="fragment" -->
   5. Accessing network<br/><!-- .element: class="fragment" -->
   6. Showing results<br/><!-- .element: class="fragment" -->
-* <br/><div><b>Note</b>: here is I\O - we solve that next time</div><!-- .element: class="fragment" -->
+* <br/><div><b>Note</b>: Some contains I\O operations - we solve that next time</div><!-- .element: class="fragment" -->
 
 ----
 
-#### Not thinking about errors
+#### Happy path
 
 ```fsharp
 let useCase (json:string) =
@@ -47,6 +47,8 @@ All functions are on the form
 'input -> 'output
 ```
 <!-- .element: class="fragment" data-fragment-index="1" -->
+and are therefore easily composable<!-- .element: class="fragment" data-fragment-index="1" -->
+
 
 Note:
 
@@ -69,18 +71,18 @@ module api =
 
 ----
 
-#### More F#'ish
+#### Composed
 
 ```fsharp
 let useCase =
-  validatePerson 
+  validatePerson
   >> db.readSSN
   >> api.findMunicipality
   >> createNewPerson 
   >> db.updateMunicipality
 ```
 
-<div><b>Note</b> could have used a pipeline</div><!-- .element: class="fragment">
+<div><b>Note:</b> could have used a pipeline</div>
 
 
 ----
@@ -92,23 +94,27 @@ let useCase =
 
 #### But what about the actual errors
 
-![Error paths](./img/error-path.png)
+![Multiple error sources create branching paths that multiply combinatorially](./img/error-path.png)
 
 ----
 
-#### two problems
+#### Two problems
 
-* Functions fail in different ways<!-- .element: class="fragment" data-fragment-index="0" -->
+* 1\) Functions fail in different ways<!-- .element: class="fragment" data-fragment-index="0" -->
   * IOError, DBError,  ValidationError, VerificationError, AuthenticationError, ...<br/><br/>
-* How to compose code that fails with functional functions?
+* 2\) How to compose code that fails with functional functions?
 <!-- .element: class="fragment" data-fragment-index="1" -->
 
 ```fsharp
-type PersonOrError = Person of p | ValidationError of string
+type PersonOrError = Person of Person | ValidationError of string
 // E.g
 let validatePerson (json: string): PersonOrError =
 ```
 <!-- .element: class="fragment" data-fragment-index="2" -->
+
+note:
+
+Need to express for our functions to be total
 
 ----
 
@@ -122,52 +128,63 @@ Compose functions into a single use-case function like:
 
 #### Changing our code to handle errors
 
-```fsharp [|2,4,6,8-9|3,5,7,10-13]
-let useCase (json:string) =
+```fsharp [|2,6,10,14,15|3-4,7-8,11-12]
+let useCase (json:string) : string =
   let person = validatePerson json
-  if person != null then
+  if person |> isNull then
+    "Validation error"
+  else
     let ssn = db.readSSN person
-    if (ssn != null) then
+    if ssn |> isNull then
+      "Person not found"
+    else
       let bornIn = api.findMunicipality ssn
-      if string.IsNullOrEmpty bornIn then
+      if string.IsNullOrEmpty(bornIn) then
+        "Municipality not found"
+      else
         let newData = createNewPerson bornIn
         db.updateMunicipality newData
-      else "Municipality not found"
-    else "Person not found"
-  else
-    "Validation error"
 ```
 
+* Could have used match<!-- .element: class="fragment" -->
+  * could have used Result/Option
+  * = same problem
 
+note:
 
-----
-
-#### Syntactic sugar 
-
-```fsharp [14-19|1-12 ]
-let dostuffwithPerson person =
+```fsharp
+let doStuffWithPerson person : string =
   let ssnOpt = db.readSSN person
   match ssnOpt with
   | Some ssn ->
-    let bornIn = api.findMunicipality ssn
-    match bordnInOpt with
+    let bornInOpt = api.findMunicipality ssn
+    match bornInOpt with
     | Some bornIn ->
-      let newData = createNewPerson person bornIn
-      let result = db.updateMunicipality newData
-      "Success"
+      let newData = createNewPerson bornIn
+      db.updateMunicipality newData
     | None -> "Municipality not found"
   | None -> "Person not found"
 
-let useCase json: ReturnType =
+let useCase json : ReturnType =
   let person = validatePerson json
   match person with
-  | Person p -> doStuffWithPerson person
+  | Person p -> doStuffWithPerson p
   | ValidationError s -> s
-
-
 ```
 
-Note: Could have chosen to return `Result` from our functions instead of Options - same problem
+----
+
+<!-- .slide: style="font-size: 34px" -->
+
+## Error taxonomy
+
+| Error category | Typical cause    | Should propagate?       |
+|----------------|------------------|-------------------------|
+| Validation     | Bad user input   | Yes, inform user        |
+| Business rule  | Domain violation | Yes, reject transaction |
+| Infrastructure | DB/API/network   | Retry or fail loudly    |
+| Exceptional    | Out of memory    | Crash (let it crash)    |
+
 
 ----
 
@@ -178,10 +195,12 @@ Creating a single type for a use-case
 ```fsharp
 type ReturnType =
   | Success
-  | DBError
-  | IOError
+  | DBConnectionFailed
+  | RecordNotFound
+  | NetworkTimeout
+  | ValidationError
   | VerificationError
-  /// ...
+  | ...  // 47 more variants over 3 years
 ```
 
 Drawbacks:
@@ -189,6 +208,7 @@ Drawbacks:
 * will consist of 'all' error types in our application<br/><!-- .element: class="fragment" -->
 * <!-- .element: class="fragment" -->hard to navigate in
 
+// TODO: Testability slide
 
 ---
 
@@ -203,7 +223,9 @@ type Result<'T,'TError> =
   | Error of ErrorValue:'TError
 ```
 
-* Both are monads<!-- .element: class="fragment" -->
+* Both are monads<br/><!-- .element: class="fragment" -->
+* <!-- .element: class="fragment" -->Both can help us make Partial functions <b>Total</b><br/>
+* <!-- .element: class="fragment" --><code>Option<'T></code> is <code>Result<'T, unit></code>
 
 Note:
 
@@ -211,23 +233,64 @@ In many other languages Result is called an `Either`
 
 ----
 
+### Result module
+
+| Hand-rolled     | F# Result Module      |
+|-----------------|-------------------------|
+| bind            | Result.bind           |
+| func -> Ok (f x)| Result.map            |
+| convert errors  | Result.mapError       |
+| check success   | Result.isOk / isError |
+| extract value   | pattern match         |
+
+----
+
 #### Extending this to our general case
 
 ```fsharp [1-6|8-13]
+// Split errors and success
 type Success = Success
 type Errors =
-  | DBError
-  | IOError
-  | VerificationError
+  | DBConnectionFailed
+  | RecordNotFound
+  | NetworkTimeout
+  | ValidationError
   /// ...
 
 // single error
-let ourUseCase input: Result<Success, Errors> =
+let ourUseCase input: Result<'T, 'E> =
     failwith ""
 // multiple errors
-let ourUseCase2 input: Result<Success, Errors list> =
+let ourUseCase2 input: Result<'T, 'E list> =
     failwith ""
 ```
+
+----
+
+<!-- .slide: style="font-size: 28px" data-visibility="hidden" -->
+
+## Error Handling: Composable vs. Hidden
+
+|                          | **Pure / Composable**                  | **Hidden Failure**                    |
+|--------------------------|--------------------------------------|------------------------------------|
+| **Validation**           | `Option<'T>`, `Result<T,E>`            | Returning `null`                   |
+| **I/O & APIs**           | `Result<T, IOError>`, `async<Result>`  | Exceptions thrown silently         |
+| **Authentication**       | `Result<User, AuthError>`              | Global auth state / exceptions     |
+| **Database**             | `Option<Person>`, `Result<T, DBError>` | SQL exceptions, null records       |
+
+----
+
+<!-- .slide: style="font-size: 28px" -->
+
+### Key distinction
+
+
+|                        | Pure functions                          | Hidden failure                     |
+|------------------------|--------------------------------------|----------------------------------|
+| **Failure visible in type?** | Yes (`Result<T,E>`)               | No (runtime surprises)         |
+| **Composable?**            | Yes (via `bind`, `>>=`)           |  No (requires nested `if`s)     |
+| **Compiler enforces handling?** | Yes (exhaustive `match`)        |  No                            |
+| **Testability**            | Easy (pure inputs -> outputs)      | Hard (need integration tests)  |
 
 ----
 
@@ -239,7 +302,7 @@ let ourUseCase2 input: Result<Success, Errors list> =
 
 ----
 
-# Monads - repcap
+# Monads - recap
 
 * Consists of:  
   * <!-- .element: class="fragment" --><code>return</code> - wraps a data type in monadic type<br/>
@@ -281,9 +344,9 @@ match a with
 | Error error -> throw error
 
 if Result.IsOk a then
-  Result.getOk a
+  Ok a
 else 
-  Result.getError a
+  Error a
 ```
 
 
@@ -292,23 +355,22 @@ else
 ### Example with `Result`
 
 ```fsharp [3-6|8]
-type person = {email: string; name: string}
-let validatePerson (input: string*string) =
-  if invalidEmail (fst input) then
+let validatePerson (input: string * string) : Result<person, string> =
+  if not validEmail (fst input) then
     Error "Email not valid"
-  elif invalidName (snd input) then
+  elif not validName (snd input) then
     Error "Name not valid"
   else
-    Ok {email = fst input; name = snd input }
+    Ok {email = fst input; name = snd input}
 ```
 
 note:
 
 ```fsharp
-let invalidEmail (str: string) =
-  not (str.Contains("@"))
-let invalidName (str: string) =
-  not (str.Contains(" "))
+let validEmail (str: string) =
+  str.Contains("@")
+let validName (str: string) =
+  str.Contains(" ")
 ```
 
 ---
@@ -322,9 +384,9 @@ let invalidName (str: string) =
 #### 
 
 ```fsharp [2,10]
-type person = {email: string; name: string}
+type Person = {email: string; name: string}
 let validatePerson input: Result<Person, string> =
-  if validEmail (fst input) then
+  if not validEmail (fst input) then
     Error "Email not valid"
   elif validName (snd input) then
     Error "Name not valid"
@@ -341,11 +403,12 @@ So how to compose these functions?
 
 #### Input -> Output
 
-* We have a bunch a functions on the form<!-- .element: class="fragment" -->
+* We have a bunch of functions on the form<!-- .element: class="fragment" -->
   * `'T -> Monad<'U>`
 * Could be one of these<!-- .element: class="fragment" -->
   * `Option<'T>`
   * `Result<'T, 'TError>`
+  * or any other
 
 ----
 
@@ -354,7 +417,7 @@ So how to compose these functions?
 * <!-- .element: class="fragment" -->To compose two functions like
   * `'A -> Result<'B, 'E>`
   * `'B -> Result<'C, 'E>`
-* <!-- .element: class="fragment" -->Monadic bind is exactly an adapter
+* <!-- .element: class="fragment" -->Monadic bind is the exact adapter needed
 
 ```fsharp
 let bind func = // being explicit about currying
@@ -370,7 +433,7 @@ let convertedValidatePerson = bind validatePerson
 
 Note:
 
-This takes a function as input, a function that with a single input and retuning a Result (`'A -> Result<'B, 'E>`)
+This takes a function as input, a function that with a single input and returning a Result (`'A -> Result<'B, 'E>`)
 
 And a value of the type `'Result<'A, 'E>`
 
@@ -378,9 +441,7 @@ Then it either return
 * If input is an error, just output the error.
 * If there is a value, then apply the given function
 
-----
-
-#### Altertive implementation
+**Alternative implementation**
 
 ```fsharp
 let bind2 func input =
@@ -401,44 +462,26 @@ let bind3 func = function
 #### Now we can compose
 
 ```fsharp
-let validated2 input = ...
-// val validated2: 'B -> Result<'C, 'Error>
+let useCase' : Result<_, _> =
+  let dbReadSSN' = bind db.readSSN
+  // val dbReadSSN': Result<Validated, 'Error> -> Result<SSN, 'Error>
+  let apiFindMunicipality' = bind api.findMunicipality
+  ...
 
-let combinedValidation =
-  let validated2' = bind validated2
-  // val validated2': Result<B, 'Error> -> Result<'C, 'Error>
-  let validated3' = bind validated3
-
-  validated1 >> validated2' >> validated3'
+  validatePerson 
+  >> dbReadSSN'
+  >> apiFindMunicipality'
+  >> ...
 ```
 
 Note:
 
 ```fsharp
-  let bind func =
-    fun input ->
-      match input with
-      | Ok value -> func value
-      | Error e  -> Error e
-
-  let validated1 str =
-    if (str = "ok") then
-      Ok str
-    else
-      Error "Error 1"
-    
-  let validated2 (str:string) =
-    if (str.ToUpper() = "OK") then
-      Ok (str.ToUpper())
-    else
-      Error "Error 2"
-
-  let validated3 (str: string) =
-    if (str.Contains("O")) then
-      Ok "Contains 'o'"
-    else
-      Error "Error 3"
-  // I know this does not make so much sense.
+  validatePerson 
+  >> db.readSSN
+  >> api.findMunicipality
+  >> createNewPerson 
+  >> db.updateMunicipality
 ```
 
 ----
@@ -452,16 +495,24 @@ let (>>=) twoTrackInput switchFunction =
 //    switchFunction: ('a -> Result<'c,'b>) -> Result<'c,'b>
 let validate x =
   x
-  |>  validated1
-  >>= validated2
-  >>= validated3
+  |>  apiFindMunicipality
+  >>= db.readSSN
+  >>= api.findMunicipality
 ```
 
 Data vs function oriented method - but same result.
 
+
+note:
+
+https://fsprojects.github.io/FSharpPlus/abstraction-monad.html
+
+
 ----
 
-### `SwitchComposition`
+### `SwitchComposition` 
+
+Actually a 'Kleisli composition
 
 ```fsharp
 // Implemented with binds in slide notes
@@ -472,10 +523,14 @@ let (>=>) aFun bFun x =
 
 // Usage
 let combinedValidation =
-  validated1
-  >=> validated2 // 'Just' hide bind
-  >=> validated3
+  apiFindMunicipality
+  >=> db.readSSN // 'Just' hide bind
+  >=> api.findMunicipality
+  ...
 ```
+
+Also from Category Theory - so a universal abstraction <!-- .element: class="fragment" -->
+
 
 Note:
 
@@ -495,6 +550,40 @@ let (>=>) aFun bFun =
 * <div class="fragment" data-fragment-index="2"><b>SwitchComposition</b> - Converts two 'switch functions' into a single new 'switch function'<br/>
   Chaining a number of functions together
 
+----
+
+## With CE
+
+```fsharp
+type ResultBuilder() =
+  member _.Bind(m, f) = Result.bind f m
+  member _.Return(x) = Ok x
+
+let result = ResultBuilder()
+
+result {
+  let! person = validatePerson json
+  let! ssn = db.readSSN person
+  let! bornIn = api.findMunicipality ssn
+  return createNewPerson bornIn // Result<Person, string>
+}
+```
+
+----
+
+<!-- .slide: style="font-size:32px" -->
+
+### Computation Expression vs. Bind
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| `bind` / `>>=` | Explicit, functional | Verbose for long chains |
+| `>=>` (Kleisli) | Clean composition | Less familiar to most |
+| Computation Expr. | Readable, idiomatic | Requires boilerplate builder |
+
+**Recommendation:** Use CEs in production, bind/Kleisli for learning
+
+
 ---
 
 #### Composing with simple functions 
@@ -513,12 +602,14 @@ let switch f input =
 #### Functions with side effects
 
 * E.g. save output, logging
+* Use sparingly we don't like sideeffects
+  * especially mixed in with our FP code
 
 ```fsharp [2-5|1,11]
 let log msg: unit = printfn "-- %O" msg
 
 let tee fn x =
-  fn x
+  let _ = fn x
   x
 
 let combinedValidation =
@@ -534,9 +625,14 @@ let combinedValidation =
 ### Exceptions
 
 * Integrating with code that throws exceptions
+* This is a boundary function
+  * Converts boundary 
 
-```fsharp[3-7|1,13]
-let doStuff input = invalidArg "input" "always wrong"
+```fsharp[6-10|1,16]
+let doStuff input = 
+  if isWrong input then
+    invalidArg "input" "always wrong"
+  else input
 
 let tryCatch fn input =
   try
@@ -563,6 +659,48 @@ let doStuff (input: string) =
 
 ----
 
+### Transforming stages (functors)
+
+- Result.map <!-- .element class="fragment" data-fragment-index="1" -->
+```fsharp
+let useCase =
+  validatePerson
+  >=> db.readSSN
+  >> Result.map normalizeSSN
+  ...
+```
+<!-- .element class="fragment" data-fragment-index="1" -->
+- Result.mapError<!-- .element class="fragment" data-fragment-index="2"-->
+```fsharp
+type DbError = ConnectionFailed | NotFound
+let useCase : Result<Person, DbError> = ...
+let toHttpResponse =
+  Result.mapError (function
+    | ConnectionFailed -> "Service unavailable, try again"  // 503
+    | NotFound         -> "Person not found"               // 404
+  )
+```
+<!-- .element class="fragment" data-fragment-index="2"-->
+
+note:
+
+- map: transform success values
+- mapError: Infrastructure errors to domain errors
+
+
+---
+
+### Beyond just monads
+
+- So far:<!-- .element class="fragment" data-fragment-index="1" -->
+  - Monads - sequential, short-circuit on first error
+- Next:<!-- .element class="fragment" data-fragment-index="2" -->
+  - What if we want **all** errors? (form validation)
+  - Solution: Applicative pattern
+
+
+----
+
 ### Parallel validation
 
 Think monoids :) combining pairwise
@@ -576,6 +714,72 @@ let plus combineOks combineErrors switch1 switch2 x =
     | Error f1, Error f2 -> Error (combineErrors f1 f2)
 ```
 
+----
+
+### Example
+
+```fsharp[1-6|7|9-15|17-21] 
+let validateEmail (email: string) =
+  if email.Contains("@") then Ok email else Error "Missing @"
+
+let validateName (name: string) =
+  if name.Length > 0 then Ok name else Error "Empty name"
+
+let combine email name = { Email = email; Name = name }
+
+// Sequential (monad) - stops at first error
+let sequentialCE =
+  result {
+    let! e = validateEmail email
+    let! n = validateName name
+    return combine e n
+  }
+
+// Parallel (applicative) - collects all errors  
+let parallel =
+  plus combine (fun e1 e2 -> sprintf "%s; %s" e1 e2)
+    validateEmail email
+    validateName name  // All errors collected
+```
+
+
+----
+
+### Monads and Applicatives 
+
+* Monads short circuit<!-- .element class="fragment" -->
+  * first error and we 'stop'
+  * sequential
+* Applicative accumulates<!-- .element class="fragment" -->
+  * all errors
+  * parallel
+
+
+----
+
+## Treat all errors equal??
+
+* Want all errors reported (Validation)<!-- .element class="fragment" -->
+  * -> Applicative
+* Does the error mean abort (Business rule)<!-- .element class="fragment" -->
+  * -> Monad
+* Error at system boundary (Boundary)<!-- .element class="fragment" -->
+  * -> convert exception to Monad
+  * or retry
+* Should we crash (Exceptional)<!-- .element class="fragment" -->
+  * keep using exception
+
+
+----
+
+### Returning
+
+* At the program 'edge'
+```fsharp
+match result with
+| Ok value -> // extract and use
+| Error err -> // handle
+```
 
 ---
 
