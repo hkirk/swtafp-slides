@@ -311,7 +311,7 @@ note:
 
 ### Onion architecture
 
-![Onion Architeture](./img/onion-architecture.png) <!-- .element style="height: 260px" -->
+![Onion Architecture](./img/onion-architecture.png) <!-- .element style="height: 260px" -->
 
 * Onion architecture was inspired by Hexagonal architecture<br/><!-- .element: class="fragment" -->
 * Layered architecture<!-- .element: class="fragment" --> 
