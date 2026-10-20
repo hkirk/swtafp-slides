@@ -11,6 +11,7 @@
 
 * Problem<br/><!-- .element: class="fragment" -->
 * Ports & Adapters<br/><!-- .element: class="fragment" -->
+* Functional core / Imperative Shell<br/><!-- .element: class="fragment" -->
 * Generalization<br/><!-- .element: class="fragment" -->
 * Other<br/><!-- .element: class="fragment" -->
 
@@ -307,7 +308,7 @@ note:
 
 `register` is the same function as `register` above
 
-----
+---
 
 ### Onion architecture
 
@@ -326,7 +327,7 @@ note:
     * they are in same layer - not a good idea though.
 * \+ fewer artifacts than ports and adapters<br/><!-- .element: class="fragment" -->
 
----
+----
 
 ### Broker architecture
 
