@@ -718,11 +718,15 @@ let plus combineOks combineErrors switch1 switch2 x =
 
 ### Example
 
-```fsharp[1-6|7|9-15|17-21] 
+```fsharp[1-9|11|13-19|21-25] 
 let validateEmail (email: string) =
+  // extract email from json
+  let email = json
   if email.Contains("@") then Ok email else Error "Missing @"
 
 let validateName (name: string) =
+  // extract name from json
+  let name = json
   if name.Length > 0 then Ok name else Error "Empty name"
 
 let combine email name = { Email = email; Name = name }
@@ -730,16 +734,16 @@ let combine email name = { Email = email; Name = name }
 // Sequential (monad) - stops at first error
 let sequentialCE =
   result {
-    let! e = validateEmail email
-    let! n = validateName name
+    let! e = validateEmail json
+    let! n = validateName json
     return combine e n
   }
 
 // Parallel (applicative) - collects all errors  
 let parallel =
   plus combine (fun e1 e2 -> sprintf "%s; %s" e1 e2)
-    validateEmail email
-    validateName name  // All errors collected
+    validateEmail
+    validateName json  // All errors collected
 ```
 
 
