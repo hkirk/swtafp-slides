@@ -1,0 +1,21 @@
+digraph core_shell {
+  rankdir=TB; nodesep=0.5; labelloc=t; label="Functional core, imperative shell:  read, decide, write"; fontname="Helvetica"; fontsize=16;
+  node [fontname="Helvetica", margin="0.25,0.12", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  edge [fontname="Helvetica", fontsize=10];
+
+  read   [label="READ (shell)\nstore.Load", fillcolor="#fde8e0"];
+  decide [label="DECIDE (pure core)\ndecide groups cap number pattern", fillcolor="#d8f0d8"];
+  write  [label="WRITE (shell)\nstore.Save", fillcolor="#fde8e0"];
+  {rank=same; read; decide; write}
+  read -> decide  [label="Groups"];
+  decide -> write [label="Ok group"];
+
+  port    [label="GroupStore\n(port)", shape=ellipse, fillcolor="#fff3c4"];
+  adapter [label="postgresStore\n(adapter)", fillcolor="#d8f0d8"];
+  db      [label="Postgres", shape=cylinder];
+
+  read -> port;
+  write -> port;
+  adapter -> port [style=dashed, arrowhead=empty, label="implements"];
+  adapter -> db;
+}

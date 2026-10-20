@@ -1,0 +1,20 @@
+digraph ports_adapters {
+  rankdir=LR; labelloc=t; label="Ports & Adapters"; fontname="Helvetica"; fontsize=16;
+  node [fontname="Helvetica", margin="0.25,0.12", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  edge [fontname="Helvetica", fontsize=10];
+
+  subgraph cluster_domain {
+    label="Domain (knows no database)"; style="rounded,filled"; fillcolor="#eef5ff"; color="#7aa7e0";
+    usecase [label="register\nrules and calls mixed"];
+    port    [label="GroupStore\n(port)", shape=ellipse, fillcolor="#fff3c4"];
+  }
+  subgraph cluster_outside {
+    label="Outside"; style="rounded,filled"; fillcolor="#f4f4f4"; color="#aaaaaa";
+    adapter [label="postgresStore\n(adapter)", fillcolor="#d8f0d8"];
+    db      [label="Postgres", shape=cylinder, fillcolor="#ffffff"];
+  }
+
+  usecase -> port    [label="Load / Save"];
+  adapter -> port    [label="implements", style=dashed, arrowhead=empty];
+  adapter -> db      [label="SELECT / INSERT"];
+}

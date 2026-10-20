@@ -1,0 +1,22 @@
+digraph oop {
+  rankdir=LR; labelloc=t; label="OOP: an object guards its own rules"; fontname="Helvetica"; fontsize=16;
+  node [fontname="Helvetica", margin="0.25,0.12", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  edge [fontname="Helvetica", fontsize=10];
+
+  subgraph cluster_domain {
+    label="Domain"; style="rounded,filled"; fillcolor="#eef5ff"; color="#7aa7e0";
+    usecase  [label="RegisterGroup\n(use case)"];
+    registry [label="SemesterRegistry\nRegister(number, pattern)\nholds the Groups", fillcolor="#e0f5e0"];
+    port     [label="IGroupStore\n(port as interface)", shape=ellipse, fillcolor="#fff3c4"];
+  }
+  subgraph cluster_outside {
+    label="Outside"; style="rounded,filled"; fillcolor="#f4f4f4"; color="#aaaaaa";
+    adapter [label="PostgresGroupStore\n(adapter class)", fillcolor="#d8f0d8"];
+    db      [label="Postgres", shape=cylinder];
+  }
+
+  usecase -> port     [label="Load / Save"];
+  usecase -> registry [label="creates, asks"];
+  adapter -> port     [label="implements", style=dashed, arrowhead=empty];
+  adapter -> db;
+}

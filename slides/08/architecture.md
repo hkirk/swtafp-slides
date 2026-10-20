@@ -27,13 +27,20 @@
 
 Note:
 
+DIP = Dependency Inversion principle
 
 
-----
+---
 
-#### Satisfying DIP
+### Code
 
-![Updated 3 layer architecture](./img/3layer2.png)
+```fsharp
+type RegisterGroup(store: PostgresGroupStore) = 
+    member _.Handle(semester, number, pattern, cap) = async {
+        let! groups = store.Load semester
+        ..
+    }
+```
 
 ----
 
@@ -68,7 +75,7 @@ Note:
 
 ----
 
-#### Extending with internalization
+#### Extending with internationalization
 
 ```csharp
 public void GenerateInvoice(Order order,
@@ -84,7 +91,7 @@ public void GenerateInvoice(Order order,
 
 #### Problems
 
-So each call to `GeneateInvoice` increments invoice number :(
+So each call to `GenerateInvoice.` increments invoice number :(
 
 ----
 
@@ -96,11 +103,54 @@ Note:
 
 GenerateTemplate and CreateInvoice should be pure functions
 
+----
+
+#### Today's solution is
+
+
+![Updated 3 layer architecture](./img/3layer2.png)
+
+- This also satisfies DIP
+
+----
+
+### This impl in F#
+
+```fsharp [1-7|9-13|15-23]
+  type IGroupStore =
+      abstract Load  : Semester -> Async<Groups> 
+      abstract Save  : NewGroup -> Async<unit> 
+  type PostgresGroupStore(conn) =
+      interface IGroupStore with
+          member _.Load semester = (* SELECT ... *)
+          member _.Save group    = (* INSERT ... *)
+
+  type SemesterRegistry(groups: Groups, cap: int) =
+      member _.Register(number, pattern) : Result<NewGroup, string> =
+          if groups.HasNumber number then Error "number taken"
+          elif groups.CountOn pattern >= cap then Error "pattern full"
+          else Ok { number = number; pattern = pattern }
+
+  type RegisterGroup(store: IGroupStore) =
+      member _.Handle(semester, number, pattern, cap) = async {
+          let! groups = store.Load semester  
+          let registry = SemesterRegistry(groups, cap)
+          match registry.Register(number, pattern) with
+          | Ok group -> do! store.Save group;
+                        return Ok group
+          | Error e  -> return Error e
+      }
+```
+
+----
+
+![OOP Zoomed](./img/oop.png)
+
 ---
 
-#### Hexagonal architecture
+#### Ports and Adapters
 
-also known as Ports and Adapters
+also known as Hexagonal architecture
 
 ![Hexagonal Architeture](./img/Hexagonal_Architecture.png "https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)") <!-- .element style="height:400px" -->
 
@@ -111,152 +161,90 @@ By Alistair Cockburn
 ## Ports & Adapters
 
 * Components<!-- .element: class="fragment" -->
-    * loosely coupled and interchangeable
-    * e.g. database, ui, business logic, etc. etc.
+    * loosely coupled and interchangeable, around one core: the domain
+    * e.g. database, ui, business logic, etc. 
 * Ports<!-- .element: class="fragment" -->
-    * 'interface' that components can access other components through
+    * what the core needs from (or offers to) the outside, defined by the core
 * Adapters<!-- .element: class="fragment" -->
-    * glue between components and ports
+    * implement a port with one technology (Postgres, HTTP, a test fake)
 
-Note: Not only for FP - but very used especially in FP so e.g. F# and Haskell
+Note: 
+
+Not only for FP - but very used especially in FP so e.g. F# and Haskell
 
 ----
 
-<!-- TODO: New example - from example -->
+### Dependency rule
+
+* dependencies point inward: 
+    * adapters know the core
+    * the core knows no adapter
+
+
+
+----
+
 <!-- in that case link to this for inspiration: https://jkone27-3876.medium.com/f-onion-architecture-in-92-lines-of-code-129c5d7877ca -->
 
-### A Restaurant example
-
-```fsharp [6-10]
-module BLL
-
-type Error = CapacityExceeded
-type Reservation = {Quantity: int}
-
-let check capacity getReservedSeats reservation =
-    let reservedSeats = getReservedSeats reservation
-    if (capacity < reservation.Quantity + reservedSeats)
-    then Result.Error CapacityExceeded
-    else Result.Ok reservation
-// val check :
-//  capacity:int ->
-//  getReservedSeats:(Reservation -> int) ->
-//  reservation:Reservation -> Result<Reservation,Error>
-```
-
-----
-
-### Controller / Use case
-
-* Restaurant check if reservation can be accepted
-
-
-```fsharp [4]
-let connStr = "..."
-let reserveTable = 
-    Validate.reservation
-    >> bind (BLL.check 10 (getReservedSeatsFromDb connStr))
-    >> map (saveReservation connStr) // same as below
-  //>> map (fun res -> (saveReservation connStr) res)
-```
-
-----
-
-### Inject `getReservedSeats`
+### A register example
 
 ```fsharp
-let getReservedSeatsFromDb (connStr: string)
-                           (reservations: Reservation): int = 
-    failwith "Not implemented"
+// PORT: a record of functions, owned by the domain
+type GroupStore =
+    {
+      Load: Semester -> Async<Groups>
+      Save: NewGroup -> Async<unit>
+    }
 
-let getReservedSeats = getReservedSeatsFromDb connStr
-// val getReservedSeats : (Reservation -> int)
+// ADAPTER: implements the port against the database
+let postgresStore (conn: string) : GroupStore =
+    {
+      Load = fun _ -> (* SELECT ... *)
+      Save = fun g -> (* INSERT ... *)
+    }
 ```
 
-* <!-- .element: class="fragment" --> 'getReservedSeats' has sideeffect
-    * signature is not honest
 
 ----
 
-### Partial application
+### Domain code
 
-* <!-- .element: class="fragment" -->Our pure function <code>check</code>, will be impure in production<br/>
-    * by injecting `getReservedSeatsFromDb`
-* <!-- .element: class="fragment" -->But why do <code>check</code> need <code>getReservedSeats</code> at all?
-
-Note:
-
-It don't - but if layered architecture kindof forces it to.
-
-----
-
-### Refactor `check`
-
-```fsharp
-let check capacity reservedSeats reservation =
-    if (capacity < reservation.Quantity + reservedSeats)
-    then Result.Error CapacityExceeded
-    else Result.Ok reservation
-```
-
-----
-
-### Calling check
-
-So now calling '`check`' is a bit more tedious
-
-```fsharp [4-6]
-let connStr = ".."
-let reserveTable =
-  Validate.reservation
-    >> map  (getReservedSeatsFromDb connStr res, res)
-    >> bind (fun (capacity, res) ->  
-                        BLL.check 10 capacity res)
-    >> map  (saveReservation connStr)
-```
-
-Note:
-
-`>>` function composition
-
-```
-let (>>) f g x = g (f x)
-
-let add1 x = 1+x
-let times2 x = x*2
-
-let add1Times2 = (>>) add1 times2
-let add1Times2' = add1 >> times2
+```fsharp [1-9|3,8]
+// USE CASE: depends on the port, never on the database
+let register (store: GroupStore) semester number pattern cap = async {
+    let! groups = store.Load semester
+    if has number groups then return Error "number taken"
+    elif countOn pattern groups >= cap then return Error "pattern full"
+    else
+        let group = { number = number; pattern = pattern }
+        do! store.Save group
+        return Ok group }
 ```
 
 ----
 
-### Reuse logic
+![Ports'n'Adapters Zoomed](./img/ports_adapters.png)
 
-* What is business logic?<br/><!-- .element: class="fragment" -->
-* What is application logic?<br/><!-- .element: class="fragment" -->
-* Does 'reserveTable' belong in the BLL?<br/><!-- .element: class="fragment" --> 
 
 ----
 
-### The function `reserveTable`
+### Tells
 
-1. could be application logic<br/><!-- .element: class="fragment" --> 
-1. thereby not something you would necessary reuse<br/><!-- .element: class="fragment" --> 
-1. because:<br/><!-- .element: class="fragment" --> 
-    * handle reservation validation in the same manner?
-    * handle input/output different
+- <!-- .element: class="fragment" --><code>async</code> in a port suggests I/O in production<br/>
+- port could just as well look like<!-- .element: class="fragment" -->
+    * ```getGroups: string -> Groups```
+
 
 ----
 
-### Take-aways
+### Should instead do something like
 
 1. Read data (impure)<br/><!-- .element: class="fragment" -->
 1. Hand data to BLL (pure)<br/><!-- .element: class="fragment" -->
 1. Save data (impure)<br/><!-- .element: class="fragment" -->
 1. Return/show data (impure)<br/><!-- .element: class="fragment" -->
 
----
+----
 
 ## Generalization
 
@@ -280,23 +268,52 @@ let add1Times2' = add1 >> times2
 
 Is my function `a()` pure or not?
 
-----
+---
 
-### Ports and Adapters
-##### or hexagonal architecture
+### Functional Core / Imperative shell
 
 * One way of avoiding DAL contaminating BLL<br/><!-- .element: class="fragment" --> 
-* Alternative to layered architecture<br/><!-- .element: class="fragment" --> 
 * Each component is connected through a number of ports<br/><!-- .element: class="fragment" --> 
 * <!-- .element: class="fragment" --> Not always the correct solution
+
+
+----
+
+![Functional Core / Imperative shell zoomed](./img/core_shell.png)
+
+----
+
+### Code
+
+```fsharp [1-5,10]
+// CORE: pure. No ports, no Async. Test it with plain values.
+let decide (groups: Groups) cap number pattern : Result<NewGroup, string> =
+    if has number groups then Error "number taken"
+    elif countOn pattern groups >= cap then Error "pattern full"
+    else Ok { number = number; pattern = pattern }
+    
+// SHELL: read, decide, write. The only place with effects / I/O.
+let register (store: GroupStore) semester number pattern cap = async {
+    let! groups = store.Load semester                       // READ
+    match decide groups cap number pattern with             // DECIDE (pure)
+    | Ok group ->
+        do! store.Save group                                // WRITE
+        return Ok group
+    | Error e -> return Error e }
+    
+```
+
+note:
+
+`register` is the same function as `register` above
 
 ----
 
 ### Onion architecture
 
-![Onion architecture](./img/onion-architecture.png) <!-- .element style="height: 260px" -->
+![Onion Architeture](./img/onion-architecture.png) <!-- .element style="height: 260px" -->
 
-* Onion architecture was inspired by Hexogonal architecture<br/><!-- .element: class="fragment" -->
+* Onion architecture was inspired by Hexagonal architecture<br/><!-- .element: class="fragment" -->
 * Layered architecture<!-- .element: class="fragment" --> 
     * where inner circles have no knowledge of outer circle
 
@@ -307,7 +324,7 @@ Is my function `a()` pure or not?
 
 * \- e.g. database is accessible from UI<br/><!-- .element: class="fragment" -->
     * they are in same layer - not a good idea though.
-* \+ fewer artifacts then ports and adapters<br/><!-- .element: class="fragment" -->
+* \+ fewer artifacts than ports and adapters<br/><!-- .element: class="fragment" -->
 
 ---
 
