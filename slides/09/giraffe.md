@@ -11,16 +11,15 @@
   * ASP.NET
   * Giraffe
 * HttpHandlers
-* 
 
 ---
 
 ### Web frameworks
 
-* Standalized way of making web resources available<!-- .element: class="fragment" --> 
+* Standardized way of making web resources available<!-- .element: class="fragment" --> 
   * API
   * Content
-* Web frameworks for all language<!-- .element: class="fragment" --> 
+* Web frameworks exists for all languages<!-- .element: class="fragment" --> 
   * C#, Java, php, ... Python, js, ...
 
 ----
@@ -28,20 +27,20 @@
 ### ASP.NET
 
 * .NET based web framework<!-- .element: class="fragment" --> 
-  * made for C#
+  * designed with C# in mind
 * Supports a wide range of applications<!-- .element: class="fragment" --> 
   * Web pages
   * MVC
   * Web API
-  * Web Hooks
-* Normally runs in the IIS container<!-- .element: class="fragment" --> 
+  * SignalR
+* Runs in the Kestrel by default<!-- .element: class="fragment" --> 
 
 ----
 
 ### Giraffe
 
-* (micro) Web framework build as middleware to ASP.NET Core<br/><!-- .element: class="fragment" --> 
-* Make use of 'all' build in middlewares<br/><!-- .element: class="fragment" --> 
+* (micro) Web framework built as middleware to ASP.NET Core<br/><!-- .element: class="fragment" --> 
+* Make use of 'all' built-in middleware<br/><!-- .element: class="fragment" --> 
   * static file, authentication, authorization, ..
 * Built as a functional framework <!-- .element: class="fragment" --> 
   * which we like :) <br/>
@@ -66,12 +65,41 @@ note:
   * Signature: (next: HttpFunc) -> (ctx: HttpContext) -> HttpFuncResult.
   * Example: GET >=> route "/hello" >=> text "Hello World".
 
+
+----
+
+## Hello world
+
+```fsharp [13-21| 8-11]
+module GiraffeHelloWorld.App
+
+open System
+open Microsoft.AspNetCore.Builder
+open Microsoft.Extensions.DependencyInjection
+open Giraffe
+
+let endpoints = 
+  choose [
+      route "/" >=> text "Hello World, from Giraffe"
+  ]
+
+[<EntryPoint>]
+let main args =
+    let builder = WebApplication.CreateBuilder(args)
+    builder.Services.AddGiraffe() |> ignore
+
+    let app = builder.Build()
+    app.UseRouting().UseGiraffe(endpoints)
+    app.Run()
+    0
+```
+
 ---
 
 ### Setting up Giraffe
 
 * Install Giraffe nuget package in F# project
-  * `PM> Install-Package Giraffe`
+  * `% dotnet add package Giraffe`
 
 
 ```fsharp [3-4]
@@ -96,13 +124,13 @@ let configureServices (services: IServiceCollection) =
     // Add Giraffe to the ASP.NET Core pipeline
     services.AddGiraffe() |> ignore
     
-let notFoundHandler = "Not Found" |> text 
-                                  |> RequestErrors.notFound
+let notFoundHandler = 
+  RequestErrors.notFound (text "Not Found")
 
 let configureApp (appBuilder: IApplicationBuilder) =
     appBuilder
     // Add Giraffe dependencies
-    .UseGiraffe(notFoundHandler)
+    .UseGiraffe(notFoundHandler )
 ```
 
 
@@ -123,20 +151,24 @@ let main _ =
 
 ----
 
-### Defining Giraffe middlewere
+### Defining Giraffe middleware
 
 ```fsharp [7-12]
 let configureServices (services: IServiceCollection) =
     // Add Giraffe to the ASP.NET Core pipeline
     services.AddGiraffe() |> ignore
     
-let notFoundHandler = "Not Found" |> text |> RequestErrors.notFound
+let notFoundHandler = 
+  RequestErrors.notFound (text "Not Found")
 
 let configureApp (appBuilder: IApplicationBuilder) =
     appBuilder
     // Add Giraffe dependencies: CORS, Auth, ...
+    .UseCors(..)
     .UseGiraffe(notFoundHandler)
 ```
+
+* Demo retunrs 404 on al request
 
 ---
 
@@ -150,7 +182,7 @@ type HttpHandler = HttpFunc -> HttpContext -> HttpFuncResult
 ```
 
 * Has a bind method (called compose)<br/><!-- .element: class="fragment" -->
-* and a operator (>=>)<br/><!-- .element: class="fragment" -->
+* and an operator (>=>)<br/><!-- .element: class="fragment" -->
 
 ----
 
@@ -169,7 +201,8 @@ let sayHelloWorld : HttpHandler = text "Hello World, from Giraffe"
 
 ```fsharp
 // type HttpHandler = HttpFunc -> HttpContext -> HttpFuncResult
-let todo: Endpoint =
+// type HttpFunc = HttpContext -> HttpFuncResult
+let todo: HttpHandler =
     // e.g. get input/database etc.
     fun next ctx ->
         ServerErrors.NOT_IMPLEMENTED "" next ctx
@@ -206,13 +239,13 @@ let sayHelloWorld : HttpHandler =
 ### Bind implementation
 
 * Http Handlers can be chained<br/><!-- .element: class="fragment" -->
-* Should look much like something we already know from last week.<!-- .element: class="fragment" -->
+* Should look familiar from earlier<!-- .element: class="fragment" -->
 
 
 ```fsharp
 //Note: concept code
 let bind (handler : HttpHandler) (handler2 : HttpHandler) =
-    fun (ctx : HttpHandlerContext) ->
+    fun (ctx : HttpContext) ->
         async {
             let! result = handler ctx
             match result with
@@ -230,8 +263,8 @@ let bind (handler : HttpHandler) (handler2 : HttpHandler) =
 
 ### `Compose`
 
-* Operator (>=>)<br/><!-- .element: class="fragment" data-fragment-index="0" -->
-* build on bind, but is optimized<br/><!-- .element: class="fragment" data-fragment-index="1" -->
+* Operator (>=>) (Kleisli composition)<br/><!-- .element: class="fragment" data-fragment-index="0" -->
+* built on bind, but is optimized<br/><!-- .element: class="fragment" data-fragment-index="1" -->
 * E.g.:<br/><!-- .element: class="fragment" data-fragment-index="2" -->
 ```fsharp
 let app = compose (route "/") (Successful.OK "Hello World")
@@ -253,7 +286,7 @@ let warbler f a = f a a
 ```
 <!-- .element: class="fragment"   data-fragment-index="0" -->
 
-* To avoid functions be eagerly loaded<br/><!-- .element: class="fragment"   data-fragment-index="1" -->
+* To avoid functions being eagerly evaluated<br/><!-- .element: class="fragment"   data-fragment-index="1" -->
 
 ```fsharp [7]
 // unit -> string
@@ -290,10 +323,10 @@ let app =
 * <!-- .element: class="fragment" -->Also a <code>HttpHandler</code><br/>
 * <!-- .element: class="fragment" --><code>route</code> being the main<br/>
   * `route "/info" >=> info`
-* <!-- .element: class="fragment" --><code>routeCi</code> - non exact match<br/>
+* <!-- .element: class="fragment" --><code>routeCi</code> - case-insensitive<br/>
   * `routeCi "/info" >=> info`
 * <!-- .element: class="fragment" --><code>routex</code> - regex<br/>
-  * `routex "/info(/?)' >=> info`
+  * `routex "/info(/?)" >=> info`
 * ....<br/><!-- .element: class="fragment" -->
 
 ----
@@ -305,22 +338,21 @@ let endpoints =
   [
     GET [
       route "/" (text "Hello World")
-      routef "/%s/%i" handler2
-      routef "/%s/%s/%s/%i" handler3
+      routef "/%s/%i" (fun (name, age) -> text "")
+      routef "/%s/%s/%s/%i" (fun (fn, mn, ls, age) -> text "")
     ]
-    subRoute "/sub" [
-      // Not specifying a http verb means it will listen to all verbs
-      route "/test" handler1
+    subRoute "/moduleA" [
+      route "/test" (text "test")
     ]
   ]
 
-app.UseGiraffe(webApp)
+app.UseGiraffe(endpoints)
 ```
 
 
 note: 
 
-Giraffe 5.x
+## Old Giraffe 5.x syntax
 
 ```fsharp [1, 6]
 let endpoints =
