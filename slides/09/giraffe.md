@@ -168,7 +168,7 @@ let configureApp (appBuilder: IApplicationBuilder) =
     .UseGiraffe(notFoundHandler)
 ```
 
-* Demo retunrs 404 on al request
+* Demo returns 404 on al request
 
 ---
 
