@@ -307,8 +307,8 @@ let App =
 ```fsharp
 let app =
   choose [
-    route "/foo" >=> text "Foo"
-    route "/bar" >=> text "Bar"
+    GET >=> route "/foo" >=> text "Foo"
+    GET >=> route "/bar" >=> text "Bar"
   ]
 ```
 * A HttpHandler<br/><!-- .element: class="fragment" -->
