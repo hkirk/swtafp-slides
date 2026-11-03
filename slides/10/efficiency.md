@@ -1,5 +1,5 @@
 <!-- .slide: data-background="#003d73" -->
-## Memory, Optimization and Queues
+## Memory and Optimization
 
 ![AU Logo](./../img/aulogo_uk_var2_white.png "AU Logo") <!-- .element style="width: 200px; position: fixed; bottom: 50px; left: 50px" -->
 
@@ -74,7 +74,7 @@ let rec pow = function
 
 ### Tail Recursion
 
-- <!-- .element: class="fragment" -->Lets try and rewrite function so we don't have extra work after <code>pow</code><br/>
+- <!-- .element: class="fragment" -->Lets try and rewrite function so we don't need a new stackframe after <code>pow</code><br/>
 ```fsharp
 let pow' (input: string * int) =
     let rec powInner acc = function
@@ -83,9 +83,11 @@ let pow' (input: string * int) =
     powInner "" input
 ```
 <!-- .element: class="fragment" -->
-- Because last expression is recursive call<br/><!-- .element: class="fragment" -->
+- Now last statement in every branch is<!-- .element: class="fragment" -->
+    - return or
+    - recursive call
 - This means:<br/><!-- .element: class="fragment" -->
-    - Compiler can 'reuse'/delete existing stackframe
+    - compiler can 'reuse'/delete existing stackframe
     - we call this tail recursive
 
 note: 
@@ -129,11 +131,11 @@ let fact'' n =
 Looping on a special form:<!-- .element: class="fragment" data-fragment-index="1" -->
 
 ```fsharp
-let rec tr checker cont last value =
-    if checker value
-    then tr checker cont last (cont value)
-    else last value
-// val tr : checker:('input -> bool) ->
+let rec tr isBase cont last value =
+    if isBase value
+    then last value
+    else tr checker cont last (cont value)
+// val tr : isBase:('input -> bool) ->
 //          cont:('input -> 'input) ->
 //          last:('input -> 'output) ->
 //          value:'input -> 'output
@@ -145,7 +147,7 @@ let rec tr checker cont last value =
 ### Implementing factorial by `tr`
 
 ```fsharp
-let fact' = tr (fun (n,_) -> n<>0L)       // checker
+let fact' = tr (fun (n,_) -> n = 0L)       // isBase
                (fun (n,m) -> (n-1L, m*n)) // cont
                (fun (_,m) -> m)           // last
 
@@ -206,7 +208,7 @@ Populate list in opposite direction
 ```fsharp
 let rec bigList = function
     | 0 -> []
-    | n -> (n-1) :: (bigList (n-1))
+    | n -> n :: (bigList (n-1))
 // val it : int list = [2; 1; 0]
 ```
 <!-- .element: class="fragment" data-fragment-index="0" -->
@@ -215,10 +217,10 @@ let rec bigList = function
 let rec bigListC c = function
     | 0 -> c []
     | n -> bigListC (fun res -> printfn "execute %d" (n-1)
-                                c ((n-1)::res)
+                                c (n :: res)
                     ) (n-1)
 
-bigListC (fun a -> a) 3
+bigListC (fun a -> a) 2
 
 ```
 <!-- .element: class="fragment" data-fragment-index="1" -->
@@ -229,7 +231,7 @@ bigListC (fun a -> a) 3
 
 * Accumulation is much faster than continuation based<br/><!-- .element: class="fragment" -->
     * Even more visible compared to iterative methods
-* Continuations will work in all places <!-- .element: class="fragment" -->
+* But 'continuations' will work in all places <!-- .element: class="fragment" -->
 
 
 ----
