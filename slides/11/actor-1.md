@@ -16,10 +16,19 @@
 
 ---
 
+## Existing concurrency model
+
+* Shared memory<br/><!-- .element: class="fragment" -->
+* Locking<br/><!-- .element: class="fragment" -->
+* OS Threads<br/><!-- .element: class="fragment" -->
+    * Memory<br/><!-- .element: class="fragment" -->
+    * Observability   <br/><!-- .element: class="fragment" -->
+
+---
+
 ### What is Akka.Net
 
 * An actor framework - (ported from Scala Akka)<!-- .element: class="fragment"  -->
-    * Actor model is from SmallTalk - OO done right :)
     * inspiration from Erlang
 * Consists of<!-- .element: class="fragment" -->
     * actors
@@ -30,10 +39,11 @@
 #### Actor
 
 * are lightweight<!-- .element: class="fragment" data-fragment-index="1" -->
-    * 2.5-3 mio. actors per GB ram
+    * ~2.5 mio. actors per GB of heap
 * can send and receive messages<!-- .element: class="fragment" data-fragment-index="2" -->
     * process one message at a time
     * synchronized
+    * -> built in thread-safety
 * exists within an actor system<!-- .element: class="fragment" data-fragment-index="3" -->
 
 ----
@@ -74,7 +84,8 @@ spawn myActorSystem "name" (actorOf2
                         (fn : Actor<'Msg> -> 'Msg -> unit))
 
 // for the 'state-holding' kind of actor
-spawn myActorSystem "name" (fn: Actor<'Msg> -> Cont<'Msg, 'Returned>)
+spawn myActorSystem "name" (fn: Actor<'Msg> -> 
+                                    Cont<'Msg, 'Returned>)
 ```
 
 * Akka.FSharp nuget package contains<!-- .element: class="fragment" -->
@@ -122,7 +133,7 @@ note:
 
 #### Continuing
 
-4. In you main function create an actor system
+4. In your main function create an actor system
     * *or where you need the system*
 ```fsharp
 [<EntryPoint>]
@@ -167,8 +178,9 @@ This is of the type `'Msg -> unit`
                              (actorOf helloActor)
     actor <! "something"
     actor <! "hello"
-    actorSystem.WhenTerminated.Wait() // Show how to terminated later
+    actorSystem.WhenTerminated.Wait() |> ignore // Show how to terminated later
 ```
+
 
 ----
 
@@ -187,8 +199,9 @@ Creating an: `Actor<'M> -> 'M -> unit`:
 
 ```fsharp
 // Defining actor
+// Actor<'Msg> -> 'Msg -> unit
 let test2Actor (mailbox: Actor<Message>) message = 
-    failWith "Handle message here"
+    failwith "Handle message here"
 
 // Creating actor
 // assume we have an existing actor system, "myActorSystem"
@@ -202,6 +215,7 @@ let test2Actor = spawn myActorSystem "test2Actor"
 
 * Computational expression<br/><!-- .element: class="fragment" -->
 ```fsharp
+// Actor<'Msg> -> Cont<'Msg, 'Returned>
 let firstActor (mailbox:Actor<_>) =
   let rec loop() = actor {
       let! message = mailbox.Receive()
@@ -214,7 +228,7 @@ let firstActor (mailbox:Actor<_>) =
 let myFirstActor = spawn myActorSystem "myFirstActor"
                                              firstActor
 ```
-* <!-- .element: class="fragment" --><code>actofOf</code> and <code>actofOf2</code> hides CE<br/>
+* <!-- .element: class="fragment" --><code>actorOf</code> and <code>actorOf2</code> hides CE<br/>
 
 ----
 
@@ -237,12 +251,12 @@ let myFirstActor = spawn myActorSystem "myFirstActor"
     * `tuples`, `records` and `discriminated unions` can be used as messages.
 * Messages are send with the '<!' tell operator<br/><!-- .element: class="fragment" --> 
 * How to handle messages is optional<!-- .element: class="fragment" --> 
-    * normally pattern matching is used
+    * normally pattern matching is applied
 
 ```fsharp
 match msg with
 | :? string as cmd -> // do something with cmd
-| :> InputResult as ir -> // do something with ir
+| :? InputResult as ir -> // do something with ir
 ```
 <!-- .element: class="fragment" -->
 
@@ -251,7 +265,7 @@ match msg with
 #### Unknown messages
 
 * if an actor receives an unknown messages it is ignored and possibly logged<br/><!-- .element: class="fragment" -->
-* if we change the previous actor<!-- .element: class="fragment" -->
+* e.g. we change the previous actor<!-- .element: class="fragment" -->
 
 ```fsharp
 let helloActor (mailbox:Actor<_>) msg =
@@ -322,17 +336,17 @@ And run the program - notice than first messages is handled by the actor system
 ### `IActorRef`
 
 * Reference/handle to another actor<br/><!-- .element: class="fragment" data-fragment-index="1" -->
-* Used to send message through the 'ActorSystem'<br/><!-- .element: class="fragment" data-fragment-index="2" -->
+* Is used to send message through the 'ActorSystem'<br/><!-- .element: class="fragment" data-fragment-index="2" -->
     * *we never talk directly to an actor*
     ```fsharp
-    let actor = spawn myActorSystem "hellowActor"
+    let actor: IActorRef = spawn myActorSystem "hellowActor"
                         (actorOf2 helloActor)
     ```
 * 'ActorSystem' do communications between actors<br/><!-- .element: class="fragment" data-fragment-index="3" -->
     * wraps messages in an envelope with metadata
     * allow for location transparency*<br/><br/>
         
-\* actor can live on another machines<!-- .element: style="font-size: 18px; " class="fragment" data-fragment-index="3" -->
+\*&nbsp;actor can live on other machines<!-- .element: style="font-size: 18px; " class="fragment" data-fragment-index="3" -->
 
 ----
 
@@ -343,7 +357,7 @@ And run the program - notice than first messages is handled by the actor system
     let myFirstActor = spawn myActorSystem "myFirstActor"
                                 (actorOf firstActor)
     ```
-2. Get 'parent', 'children' or 'sender', etc. from mailbox <br/><!-- .element: class="fragment" -->
+2. Get 'parent', 'children' or 'sender', etc. from mailbox<!-- .element: class="fragment" -->
 3. Get actor from 'ActorPath'<br/><!-- .element: class="fragment" -->
     * we will see this next week
 
@@ -362,7 +376,7 @@ mailbox.Context.Sender // or mailbox.Sender
 // Children
 let child = spawn mailbox.Context "myChildActor" (actorOf childActor)
 // or
-mailbox.Child // GetChildren
+mailbox.Context.Child // or .Context.GetChildren ()
 ```
 
 ----
@@ -414,6 +428,11 @@ let senderActor hello (mailbox: Actor<_>) _ =
         hello <! (Hello txt)
 ```
 
+note:
+
+* `hello` is a direct access to a IActorRef - so be aware - it can die
+* `mailbox.Context.System.Terminate()` - returns a Task 
+
 ----
 
 <!-- .slide: data-background="#dcedc1" -->
@@ -455,6 +474,9 @@ actorSystem.WhenTerminated.Wait ()
 
 * Twitter (uses/used JVM Akka)
     * breaks down the stream of all tweets down into smaller streams - for each user.
+    * https://akka.io/customers?hsLang=en
+* Akka.NET
+    * Siemens, JP Morgan chase, Dell, Boesch, ..
 
 ----
 
@@ -474,7 +496,7 @@ actorSystem.WhenTerminated.Wait ()
 * every actor we create has a supervisor<br/><!-- .element: class="fragment" -->
 * allows for an actor system to isolate and recover from failures<br/><!-- .element: class="fragment" -->
 * errors are contained in parts of the hierarchy<br/><!-- .element: class="fragment" -->
-    * other actors is not effected
+    * other actors is not affected
 
 
 ----
@@ -505,7 +527,7 @@ actorSystem.WhenTerminated.Wait ()
 
 Note:
 
-`/` is the only actor which don't have another actor
+`/` is the only actor which don't have a parant
 
 
 ----
@@ -525,7 +547,7 @@ let sender = spawn actorSystem "a1"
 <!-- .element: class="fragment" data-fragment-index="1" -->
 
 * Actors created with the 'actorSystem' is children of '/user'<br/><!-- .element: class="fragment" data-fragment-index="2" -->
-* Creating child actors e.g. '/b1'<!-- .element: class="fragment" data-fragment-index="3" -->
+* Actors created with an actors context e.g. '/b1'<!-- .element: class="fragment" data-fragment-index="3" -->
 
 ```fsharp
 // From inside the /a2 actor
@@ -539,8 +561,8 @@ let b1 = spawn mailbox.context "b1" basicActor
 #### Supervision
 
 * Actor only supervise children<br/><!-- .element: class="fragment" -->
-* Supervision 'starts' when something goes wrong
-    *  e.g. an exception in a child actor<br/><!-- .element: class="fragment" -->
+* Supervision 'starts' when something goes wrong<br/><!-- .element: class="fragment" -->
+    *  e.g. an exception in a child actor
     * errors is wrapped in a `Failure` message and send to parent.
 * Parent actor handle message based on<br/><!-- .element: class="fragment" -->
     * 1. how the child failed
@@ -550,10 +572,10 @@ let b1 = spawn mailbox.context "b1" basicActor
 
 #### Example
 
-1. 'c1' experience an error and throws an exception<br/><!-- .element: class="fragment" -->
-2. 'c1' suspends operations<br/><!-- .element: class="fragment" -->
-3. The system sends a 'Failure' message to 'c1's' parent 'b1'<br/><!-- .element: class="fragment" -->
-4. 'b1' issues a directive to 'c1' telling it what should happen<br/><!-- .element: class="fragment" -->
+1. c1 experience an error and throws an exception<br/><!-- .element: class="fragment" -->
+2. c1 suspends its operations<br/><!-- .element: class="fragment" -->
+3. The system sends a Failure message to c1's parent b1<br/><!-- .element: class="fragment" -->
+4. b1 issues a directive to c1 - telling it what should happen<br/><!-- .element: class="fragment" -->
 5. System (hopefully) continue to work<br/><!-- .element: class="fragment" -->
 
 ----
@@ -576,7 +598,7 @@ let b1 = spawn mailbox.context "b1" basicActor
 * <!-- .element: class="fragment" --> <b>One-For-One</b> strategy (default)
     * only failing actor is affected - not siblings
 * <!-- .element: class="fragment" --><b>All-For-One</b>
-    * failing actor and all siblings are effected.
+    * failing actor and all siblings are affected.
 
 ----
 
@@ -601,7 +623,7 @@ let actorRef =
 
 Note:
 
-Here the actor handles errors if they no more than 10 errors happens within a 60 second window
+Here the actor handles errors, if no more than 10 errors happens within a 60 second window
 
 
 ---
@@ -741,6 +763,8 @@ let fileWriterActor path writer
 ```
 
 Note:
+
+* Leaks file-stream - hooks is next week
 
 ```fsharp
 // Messages.fs
