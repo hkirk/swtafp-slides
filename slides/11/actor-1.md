@@ -527,7 +527,7 @@ actorSystem.WhenTerminated.Wait ()
 
 Note:
 
-`/` is the only actor which don't have a parant
+`/` is the only actor which don't have a parent
 
 
 ----
