@@ -65,7 +65,7 @@ type PlaybackActor() =
 
 #### Only for `PreStart` and/or `PostStop`
 
-```fsharp [2-3|4-5]
+```fsharp [7-11|2-3|4-5]
 let sampleActor (mailbox:Actor<_>) =
     // this section works like pre-start
     printf "pre-start"  
@@ -116,7 +116,7 @@ let selection = select "path/to/actor" mailbox.Context.System
 let myFooActor = spawn actorSystem "barActor"
                                          (actorOf fooActor)
 // in an actor
-let selection' = select "akka://user/barActor"
+let selection' = select "akka://MySystem/user/barActor"
                                      mailbox.Context.System
 selection' <! someMessage
 ```
@@ -142,8 +142,8 @@ selection' <! someMessage
 
 #### Loose coupling
 
-* Don't need to store and/or pass around IActorRef<br/><!-- .element: class="fragment" -->
-* Weaker coupling between actors/components<br/><!-- .element: class="fragment" -->
+* Don't need to store and/or pass around IActorRef
+* Weaker coupling between actors/components
 
 ----
 
@@ -180,25 +180,28 @@ select "akka://MyActorSystem/user/AuthenticateActor"
 
 ----
 
-#### Take care when passing `ActorPaths` around
+#### Take care 
 
-Because:
+Remember when passing `ActorPaths` around
 * ActorSelection can be relative
 
 ---
 
 ### Good design
 
-* Never rely on one hierarchy design<br/><!-- .element: class="fragment" -->
-* Always communicate via top-level actors<br/><!-- .element: class="fragment" -->
-* Delegate risky operations to leafs<br/><!-- .element: class="fragment" -->
+* Never rely on one hierarchy design<br/><!-- .element: class="fragment" data-fragment-index="1" -->
+* Always communicate via top-level actors\*<br/><!-- .element: class="fragment"  data-fragment-index="2"-->
+* Delegate risky operations to leafs<br/><!-- .element: class="fragment" data-fragment-index="3" -->
+
+<br/><br/><br/><br/>
+\* can be 'ignored' in smaller systems<br/><!-- .element: style="font-size: 20px" class="fragment" data-fragment-index="2" -->
 
 ----
 
 ### Knowledge
 
 * Make it possible to change implementation details (DIP, LSP)<br/><!-- .element: class="fragment" -->
-* Use top-level actors as interfaces<br/><!-- .element: class="fragment" -->
+* Think of top-level actors as interfaces/subsystems<br/><!-- .element: class="fragment" -->
 
 ![Limit knowledge](./img/limit-knowledge-about-cousins.png "Limit knowledge")<br/><!-- .element: class="fragment" -->
 
@@ -208,7 +211,7 @@ Because:
 ### Supervisor
 
 * Plan supervisor actors where custom failure handing is needed
-  * e.g. restarting a group of workers differently
+  * e.g. restarting a group of workers differently or
   * child actors require same failure handling
 
 
@@ -222,6 +225,7 @@ Because:
   * by `IActorRef` or `ActorSelection`
 * Makes extension possible (OCP)<br/><!-- .element: class="fragment" -->
 * Return is possible with IActorRef.Forward<br/><!-- .element: class="fragment" -->
+  * sender preserving
 
 ---
 
@@ -240,6 +244,15 @@ Because:
     * stay in a state for some time
 
 \* called become in C# and Scala<!-- .element: style="font-size: 20px" class="fragment" data-fragment-index="2" -->
+
+----
+
+### Chatsystem 
+
+* Without time - for simplicity
+
+![CAuthflow](./img/chatsystem.png)
+
 
 ----
 
@@ -269,16 +282,23 @@ let actor (mailbox: Actor<_>) =
 
 * In the above example our actor can handle messages base on 3 states<br/><!-- .element: class="fragment" -->
     * `authenticating`, `unauthenticated` and `authenticated`
-* This enables reusablitity, and different work with little code<br/><!-- .element: class="fragment" -->
+* This enables reusablitity, and different behavior with little code<br/><!-- .element: class="fragment" -->
 * Safe because actors only handle one messages at a time.<br/><!-- .element: class="fragment" -->
+
+----
+
+#### Changing message behaviour
+
+Extending the chat example:
+
+![Chat with messages handling](./img/chatsystem2.png)
 
 ----
 
 #### Handling messages in a state
 
-Let us imagine a chat example:
 
-```fsharp [1-13|7|14-25|6|26-36 ]
+```fsharp [1-11|7|12-23|6|24-33 ]
 let rec authenticating () =
   actor {
     let! message = mailbox.Receive ()
@@ -287,11 +307,9 @@ let rec authenticating () =
     | AuthenticationSuccess -> return! authenticated ()
     | AuthenticationFailure -> return! unauthenticated ()
     | IncomingMessage (roomId, msg) when roomId = chatroomId
-          -> ()
+          -> return! authenticating ()
     | OutgoingMessage (roomId, msg) when roomId = chatroomId
-          -> ()
-    return! authenticating ()
-  }
+          -> return! authenticating ()  }
   and unauthenticated () =
     actor {
       let! message = mailbox.Receive ()
@@ -299,10 +317,10 @@ let rec authenticating () =
       match message with
       | RetryAuthentication -> return! authenticating ()
       | IncomingMessage (roomId, msg) when roomId = chatroomId
-                  -> ()
+                  -> return! unauthenticated ()
       | OutgoingMessage (roomId, msg) when roomId = chatroomId
-                  -> ()
-      return! unauthenticated ()
+                  -> return! unauthenticated ()
+      
     }
   and authenticated () =
     actor {
@@ -310,10 +328,9 @@ let rec authenticating () =
 
       match message with
       | IncomingMessage (roomId, msg) when roomId = chatroomId
-                    -> ()
+                    -> return! authenticated ()
       | OutgoingMessage (roomId, msg) when roomId = chatroomId
-                    -> ()
-      return! authenticated ()
+                    -> return! authenticated ()
     }
 ```
 
@@ -337,11 +354,18 @@ let actor (mailbox: Actor<_>) =
 
 #### Unhandled messages
 
-* <!-- .element: class="fragment" -->Actors has a <code>Stash</code> which acts like stack structure<br/>
+* <!-- .element: class="fragment" -->Actors has a <code>stash</code> which acts like stack structure<br/>
     * Calling `mailbox.Stash ()` puts current message onto stack
 * <!-- .element: class="fragment" --><code>mailbox.Unstash ()</code> puts the top message at the front of the inbox<br/>
 * <!-- .element: class="fragment" --><code>mailbox.UnstashAll ()</code> unstashes all messages.<br/>
     * Preserves FIFO order
+
+
+----
+
+### Handling state
+
+![Saving message while authenticating](./img/chatsystem3.png)
 
 
 ----
@@ -404,25 +428,10 @@ let disposableActor (mailbox:Actor<_>) =
 
 ----
 
-#### Routing strategies
-
-* <!-- .element: class="fragment" -->Broadcast - Forward to all routees<br/>
-* <!-- .element: class="fragment" -->Random - Forward to a random routee<br/>
-* <!-- .element: class="fragment" -->ConsistentHash - Forward to a specific routee based on message<br/>
-
-----
-
-#### Supervision
-
-* <!-- .element: class="fragment" -->Router are actors so we can used <code>SupervisorStrategy</code><br/>
-* <!-- .element: class="fragment" -->Default is 'always escalate'
-
-----
-
 #### Starting a Router actor
 
 ```fsharp
-let worker = spawn mailbox.Context "worker"
+let worker = spawnOpt mailbox.Context "worker"
                 (workerActor)
                 [ SpawnOption.Router(RoundRobinPool(10)) ]
 ```
@@ -455,24 +464,40 @@ akka.actor.deployment {
 
 ----
 
+#### Supervision
+
+* <!-- .element: class="fragment" -->Router are actors so we can used <code>SupervisorStrategy</code><br/>
+* <!-- .element: class="fragment" -->Default is 'always escalate'
+
+----
+
+#### Routing strategies
+
+* <!-- .element: class="fragment" -->Broadcast - Forward to all routees<br/>
+* <!-- .element: class="fragment" -->Random - Forward to a random routee<br/>
+* <!-- .element: class="fragment" -->ConsistentHash - Forward to a specific routee based on message<br/>
+
+
+----
+
 #### Load balancing
 
 Try to evenly distribute work
 
 * <!-- .element: class="fragment" --><code>RoundRobin</code> - just forward each message to a new routee<br/>
-* <!-- .element: class="fragment" --><code>TailChooping</code> - forward to one random routee, after some delay send to a new until answer is recieved.<br/>
+* <!-- .element: class="fragment" --><code>TailChopping</code> - forward to one random routee, after some delay send to a new until answer is recieved.<br/>
 * <!-- .element: class="fragment" --><code>ScatterGatherFirstCompleted</code> - forward to all routees and return first answer. If no answer within a given timeframe, reply to sender.<br/>
 
 ----
 
 #### Load balancing 2 (Pool only)
 
-* <!-- .element: class="fragment" --><code>Resizable</code> - Forward to routee with fewest messages in mailbox
+* <!-- .element: class="fragment" --><code>SmallestMailboxPool</code> - Forward to routee with fewest messages in mailbox
     1. Idle routee
     2. Routee with empty mailbox
     3. Routee with fewest messages
     4. Remote routee
-* <!-- .element: class="fragment" --><code>ResizableRouter</code> - 'Auto scaling', tries to detect pressure on routee and expand/contract pool size
+* <!-- .element: class="fragment" --><code>ResizablePoolRouter</code> - 'Auto scaling', tries to detect pressure on routee and expand/contract pool size
 
 ----
 
@@ -506,8 +531,8 @@ let c3 = spawn mailbox.Context "coordinator3" (coordinatorA)
 // coordinators if they are available for work
 let coordinatorPaths = 
         [| string c1.Path; string c2.Path; string c3.Path |]
-let coordinator = mailbox.Context.ActorOf(
-    Props.Empty.WithRouter(BroadcastGroup(coordinatorPaths)))
+let coordinator = spawnOpt mailbox.Context "coordinatorRouter" (actorOf2 (fun _ _ -> ()))
+             [ SpawnOption.Router (BroadcastGroup coordinatorPaths) ]
 ```
 <!-- .element: class="fragment" -->
 
@@ -524,11 +549,12 @@ let coordinator = mailbox.Context.ActorOf(
 
 ### Akka.NET ecosystem
 
-* Akka.TestKit
-* Akka.Remote
-* Akka.Persistence
-* Akka.Cluster
-* Akka.Streams
+* Akka.TestKit - test framework
+* Akka.Remote - actor system on multiple processes
+* Akka.Persistence - state management
+* Akka.Cluster - cluser configuration
+* Akka.Streams - reactive programing on Akka.Net
+* ...
 
 ----
 

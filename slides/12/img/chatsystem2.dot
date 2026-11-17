@@ -1,0 +1,16 @@
+digraph auth_fsm {
+    rankdir=LR;
+    node [shape=ellipse, style=filled, fillcolor="#dcedc1"];
+    start [shape=point, width=0.15];
+
+    start -> authenticating
+
+    authenticating -> authenticating [label="ignore Incomming/outgoing"];
+    authenticating -> authenticated [label="AuthenticationSuccess"];
+    authenticating -> unauthenticated [label="AuthenticationFailure"];
+
+    unauthenticated -> authenticating [label="RetryAuthentication"];
+    unauthenticated -> unauthenticated [label="ignore Incomming/outgoing"];
+
+    authenticated -> authenticated [label="post Incomming/outgoing"];
+}
