@@ -5,12 +5,12 @@ digraph auth_fsm {
 
     start -> authenticating
 
-    authenticating -> authenticating [label="Stash Incomming/outgoing"];
+    authenticating -> authenticating [label="Stash Incoming/outgoing"];
     authenticating -> authenticated [label="AuthenticationSuccess\nUnstash"];
     authenticating -> unauthenticated [label="AuthenticationFailure\nUnstash"];
 
     unauthenticated -> authenticating [label="RetryAuthentication"];
-    unauthenticated -> unauthenticated [label="Stash Incomming/outgoing"];
+    unauthenticated -> unauthenticated [label="Stash Incoming/outgoing"];
 
-    authenticated -> authenticated [label="post Incomming/outgoing"];
+    authenticated -> authenticated [label="post Incoming/outgoing"];
 }

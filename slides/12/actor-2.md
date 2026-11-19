@@ -553,8 +553,8 @@ let coordinator = spawnOpt mailbox.Context "coordinatorRouter" (actorOf2 (fun _ 
 * Akka.TestKit - test framework
 * Akka.Remote - actor system on multiple processes
 * Akka.Persistence - state management
-* Akka.Cluster - cluser configuration
-* Akka.Streams - reactive programing on Akka.Net
+* Akka.Cluster - cluster configuration
+* Akka.Streams - reactive programming on Akka.Net
 * ...
 
 ----

@@ -5,12 +5,12 @@ digraph auth_fsm {
 
     start -> authenticating
 
-    authenticating -> authenticating [label="ignore Incomming/outgoing"];
+    authenticating -> authenticating [label="ignore Incoming/outgoing"];
     authenticating -> authenticated [label="AuthenticationSuccess"];
     authenticating -> unauthenticated [label="AuthenticationFailure"];
 
     unauthenticated -> authenticating [label="RetryAuthentication"];
-    unauthenticated -> unauthenticated [label="ignore Incomming/outgoing"];
+    unauthenticated -> unauthenticated [label="ignore Incoming/outgoing"];
 
-    authenticated -> authenticated [label="post Incomming/outgoing"];
+    authenticated -> authenticated [label="post Incoming/outgoing"];
 }
