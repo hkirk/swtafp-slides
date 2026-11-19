@@ -109,7 +109,8 @@ let aref = spawn system "actor" (sampleActor)
 
 #### Creating an actor path
 
-```fsharp [1|3-5|6-9|]
+```fsharp [2|4-6|7-10|]
+let myActorSystem = System.create "MySystem" (Configuration.load ())
 let selection = select "path/to/actor" mailbox.Context.System
 
 // e.g.
