@@ -87,6 +87,20 @@ rate or timing is not under your control
     - e.g. a counter shown in the UI recalculated on every tick
 
 
+----
+
+### Why is this Functional Programming?
+
+- Streams are just values<!-- .element: class="fragment" -->
+    - pipelines are constructed, passed and reused
+- The operators are the FP toolbox<!-- .element: class="fragment" -->
+    - map, filter, scan (fold), zip - like list
+- Immutable data flowing through<!-- .element: class="fragment" -->
+    - events are immutable messages
+- Declarative composition, not imperative loops<!-- .element: class="fragment" -->
+    - describe what the pipeline is, not how it iterates
+
+
 ---
 
 ### Creating events
@@ -205,12 +219,6 @@ tick from A
 ```
 <!-- .element: class="fragment" -->
 
-----
-
-### Demo
-
-![Live code](https://resources.jetbrains.com/storage/products/rider/img/meta/preview.png "" )
-
 ---
 
 ### Akka Streams
@@ -273,7 +281,7 @@ Source.From [ 1 .. 1000000 ]
 
 Mailbox flow
 * Each stage is an actor<br/><!-- .element: class="fragment" -->
-* Unbounded push into an actor = the mailbox problem from Akka lecture<br/><!-- .element: class="fragment" -->
+* Unbounded push into an actor<br/><!-- .element: class="fragment" -->
 * Reactive Streams demand signaling: bounded mailbox, upstream waits<br/><!-- .element: class="fragment" -->
 * Same principle as supervision: containment instead of overload<br/><!-- .element: class="fragment" -->
 
@@ -286,11 +294,13 @@ Mailbox flow
 - You choose the strategy, as with actor supervision<!-- .element: class="fragment" -->
 
 ```fsharp
-let decider = System.Linq.RestartDecider ()
-
+Decider decider = cause => cause is InvalidCastException
+    ? Directive.Restart
+    : Directive.Stop;
 let parse =
     Flow.Create<string>()
-        .Select(decider, fun s -> int s) // may throw
+        .Select(, fun s -> int s) // may throw
+        .WithAttributes(ActorAttributes.CreateSupervisionStrategy(decider));
 
 Source.From [ "1"; "x"; "3" ]
 |> Source.via parse
