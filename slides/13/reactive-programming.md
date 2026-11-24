@@ -250,12 +250,13 @@ tick from A
 open Akka.Streams
 open Akka.Streams.Dsl
 
+let system = ActorSystem.Create("MySteamSystem")
 let materializer = system.Materializer ()
 
-Source.From [ 1 .. 100 ]
-|> Source.via (Flow.Create<int>().Select(fun x -> x * 2))
-|> Source.toMat (Sink.ForEach(fun x -> printfn "%d" x)) Keep.right
-|> Source.run materializer
+Source.From([ 1 .. 100 ])
+        .Via(Flow.Create<int>().Select(fun x -> x * 2))
+        .To(Sink.ForEach(fun x -> printfn "%d" x))
+        .Run(materializer)
 ```
 
 ----
@@ -267,10 +268,11 @@ Source.From [ 1 .. 100 ]
 * Built-in operators make the rate explicit<!-- .element: class="fragment" -->
 
 ```fsharp
-Source.From [ 1 .. 1000000 ]
-|> Source.via (Flow.Create<int>().Throttle(10, TimeSpan.FromSeconds 1.))
-|> Source.to (Sink.ForEach(fun x -> (* slow consumer *) ()))
-|> Source.run materializer
+Source.From([ 1 .. 100000 ])
+        .Via(Flow.Create<int>().Select(fun x -> x * 2)
+                .Throttle(2, TimeSpan.FromSeconds 1., 5, ThrottleMode.Shaping))
+        .To(Sink.ForEach(fun x -> printfn "%s -- %d" (DateTime.Now.ToString "HH:mm:ss.fff") x))
+        .Run(materializer)
 ```
 <!-- .element: class="fragment" -->
 
@@ -294,18 +296,22 @@ Mailbox flow
 - You choose the strategy, as with actor supervision<!-- .element: class="fragment" -->
 
 ```fsharp
-Decider decider = cause => cause is InvalidCastException
-    ? Directive.Restart
-    : Directive.Stop;
+let decider =
+      Supervision.Decider(fun cause ->
+        match cause with
+        | :? FormatException -> Supervision.Directive.Restart
+        | _                  -> Supervision.Directive.Stop)
 let parse =
     Flow.Create<string>()
-        .Select(, fun s -> int s) // may throw
+        .Select(fun s -> int s) // may throw
         .WithAttributes(ActorAttributes.CreateSupervisionStrategy(decider));
 
-Source.From [ "1"; "x"; "3" ]
-|> Source.via parse
-|> Source.to (Sink.ForEach(printfn "%d"))
-|> Source.run materializer
+
+let completion =
+    Source.From([ "1"; "x"; "3" ])
+        .Via(parse)
+        .To(Sink.ForEach(fun x -> printfn "%d" x))
+        .Run(materializer)
 // Resume: 1, 3 are printed, "x" is skipped
 ```
 <!-- .element: class="fragment" -->
@@ -322,7 +328,7 @@ Source.From [ "1"; "x"; "3" ]
 
 ```fsharp
 // one source, two sinks: every element to both
-let bcast = GraphDSL.Create(fun b ->
+let bcast = GraphDsl.Create(fun b ->
     let broadcast = b.Add(new Broadcast<int>(2))
     b.From(b.Add(source)).To(broadcast) |> ignore
     b.From(broadcast).To(sink1) |> ignore
@@ -330,6 +336,44 @@ let bcast = GraphDSL.Create(fun b ->
     ClosedShape.Instance)
 ```
 <!-- .element: class="fragment" -->
+
+
+note:
+
+```fsharp
+let source = Source.From [1 .. 10]
+let sink1 = Sink.ForEach(fun x -> printfn $"sink1 {x}")
+let sink2 = Sink.ForEach(fun x -> printfn $"sink2 {x}")
+
+//...
+
+RunnableGraph.FromGraph(bcast).Run(materializer) |> ignore
+
+
+
+output
+
+sink1 1
+sink1 1
+sink1 2
+sink1 2
+sink1 3
+sink1 3
+sink1 4
+sink1 4
+sink1 5
+sink1 5
+sink1 6
+sink1 6
+sink1 7
+sink1 7
+sink1 8
+sink1 8
+sink1 9
+sink1 9
+sink1 10
+sink1 10
+```
 
 ----
 
